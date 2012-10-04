@@ -87,11 +87,17 @@
 			throw new Exception.NotImplementedException('GetCategories not yet implemented');
 		}
 
-		/*	Get 5 random questions within a category
+		/*	Get the final Question and Category
 		 *	@param {Object} args contains the information for loading the question
 		 *		Structure:  {
 		  						
 		  					}
+		  	@returns {Object}
+		  		Structure:	{
+		  		          		category:	The category of the question
+		  		          		question:	The question itself
+		  		          		answer:  	The question answer
+		  		          	}
 		 */
 		DataContext.GetFinalQuestion = function(args)
 		{

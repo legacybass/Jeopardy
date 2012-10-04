@@ -65,8 +65,7 @@
 
 		Jeopardy.JeopardyViewModel = function()
 		{
-			var self = this,
-				round = 0;
+			var self = this;
 
 			self.categories = ko.observableArray();
 
