@@ -61,6 +61,8 @@
 		// Any publicly accessible methods should be attached to the "JeopardyViewModel" object created above
 		// Any private functions or variables can be placed anywhere
 
+// Begin Classes
+
 		Jeopardy.JeopardyViewModel = function()
 		{
 			var self = this,
@@ -73,5 +75,7 @@
 
 			}
 		}
+
+// End Classes
 	});
 })();

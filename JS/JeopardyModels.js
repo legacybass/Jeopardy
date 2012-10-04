@@ -63,15 +63,19 @@
 
 		/*	Hold data about a single Jeopardy question
 		 *	@param (Object) args Parameter object that holds the data to be inserted into this question.
+		 *			Structure:  {
+		  							DataObj: //Object that can retrieve and persist data
+		  						}
 		 */
 		Jeopardy.JeopardyQuestionModel = function(args)
 		{
-			var self = this;
 			args = args || {};
+			var self = this,
+				DataObj = args.DataObj;
 
-			self.question = ko.observable(args.question);
-			self.value = ko.observable(args.value);
-			self.category = ko.observable(args.category);
+			self.question = ko.observable();
+			self.value = ko.observable();
+			self.category = ko.observable();
 		}
 
 		Jeopardy.JeopardyCategoryModel = function(args)
@@ -82,6 +86,26 @@
 			self.header = ko.observable(args.header);
 			self.questions = ko.observableArray();
 		}
+
+		Jeopardy.JeopardyGame = (function()
+		{
+			var DataObj;
+
+			function StartGame()
+			{
+
+			}
+
+			return function(args)
+			{
+				args = args || {};
+				var self = this;
+				DataObj = args.DataContext;
+
+				self.StartGame = StartGame;
+			}
+		})();
+
 // End Classes
 
 	});

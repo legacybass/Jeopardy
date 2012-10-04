@@ -22,19 +22,20 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			factory(target);
+			var exception = module['Exception'] || Exception;
+			factory(target, exception);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports'], factory);
+			define(['exports', 'ExceptionModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['Database'] = {});
+			factory(window['Database'] = {}, window['Exception']);
 		}
-	})(function(DatabaseExports)
+	})(function(DatabaseExports, exception)
 	{
 		var Database = typeof DatabaseExports !== Types.Undefined ? DatabaseExports : {};
 
@@ -118,11 +119,7 @@
 			}
 		}
 
-		function Exception(message)
-		{
-			var self = this;
-			self.message = message;
-		}
+		
 
 // End Classes
 
