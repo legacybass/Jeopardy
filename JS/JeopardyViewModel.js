@@ -22,8 +22,10 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var models = module['JeopadryQuestionModel'] || JeopardyQuestionModel;
-			factory(target, models);
+			var models = module['JeopardyModels'] || window['JeopardyModels'];
+			var data = module['DataContext'] || window['DataContext'];
+			var ko = module['ko'] || window['ko'];
+			factory(target, models, data, ko);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
@@ -34,10 +36,11 @@
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['Jeopardy'] = window['Jeopardy'] || {},
-					window['Jeopardy'].JeopardyQuestionModel,
+					window['JeopardyModels'],
+					window['DataContext'],
 					window['ko']);
 		}
-	})(function(JeopardyExports, JeopardyModel, ko)
+	})(function(JeopardyExports, JeopardyGame, JeopardyData, ko)
 	{
 		var Jeopardy = typeof JeopardyExports !== Types.Undefined ? JeopardyExports : {};
 
@@ -65,7 +68,11 @@
 
 		Jeopardy.JeopardyViewModel = function()
 		{
-			var self = this;
+			var self = this,
+				DataObj = JeopardyData,
+				GameObj = new JeopardyGame.JeopardyGame({
+					DataContext:
+				});
 
 			self.categories = ko.observableArray();
 

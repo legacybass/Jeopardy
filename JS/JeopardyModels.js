@@ -34,7 +34,11 @@
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['Jeopardy'] = window['Jeopardy'] || {}, window['ko']);
+			factory(
+				window['JeopardyModels'] = window['JeopardyModels'] || {},
+				window['ko'],
+				window['ExceptionsModule']
+			);
 		}
 	})(function(JeopardyExports, ko, Exceptions)
 	{
@@ -68,40 +72,56 @@
 		  							DataObj: //Object that can retrieve and persist data
 		  						}
 		 */
-		Jeopardy.JeopardyQuestionModel = function(args)
+		var JeopardyQuestionModel = (function()
 		{
-			args = args || {};
-			var self = this,
-				DataObj = args.DataObj;
+			function(args)
+			{
+				args = args || {};
+				var self = this,
+					DataObj = args.DataObj;
 
-			self.question = ko.observable();
-			self.answer = ko.observable();
-			self.value = ko.observable();
-			self.category = ko.observable();
-		}
+				self.question = ko.observable();
+				self.answer = ko.observable();
+				self.value = ko.observable();
+				self.category = ko.observable();
+			}
+		})();
 
-		Jeopardy.JeopardyCategoryModel = function(args)
+		var JeopardyCategoryModel = (function()
 		{
-			var self = this;
-			args = args || {};
 
-			self.header = ko.observable(args.header);
-			self.questions = ko.observableArray();
-		}
+
+			var JeopardyCategoryModel = function(args)
+			{
+				var self = this;
+				args = args || {};
+
+				self.header = ko.observable(args.header);
+				self.questions = ko.observableArray();
+			}
+
+			return JeopardyCategoryModel;
+		})();
 
 		Jeopardy.JeopardyGame = (function()
 		{
 			var DataObj,
 				answerWindow,
-				round = 0;
+				round = 0,
+				categories;
 
 			/*	Begin the game
-			 *	@param {Object} args 
+			 *	@param {Object} args Information about game setup
+			 *		Structure:	{
+			  		          		RequiredCategories: Array of category names
+			  		          	}
 			 */
 			function StartGame(args)
 			{
 				answerWindow = window.open('AnswerWindow.html', null, null, null);
-				DataObj.GetCategories()
+				categories = DataObj.GetCategories({
+					RequiredCategories: args.RequiredCategories
+				});
 			}
 
 
@@ -112,6 +132,7 @@
 
 				if(args.DataContext == undefined)
 					throw new Exception.InvalidArgumentException('The DataContext must be defined.');
+
 				DataObj = args.DataContext;
 
 				self.StartGame = StartGame;
