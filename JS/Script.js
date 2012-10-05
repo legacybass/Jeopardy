@@ -1,4 +1,4 @@
-require(['JeopardyViewModel', 'knockout'], function(jvm, ko)
+require(['JeopardyViewModel', 'knockout', 'domready!'], function(jvm, ko)
 {
 	var jeopardy = new jvm.JeopardyViewModel();
 	ko.applyBindings(jeopardy);

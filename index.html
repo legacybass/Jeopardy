@@ -1,24 +1,24 @@
 <!doctype html>
 <html>
 <head>
-	<link rel="stylesheet/less" href="Stylesheets/Jeopardy.less" />
+	<link rel="stylesheet/less" href="Stylesheets/Contestant.less" />
 	<style type="text/css">
 
 	</style>
 	<script type="text/javascript">
 		var require = {
-			basePath: '.',
+			basePath: 'JS',
 			paths: {
-				jquery: 'libs/jquery-1.7.2.min',
-				knockout: 'libs/Knockout/knockout-2.1.0'
+				jquery: 'JS/libs/jquery-1.7.2.min',
+				knockout: 'JS/libs/Knockout/knockout-2.1.0'
 			},
-			deps: ['jquery'],
+			deps: ['jquery', 'JS/libs/less-1.3.0.min'],
 			shim: {
 
 			}
 		}
 	</script>
-	<script type="text/javascript" data-main="JS/Script.js" src="JS/libs/require.min.js"></script>
+	<script type="text/javascript" src="JS/libs/require.min.js"></script>
 </head>
 <body>
 	<div class="header">

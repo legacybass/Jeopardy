@@ -22,20 +22,23 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var exception = module['Exception'] || Exception;
-			factory(target, exception);
+			var exception = module['Exception'];
+			var models = module['JeopardyModels']
+			factory(target, exception, models);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'ExceptionModule'], factory);
+			define(['exports', 'ExceptionModule', 'JeopardyModels'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['DataContext'] = {});
+			factory(window['DataContext'] = window['DataContext'] || {},
+					window['Exception'],
+					window['JeopardyModels']);
 		}
-	})(function(DataContextExports, Exception)
+	})(function(DataContextExports, Exception, models)
 	{
 		var DataContext = typeof DataContextExports !== Types.Undefined ? DataContextExports : {};
 
@@ -70,6 +73,7 @@
 		 *		Structure:  {
 		  						category: Name
 		  					}
+		 * @returs {Object} A Models.Question object
 		 */
 		DataContext.GetQuestions = function(args)
 		{
@@ -81,9 +85,12 @@
 		 *		Structure:  {
 		  						RequiredCategories: Array of categories that must exist in the round
 		  					}
+		 *	@return {Array} Array of Models.category objects
 		 */
 		DataContext.GetCategories = function(args)
 		{
+			// Go to data storage and get 5 categories
+			// ? Then populate each question in category
 			throw new Exception.NotImplementedException('GetCategories not yet implemented');
 		}
 

@@ -1,0 +1,112 @@
+/*	Jeopardy Main Stylesheet
+ *	Author:		Daniel Beus
+ *	Date:  		10/4/2012
+ */
+
+ // Imports
+@import "CrossBrowser";
+
+
+// Variables
+@red: hsl(0, 100%, 25%);
+@orange: hsl(30, 100%, 50%);
+@yellow: hsl(66, 100%, 50%);
+@blue: hsl(200, 100%, 25%);
+@green: hsl(130, 100%, 25%);
+@purple: hsl(270, 100%, 25%);
+@black: hsl(0, 0, 25%);
+@white: hsl(51, 100%, 90%);
+
+@buttonTopFaceColor: @green;
+@buttonWidth: 200px;
+
+
+// Mixins
+.buttonColorMixer(@topColor:@buttonTopFaceColor)
+{
+	@buttonBodyColor: darken(@topColor, 10%);
+	
+	.textColor(@topColor);
+	border: solid 1px @buttonBodyColor;
+	background:@topColor;
+	.box-shadow(0px, 9px, 0px, @buttonBodyColor);
+	
+	&:active
+	{
+		.box-shadow(0px, 2px, 0px, @buttonBodyColor);
+		position:relative;
+		top:7px;
+	}
+}
+
+.textColor(@background) when (lightness(@background) >= 50%)
+{
+	color: black;
+}
+.textColor(@background) when (lightness(@background) < 50%)
+{
+	color: white;
+}
+
+
+// Styles
+.box
+{
+	width: @buttonWidth * 1.45;
+	float:left;
+	height:100px;
+	background:#ececec;
+	border: 1px solid #d1d1d1;
+	.border-radius(5px);
+
+	.button
+	{
+		position:relative;
+		width: @buttonWidth;
+		margin:13px;
+		display:block;
+		text-transform: uppercase;
+		text-decoration: none;
+		.border-radius(5px);
+		text-align:center;
+		padding:20px 30px;
+		.transition(all, 0.1s);
+		cursor: pointer;
+		.unselectable();
+
+		.buttonColorMixer();
+
+		&.red
+		{
+			.buttonColorMixer(@red);
+		}
+		&.orange
+		{
+			.buttonColorMixer(@orange);
+		}
+		&.yellow
+		{
+			.buttonColorMixer(@yellow);
+		}
+		&.green
+		{
+			.buttonColorMixer(@green);
+		}
+		&.blue
+		{
+			.buttonColorMixer(@blue);
+		}
+		&.purple
+		{
+			.buttonColorMixer(@purple);
+		}
+		&.black
+		{
+			.buttonColorMixer(@black);
+		}
+		&.white
+		{
+			.buttonColorMixer(@white);
+		}
+	}
+}

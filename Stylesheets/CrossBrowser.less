@@ -1,0 +1,46 @@
+/*	Cross Browser Less Stylesheet
+ *	Author:		Daniel Beus
+ *	Date:  		10/4/2012
+ */
+
+// Variables
+
+
+// Mixins
+.transform(...)
+{
+	-webkit-transform: @arguments;
+	-moz-transform: @arguments;
+	-o-transform: @arguments;
+	transform: @arguments;
+}
+.border-radius(...)
+{
+	-webkit-border-radius: @arguments;
+	-moz-border-radius: @arguments;
+	-o-border-radius: @arguments;
+	border-radius: @arguments;
+}
+.transition(...)
+{
+	-webkit-transition: @arguments;
+	-moz-transition: @arguments;
+	-o-transition: @arguments;
+	transition: @arguments;
+}
+.box-shadow(...)
+{
+	-webkit-box-shadow: @arguments;
+	-moz-box-shadow: @arguments;
+	-o-box-shadow: @arguments;
+	box-shadow: @arguments;
+}
+.unselectable()
+{
+	-webkit-user-select: none;
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-o-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}

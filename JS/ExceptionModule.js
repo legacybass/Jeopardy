@@ -32,7 +32,7 @@
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['Exception'] = {});
+			factory(window['Exception'] = window['Exception'] || {});
 		}
 	})(function(ExceptionExports)
 	{

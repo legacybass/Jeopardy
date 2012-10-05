@@ -23,7 +23,6 @@
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
 			var models = module['JeopardyModels'] || window['JeopardyModels'];
-			var data = module['DataContext'] || window['DataContext'];
 			var ko = module['ko'] || window['ko'];
 			factory(target, models, data, ko);
 		}
@@ -37,10 +36,9 @@
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['Jeopardy'] = window['Jeopardy'] || {},
 					window['JeopardyModels'],
-					window['DataContext'],
 					window['ko']);
 		}
-	})(function(JeopardyExports, JeopardyGame, JeopardyData, ko)
+	})(function(JeopardyExports, JeopardyGame, ko)
 	{
 		var Jeopardy = typeof JeopardyExports !== Types.Undefined ? JeopardyExports : {};
 
@@ -64,24 +62,51 @@
 		// Any publicly accessible methods should be attached to the "JeopardyViewModel" object created above
 		// Any private functions or variables can be placed anywhere
 
-// Begin Classes
+//		Begin Private Variables
+
+		var Animations,
+			AnswerWindow;
+
+
+//		Begin Private Functions
+
+		function ShowAnimation(animation)
+		{
+
+		}
+
+
+//		Begin Classes
 
 		Jeopardy.JeopardyViewModel = function()
 		{
 			var self = this,
-				DataObj = JeopardyData,
 				GameObj = new JeopardyGame.JeopardyGame({
 					DataContext:
+				}),
+				categories = ko.observableArray();
+
+			Object.defineProperty(self, 'Categories', {
+				get: function()
+				{
+					return categories;
+				},
+				enumerable: true,
+				writable: false.
+				configurable: false
+			});
+
+			self.StartGame = function(args)
+			{
+				args = args || {};
+				GameObj.StartGame({
+					RequireCategories: args.RequiredCategories
 				});
 
-			self.categories = ko.observableArray();
+				categories = ko.observableArray(GameObj.Categories);
 
-			self.StartRound = function()
-			{
-
+				// Show animations
 			}
 		}
-
-// End Classes
 	});
 })();

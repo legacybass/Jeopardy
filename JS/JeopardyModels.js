@@ -22,25 +22,23 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var knockout = module['knockout'] || window['knockout'];
-			var exceptions = module['ExceptionsModule'] || window['ExceptionsModule'];
+			var exceptions = module['ExceptionsModule'];
 			factory(target, knockout, exceptions);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'knockout', 'ExceptionsModule'], factory);
+			define(['exports', 'ExceptionsModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(
 				window['JeopardyModels'] = window['JeopardyModels'] || {},
-				window['ko'],
-				window['ExceptionsModule']
+				window['Exception']
 			);
 		}
-	})(function(JeopardyExports, ko, Exceptions)
+	})(function(JeopardyExports, Exceptions)
 	{
 		var Jeopardy = typeof JeopardyExports !== Types.Undefined ? JeopardyExports : {};
 
@@ -74,17 +72,19 @@
 		 */
 		var JeopardyQuestionModel = (function()
 		{
-			function(args)
+			var JeopardyQuestionModel = function(args)
 			{
 				args = args || {};
 				var self = this,
 					DataObj = args.DataObj;
 
-				self.question = ko.observable();
-				self.answer = ko.observable();
-				self.value = ko.observable();
-				self.category = ko.observable();
+				self.question;
+				self.answer;
+				self.value;
+				self.category;
 			}
+
+			return JeopardyQuestionModel;
 		})();
 
 		var JeopardyCategoryModel = (function()
@@ -93,50 +93,14 @@
 
 			var JeopardyCategoryModel = function(args)
 			{
-				var self = this;
 				args = args || {};
+				var self = this;
 
-				self.header = ko.observable(args.header);
-				self.questions = ko.observableArray();
+				self.name;
+				self.questions = [];
 			}
 
 			return JeopardyCategoryModel;
-		})();
-
-		Jeopardy.JeopardyGame = (function()
-		{
-			var DataObj,
-				answerWindow,
-				round = 0,
-				categories;
-
-			/*	Begin the game
-			 *	@param {Object} args Information about game setup
-			 *		Structure:	{
-			  		          		RequiredCategories: Array of category names
-			  		          	}
-			 */
-			function StartGame(args)
-			{
-				answerWindow = window.open('AnswerWindow.html', null, null, null);
-				categories = DataObj.GetCategories({
-					RequiredCategories: args.RequiredCategories
-				});
-			}
-
-
-			return function(args)
-			{
-				args = args || {};
-				var self = this;
-
-				if(args.DataContext == undefined)
-					throw new Exception.InvalidArgumentException('The DataContext must be defined.');
-
-				DataObj = args.DataContext;
-
-				self.StartGame = StartGame;
-			}
 		})();
 
 // End Classes

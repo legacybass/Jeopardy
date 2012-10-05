@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+	<link rel="stylesheet/less" href="Stylesheets/Contestant.less" />
+	<script type="text/javascript">
+		var require = {
+			basePath: 'JS',
+			paths: {
+				jquery: 'JS/libs/jquery-1.7.2.min',
+				knockout: 'JS/libs/Knockout/knockout-2.1.0'
+			},
+			deps: ['jquery', 'JS/libs/less-1.3.0.min'],
+			shim: {
+
+			}
+		}
+	</script>
+	<script type="text/javascript" src="JS/libs/require.min.js"></script>
+	<script type="text/javascript">
+		require(['jquery'], function()
+		{
+			$(function()
+			{
+				var button = $('.box a.button').first();
+				$('input[type="radio"]').click(function()
+				{
+					var $this = $(this),
+						color = $this.val();
+					button.removeClass();
+					button.addClass('button').addClass(color);
+				})
+			});
+		});
+	</script>
+</head>
+<body>
+	<div id="contestantInfoContainer">
+		<input type="text" />
+	</div>
+	<div id="colorSelect">
+		<input type="radio" name="color" value="black" id="black">
+		<label for="black">Black</label>
+		<input type="radio" name="color" value="white" id="white">
+		<label for="white">White</label>
+		<input type="radio" name="color" value="red" id="red">
+		<label for="red">Red</label>
+		<input type="radio" name="color" value="orange" id="orange">
+		<label for="orange">Orange</label>
+		<input type="radio" name="color" value="yellow" id="yellow">
+		<label for="yellow">Yellow</label>
+		<input type="radio" name="color" value="green" id="green">
+		<label for="green">Green</label>
+		<input type="radio" name="color" value="blue" id="blue">
+		<label for="blue">Blue</label>
+		<input type="radio" name="color" value="purple" id="purple">
+		<label for="purple">Purple</label>
+	</div>
+	<div class="box" data-bind="visible: IsConnected">
+		<a class="button">Buzz In</a>
+	</div>
+</body>
+</html>
