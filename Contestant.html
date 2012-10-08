@@ -21,13 +21,17 @@
 		{
 			$(function()
 			{
-				var button = $('.box a.button').first();
+				var button = $('.box a.button');
+				var roundButton = $('#newContainer');
 				$('input[type="radio"]').click(function()
 				{
 					var $this = $(this),
 						color = $this.val();
 					button.removeClass();
 					button.addClass('button').addClass(color);
+
+					roundButton.removeClass();
+					roundButton.addClass('box').addClass(color);
 				})
 			});
 		});
@@ -35,7 +39,8 @@
 </head>
 <body>
 	<div id="contestantInfoContainer">
-		<input type="text" />
+		<label for="username">Enter your username:</label>
+		<input type="text" id="username" />
 	</div>
 	<div id="colorSelect">
 		<input type="radio" name="color" value="black" id="black">
@@ -48,7 +53,7 @@
 		<label for="orange">Orange</label>
 		<input type="radio" name="color" value="yellow" id="yellow">
 		<label for="yellow">Yellow</label>
-		<input type="radio" name="color" value="green" id="green">
+		<input type="radio" name="color" value="green" id="green" checked="checked">
 		<label for="green">Green</label>
 		<input type="radio" name="color" value="blue" id="blue">
 		<label for="blue">Blue</label>
@@ -57,6 +62,11 @@
 	</div>
 	<div class="box" data-bind="visible: IsConnected">
 		<a class="button">Buzz In</a>
+	</div>
+	<div style="clear: both;"></div>
+	<div id="newContainer" class="box" >
+		<div class="body"></div>
+		<div class="top"><p>Buzz In</p></div>
 	</div>
 </body>
 </html>

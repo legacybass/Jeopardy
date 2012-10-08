@@ -22,23 +22,24 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var models = module['JeopardyModels'] || window['JeopardyModels'];
+			var models = module['JeopardyGameModule'] || window['JeopardyGameModule'];
 			var ko = module['ko'] || window['ko'];
+			var exceptions = module['ExceptionModule'];
 			factory(target, models, data, ko);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'JeopardyModels', 'knockout'], factory);
+			define(['exports', 'JeopardyGameModule', 'knockout', 'ExceptionModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['Jeopardy'] = window['Jeopardy'] || {},
-					window['JeopardyModels'],
+					window['JeopardyGameModule'],
 					window['ko']);
 		}
-	})(function(JeopardyExports, JeopardyGame, ko)
+	})(function(JeopardyExports, JeopardyGame, ko, Exceptions)
 	{
 		var Jeopardy = typeof JeopardyExports !== Types.Undefined ? JeopardyExports : {};
 
@@ -70,9 +71,20 @@
 
 //		Begin Private Functions
 
+		/*	Show the selected animation
+		 *	
+		 */
 		function ShowAnimation(animation)
 		{
 
+		}
+
+		/*	Hide the Question from the main UI reenable question selection
+		 *	Params Descriptions
+		 */
+		function FinishQuestion(args)
+		{
+			
 		}
 
 
@@ -82,20 +94,25 @@
 		{
 			var self = this,
 				GameObj = new JeopardyGame.JeopardyGame({
-					DataContext:
+
 				}),
 				categories = ko.observableArray();
 
 			Object.defineProperty(self, 'Categories', {
 				get: function()
 				{
-					return categories;
+					return (categories().length > 1 ? categories : []) ;
 				},
 				enumerable: true,
-				writable: false.
 				configurable: false
 			});
 
+			/*	Initialize the gameboard and perform any server side calls
+			 *	@param {Object} args holds data about starting the new game
+			 *		Structure:	{
+			  		          		RequiredCategories: array of category names that are required for this game
+			  		          	}
+			 */
 			self.StartGame = function(args)
 			{
 				args = args || {};
@@ -106,7 +123,26 @@
 				categories = ko.observableArray(GameObj.Categories);
 
 				// Show animations
+				ShowAnimation();
+			}
+
+			/*	Show the question text, show the answer in the answer window, remove question from selection
+			 *	
+			 */
+			self.ShowQuestion = function(args)
+			{
+				throw new Exception.NotImplementedException('GetQuestions not yet implemented');
+			}
+
+			/*	Function to hide an entire category
+			 *	
+			 */
+			self.DisableCategory = function(args)
+			{
+				throw new Exception.NotImplementedException('GetQuestions not yet implemented');
 			}
 		}
+
+		return Jeopardy;
 	});
 })();

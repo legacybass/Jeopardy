@@ -8,12 +8,12 @@
 
 
 // Variables
-@red: hsl(0, 100%, 25%);
-@orange: hsl(30, 100%, 50%);
-@yellow: hsl(66, 100%, 50%);
+@red: hsl(0, 100%, 50%);
+@orange: hsl(39, 100%, 50%);
+@yellow: hsl(60, 100%, 50%);
 @blue: hsl(200, 100%, 25%);
 @green: hsl(130, 100%, 25%);
-@purple: hsl(270, 100%, 25%);
+@purple: hsl(290, 100%, 25%);
 @black: hsl(0, 0, 25%);
 @white: hsl(51, 100%, 90%);
 
@@ -22,13 +22,14 @@
 
 
 // Mixins
-.buttonColorMixer(@topColor:@buttonTopFaceColor)
+.buttonColorMixer(@topColor:@buttonTopFaceColor, @darken: 10%)
 {
-	@buttonBodyColor: darken(@topColor, 10%);
+	@buttonBodyColor: darken(@topColor, @darken);
 	
 	.textColor(@topColor);
 	border: solid 1px @buttonBodyColor;
-	background:@topColor;
+	//.background(top left, lighten(@topColor, 5%), darken(@topColor, 5%), @topColor, '', right);
+	background: @topColor;
 	.box-shadow(0px, 9px, 0px, @buttonBodyColor);
 	
 	&:active
@@ -36,6 +37,41 @@
 		.box-shadow(0px, 2px, 0px, @buttonBodyColor);
 		position:relative;
 		top:7px;
+	}
+}
+.roundButtonColorMixer(@topColor: @buttonTopFaceColor, @darken: 10%)
+{
+	@buttonBodyColor: darken(@topColor, @darken);
+
+	.textColor(@topColor);
+	
+	.top
+	{
+		.background(top left, lighten(@topColor, 5%), darken(@topColor, 15%), @topColor, '', right);
+	}
+
+	.body
+	{
+		.background(left, lighten(@buttonBodyColor, 10%), darken(@buttonBodyColor, 10%), @buttonBodyColor, '', right);
+	}
+
+	&:active
+	{
+		.top
+		{
+			margin-top: @buttonWidth * 0.2;
+			p
+			{
+				margin-top: @buttonWidth * 0.5;
+			}
+		}
+
+		.body
+		{
+			height: @buttonWidth * 0.8;
+			margin-top: @buttonWidth * 0.42;
+			.border-radius(~"100% / 62%");
+		}
 	}
 }
 
@@ -58,6 +94,8 @@
 	background:#ececec;
 	border: 1px solid #d1d1d1;
 	.border-radius(5px);
+	position: relative;
+	left: 33%;
 
 	.button
 	{
@@ -108,5 +146,95 @@
 		{
 			.buttonColorMixer(@white);
 		}
+	}
+}
+
+body *:not(#username)
+{
+	.unselectable();
+}
+
+#newContainer
+{
+	text-transform: uppercase;
+	text-decoration: none;
+	.roundButtonColorMixer(@green);
+
+	&.box
+	{
+		width: @buttonWidth * 1.45;
+		float: left;
+		height: @buttonWidth * 1.45;
+		background: hsl(0, 0, 93%);
+		border: 1px solid hsl(0, 0, 82%);
+		.border-radius(5px);
+		position: relative;
+		left: 33%;
+	}
+
+	&.red
+	{
+		.roundButtonColorMixer(@red);
+	}
+	&.orange
+	{
+		.roundButtonColorMixer(@orange);
+	}
+	&.yellow
+	{
+		.roundButtonColorMixer(@yellow);
+	}
+	&.green
+	{
+		.roundButtonColorMixer(@green);
+	}
+	&.blue
+	{
+		.roundButtonColorMixer(@blue);
+	}
+	&.purple
+	{
+		.roundButtonColorMixer(@purple);
+	}
+	&.black
+	{
+		.roundButtonColorMixer(@black);
+	}
+	&.white
+	{
+		.roundButtonColorMixer(@white);
+	}
+
+	.top
+	{
+		width: @buttonWidth;
+		height: @buttonWidth;
+		.border-radius(100%);
+		.transition(all, 0.1s);
+		.transform(rotateX(64deg), translateY(-731px));
+		p
+		{
+			position: relative;
+			top: 35px;
+			text-align: center;
+			font-size: 4em;
+			.transition(all, 0.1s);
+			.unselectable();
+		}
+	}
+
+	.body
+	{
+		width: @buttonWidth;
+		height: @buttonWidth;
+		.border-radius(~"100% / 50%");
+		.transition(all, 0.1s);
+	}
+
+	> *
+	{
+		margin-left: 15%;
+		margin-top: 15%;
+		cursor: pointer;
 	}
 }

@@ -58,11 +58,37 @@
 		// Any publicly accessible methods should be attached to the "Exception" object created above
 		// Any private functions or variables can be placed anywhere
 
-		Exception.Exception = function (message)
+		Exception.Exception = (function()
 		{
-			var self = this;
-			self.message = message;
-		}
+			var Exception = function (message)
+			{
+				var self = this;
+				Object.defineProperty(self, 'message',{
+					get: function()
+					{
+						return message;
+					},
+					enumerable: true,
+					configurable: true
+				});
+
+				Object.defineProperty(self, 'name',{
+					get: function()
+					{
+						return message;
+					},
+					enumerable: true,
+					configurable: true
+				});
+
+				self.prototype.toString = function()
+				{
+					return message;
+				}
+			}
+
+			return Exception;
+		});
 
 		Exception.NotImplementedException = (function(undefined){
 			// public API -- Constructor
@@ -74,7 +100,6 @@
 		
 			// Inherit from another class
 			NotImplementedException.prototype = Exception.Exception.prototype; 
-		
 			NotImplementedException.prototype.version = '1.0'
 		
 			// Return Constructor

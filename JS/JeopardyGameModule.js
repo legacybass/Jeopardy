@@ -23,12 +23,13 @@
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
 			var DataObj = module['DataContext'];
+			var exceptions = module['ExceptionModule'];
 			factory(target, DataObj);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'DataContext'], factory);
+			define(['exports', 'DataContext', 'ExceptionModule'], factory);
 		}
 		else
 		{
@@ -71,7 +72,6 @@
 					return categories;
 				},
 				enumerable: true,
-				writable: false.
 				configurable: false
 			});
 
@@ -108,14 +108,11 @@
 				args = args || {};
 				var self = this;
 
-				if(args.DataContext == undefined)
-					throw new Exception.InvalidArgumentException('The DataContext must be defined.');
-
-				DataObj = args.DataContext;
-
 				self.StartGame = StartGame;
 				self.GetNextRound = GetNextRound;
 			}
 		})();
+
+		return Jeopardy;
 	});
 })();

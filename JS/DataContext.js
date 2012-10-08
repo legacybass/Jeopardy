@@ -22,7 +22,7 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var exception = module['Exception'];
+			var exception = module['ExceptionModule'];
 			var models = module['JeopardyModels']
 			factory(target, exception, models);
 		}
@@ -112,5 +112,7 @@
 		}
 
 // End Functions
+
+		return DataContext;
 	});
 })();

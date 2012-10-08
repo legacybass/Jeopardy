@@ -22,13 +22,13 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var exceptions = module['ExceptionsModule'];
+			var exceptions = module['ExceptionModule'];
 			factory(target, knockout, exceptions);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'ExceptionsModule'], factory);
+			define(['exports', 'ExceptionModule'], factory);
 		}
 		else
 		{
@@ -78,16 +78,17 @@
 				var self = this,
 					DataObj = args.DataObj;
 
-				self.question;
-				self.answer;
-				self.value;
-				self.category;
+				self.question = args.question;
+				self.answer = args.answer;
+				self.value = args.value;
+				self.category = args.category;
+				self.visible = args.visible;
 			}
 
 			return JeopardyQuestionModel;
 		})();
 
-		var JeopardyCategoryModel = (function()
+		Jeopardy.JeopardyCategoryModel = (function()
 		{
 
 
@@ -96,14 +97,15 @@
 				args = args || {};
 				var self = this;
 
-				self.name;
-				self.questions = [];
+				self.name = args.name;
+				self.questions = args.questions || [];
 			}
 
 			return JeopardyCategoryModel;
 		})();
 
 // End Classes
-
+	
+		return Jeopardy;
 	});
 })();
