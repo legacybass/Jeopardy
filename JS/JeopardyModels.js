@@ -94,7 +94,7 @@
 					configurable: false
 				});
 
-				var answer = ko.observable(args.answer);
+				var answer = args.answer;
 				Object.defineProperty(self, 'Answer',{
 					get: function()
 					{
@@ -104,7 +104,7 @@
 					configurable: false
 				});
 
-				var value = ko.observable(args.value);
+				var value = args.value;
 				Object.defineProperty(self, 'Value',{
 					get: function()
 					{
@@ -114,7 +114,7 @@
 					configurable: false
 				});
 
-				var category = ko.observable(args.category);
+				var category = args.category;
 				Object.defineProperty(self, 'Category',{
 					get: function()
 					{
@@ -133,6 +133,20 @@
 					set: function(value)
 					{
 						hasBeenSelected(!!value);
+					},
+					enumerable: true,
+					configurable: false
+				});
+
+				var hasBeenShown = ko.observable(args.hasBeenShown == undefined ? false : !!args.hasBeenShown);
+				Object.defineProperty(self, 'HasBeenShown',{
+					get: function()
+					{
+						return hasBeenShown;
+					},
+					set: function(value)
+					{
+						hasBeenShown(value);
 					},
 					enumerable: true,
 					configurable: false

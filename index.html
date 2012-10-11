@@ -107,9 +107,9 @@
 				</div>
 				<!-- ko foreach: Questions -->
 				<div data-bind="if: !HasBeenSelected(), css: { money: !HasBeenSelected(), hideQuestion: !!HasBeenSelected() }, click: $root.QuestionSelected" class="money">
-					<p data-bind="text: '$' + Value()"></p>
+					<p data-bind="text: '$' + Value"></p>
 				</div>
-				<div data-bind="css: { showAnswer: !!HasBeenSelected(), question: !HasBeenSelected() }" class="question">
+				<div data-bind="css: { showAnswer: !!HasBeenSelected() && !HasBeenShown(), question: !HasBeenSelected() || !!HasBeenShown() }, click: $root.QuestionDone" class="question">
 					<p data-bind="text: Question"></p>
 				</div>
 				<!-- /ko -->

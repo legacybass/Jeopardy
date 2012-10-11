@@ -72,33 +72,6 @@
 
 //		Begin Private Functions
 
-		/*	Show the selected animation
-		 *	
-		 */
-		function ShowAnimation(animation)
-		{
-
-		}
-
-
-		/*	Show the question animation and remove dollar amount from screen
-		 *	
-		 */
-		function ShowQuestion(args)
-		{
-			alert(args.question.Question);
-
-		}
-
-		/*	Hide the Question from the main UI reenable question selection
-		 *	Params Descriptions
-		 */
-		function FinishQuestion(args)
-		{
-			
-		}
-
-
 
 
 //		Begin Classes
@@ -134,9 +107,6 @@
 				});
 
 				categories = ko.observableArray(GameObj.Categories);
-
-				// Show animations
-				ShowAnimation();
 			}
 
 			/*	Show the question text, show the answer in the answer window, remove question from selection
@@ -149,19 +119,12 @@
 					return;
 				}
 
-				ShowQuestion({
-					question: question
-				});
-
 				question.HasBeenSelected(true);
 			}
 
-			/*	Function to hide an entire category
-			 *	
-			 */
-			self.DisableCategory = function(args)
+			self.QuestionDone = function(question)
 			{
-				throw new Exception.NotImplementedException('GetQuestions not yet implemented');
+				question.HasBeenShown(true);
 			}
 		}
 
