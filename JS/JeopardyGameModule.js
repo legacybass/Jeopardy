@@ -101,6 +101,7 @@
 				categories = DataObj.GetCategories({
 					RequiredCategories: args.RequiredCategories
 				});
+				round++;
 			}
 
 			return function(args)
@@ -110,6 +111,14 @@
 
 				self.StartGame = StartGame;
 				self.GetNextRound = GetNextRound;
+				Object.defineProperty(self, 'Categories', {
+					get: function()
+					{
+						return categories;
+					},
+					enumerable: true,
+					configurable: false
+				});
 			}
 		})();
 

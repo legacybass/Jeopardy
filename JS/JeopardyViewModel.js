@@ -37,7 +37,8 @@
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['Jeopardy'] = window['Jeopardy'] || {},
 					window['JeopardyGameModule'],
-					window['ko']);
+					window['ko'],
+					window['ExceptionModule']);
 		}
 	})(function(JeopardyExports, JeopardyGame, ko, Exceptions)
 	{
@@ -79,6 +80,16 @@
 
 		}
 
+
+		/*	Show the question animation and remove dollar amount from screen
+		 *	
+		 */
+		function ShowQuestion(args)
+		{
+			alert(args.question.Question);
+
+		}
+
 		/*	Hide the Question from the main UI reenable question selection
 		 *	Params Descriptions
 		 */
@@ -86,6 +97,8 @@
 		{
 			
 		}
+
+
 
 
 //		Begin Classes
@@ -129,9 +142,18 @@
 			/*	Show the question text, show the answer in the answer window, remove question from selection
 			 *	
 			 */
-			self.ShowQuestion = function(args)
+			self.QuestionSelected = function(question)
 			{
-				throw new Exception.NotImplementedException('GetQuestions not yet implemented');
+				if(question.HasBeenSelected())
+				{
+					return;
+				}
+
+				ShowQuestion({
+					question: question
+				});
+
+				question.HasBeenSelected(true);
 			}
 
 			/*	Function to hide an entire category

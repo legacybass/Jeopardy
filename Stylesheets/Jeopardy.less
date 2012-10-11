@@ -3,7 +3,147 @@
  *	Date:  		10/4/2012
  */
 
- @buttonTopFaceColor: hsl(120, 100%, 25%)
- @buttonBodyColor: hsl(120, 100%, 18%)
 
- 
+// Imports
+@import "CrossBrowser";
+//@import "Variables";
+
+
+// Variables
+@backgroundColor: hsl(228, 100%, 25%);
+@textColor: hsl(42, 100%, 60%);
+
+
+// Mixins
+.common()
+{
+	background: @backgroundColor;
+	text-align: center;
+	.border();
+}
+.border()
+{
+	border: 5px solid black;
+	border-collapse: separate;
+}
+.text(@color: @textColor)
+{
+	color: @color;
+	font-family: Helvetica, Arial, sans-serif;
+	font-weight: bold;
+	text-shadow: 4px 5px 0px black;
+}
+.gameSpace()
+{
+	height: 15%;
+	min-width: 80px;
+}
+.moneyCommon()
+{
+	.common();
+	.gameSpace();
+
+	font-size: 3em;
+}
+
+
+// Styles
+@font-face { font-family: Jeopardy; src: url('Fonts/gyparody-webfont.woff'); }
+
+html, html *
+{
+	height: 100%;
+	width: 100%;
+}
+
+.game
+{
+
+}
+
+.header
+{
+	height: 10%;
+}
+
+.title
+{
+	font-size: 5em;
+	text-align: center;
+	font-family: Jeopardy;
+	color: hsl(0, 0, 0);
+    -webkit-mask-image: -webkit-gradient(linear, left bottom, left top, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.1)));
+    -webkit-mask-image: -webkit-linear-gradient(left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.1))); /* Chrome 10+, Saf5.1+ */
+    -moz-mask-image: -moz-linear-gradient(left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.1))); /* FF3.6 */
+    -ms-mask-image: -ms-linear-gradient(left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.1))); /* IE10 */
+    -o-mask-image: -o-linear-gradient(left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.1))); /* Opera 11.10+ */
+    -mask-image: linear-gradient(left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.1))); /* W3C */
+}
+
+.gameBoard
+{
+	height: 75%;
+	min-width: 400px;
+}
+
+.gameColumn
+{
+	float: left;
+	width: 20%;
+	min-width: 80px;
+}
+
+.categoryHeader
+{
+	.common();
+	.gameSpace();
+
+	font-size: 1em;
+
+	p
+	{
+		.text(white);
+		text-transform: uppercase;
+	}
+}
+
+.money
+{
+	.moneyCommon();
+
+	cursor: pointer;
+
+	&:hover
+	{
+		background: lighten(@backgroundColor, 10%);
+	}
+
+	p
+	{
+		.text();
+		position: relative;
+		top: -25%;
+	}
+}
+
+.hideQuestion
+{
+	.moneyCommon();
+
+	cursor: default;
+
+	p
+	{
+		display: none;
+	}
+}
+
+.question
+{
+	display: none;
+}
+
+.showAnswer
+{
+	display: none;
+}

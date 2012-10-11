@@ -23,8 +23,8 @@
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
 			var exception = module['ExceptionModule'];
-			var models = module['JeopardyModels']
-			factory(target, exception, models);
+			var Models = module['JeopardyModels']
+			factory(target, exception, Models);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
@@ -38,7 +38,7 @@
 					window['Exception'],
 					window['JeopardyModels']);
 		}
-	})(function(DataContextExports, Exception, models)
+	})(function(DataContextExports, Exception, Models)
 	{
 		var DataContext = typeof DataContextExports !== Types.Undefined ? DataContextExports : {};
 
@@ -77,7 +77,50 @@
 		 */
 		DataContext.GetQuestions = function(args)
 		{
-			throw new Exception.NotImplementedException('GetQuestions not yet implemented');
+			//throw new Exception.NotImplementedException('GetQuestions not yet implemented');
+			var answers = [
+				't occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est labor',
+				's nisi ut aliquip ex ea',
+				'ipsum dolor sit amet, consectetur adipisicing elit, sed d',
+				'em ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullam'
+			];
+			return [
+				new Models.JeopardyQuestionModel({
+					question:	answers[Math.floor(Math.random() * 4)],
+					answer:  	answers[Math.floor(Math.random() * 4)],
+					value:   	200,
+					category:	'Test',
+					visible: 	true
+				}),
+				new Models.JeopardyQuestionModel({
+					question:	answers[Math.floor(Math.random() * 4)],
+					answer:  	answers[Math.floor(Math.random() * 4)],
+					value:   	400,
+					category:	'Test',
+					visible: 	true
+				}),
+				new Models.JeopardyQuestionModel({
+					question:	answers[Math.floor(Math.random() * 4)],
+					answer:  	answers[Math.floor(Math.random() * 4)],
+					value:   	600,
+					category:	'Test',
+					visible: 	true
+				}),
+				new Models.JeopardyQuestionModel({
+					question:	answers[Math.floor(Math.random() * 4)],
+					answer:  	answers[Math.floor(Math.random() * 4)],
+					value:   	800,
+					category:	'Test',
+					visible: 	true
+				}),
+				new Models.JeopardyQuestionModel({
+					question:	answers[Math.floor(Math.random() * 4)],
+					answer:  	answers[Math.floor(Math.random() * 4)],
+					value:   	1000,
+					category:	'Test',
+					visible: 	true
+				})
+			];
 		}
 
 		/*	Get 5 random questions within a category
@@ -91,7 +134,39 @@
 		{
 			// Go to data storage and get 5 categories
 			// ? Then populate each question in category
-			throw new Exception.NotImplementedException('GetCategories not yet implemented');
+			//throw new Exception.NotImplementedException('GetCategories not yet implemented');
+			return [
+				new Models.JeopardyCategoryModel({
+					name:     	'Mythology',
+					questions:	DataContext.GetQuestions({
+					          	category: 'Test'
+					})
+				}),
+				new Models.JeopardyCategoryModel({
+					name:     	'Crossword clues "K"',
+					questions:	DataContext.GetQuestions({
+					          	category: 'Test2'
+					})
+				}),
+				new Models.JeopardyCategoryModel({
+					name:     	'How I Met Your Father',
+					questions:	DataContext.GetQuestions({
+					          	category: 'Test3'
+					})
+				}),
+				new Models.JeopardyCategoryModel({
+					name:     	'Stupid Answers',
+					questions:	DataContext.GetQuestions({
+					          	category: 'Test4'
+					})
+				}),
+				new Models.JeopardyCategoryModel({
+					name:     	'.NET and the Dependency Injection Pattern',
+					questions:	DataContext.GetQuestions({
+					          	category: 'Test5'
+					})
+				})
+			];
 		}
 
 		/*	Get the final Question and Category

@@ -56,3 +56,17 @@
     background: linear-gradient(@start, @startColor, @endColor); /* W3C */ 
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="@{startColor}", endColorstr="@{endColor}",GradientType=0 ); /* IE6-9 */
 }
+.columns(...)
+{
+	-webkit-column-count: @arguments;
+	-moz-column-count: @arguments;
+	-o-column-count: @arguments;
+	column-count: @arguments;
+}
+.column-rule(...)
+{
+	-webkit-column-rule: @arguments;
+	-moz-column-rule: @arguments;
+	-o-column-rule: @arguments;
+	column-rule: @arguments;
+}

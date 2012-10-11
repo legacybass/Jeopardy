@@ -23,22 +23,24 @@
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
 			var exceptions = module['ExceptionModule'];
+			var knockout = module['knockout'];
 			factory(target, knockout, exceptions);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'ExceptionModule'], factory);
+			define(['exports', 'ExceptionModule', 'knockout'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(
-				window['JeopardyModels'] = window['JeopardyModels'] || {},
-				window['Exception']
+				window['JeopardyViewModel'] = window['JeopardyViewModel'] || {},
+				window['Exception'],
+				window['ko']
 			);
 		}
-	})(function(JeopardyExports, Exceptions)
+	})(function(JeopardyExports, Exceptions, ko)
 	{
 		var Jeopardy = typeof JeopardyExports !== Types.Undefined ? JeopardyExports : {};
 
@@ -70,7 +72,7 @@
 		  							DataObj: //Object that can retrieve and persist data
 		  						}
 		 */
-		var JeopardyQuestionModel = (function()
+		Jeopardy.JeopardyQuestionModel = (function()
 		{
 			var JeopardyQuestionModel = function(args)
 			{
@@ -78,11 +80,63 @@
 				var self = this,
 					DataObj = args.DataObj;
 
-				self.question = args.question;
-				self.answer = args.answer;
-				self.value = args.value;
-				self.category = args.category;
-				self.visible = args.visible;
+				var question = args.question;
+				Object.defineProperty(self, 'Question',{
+					get: function()
+					{
+						return question;
+					},
+					set: function(value)
+					{
+						question(value);
+					},
+					enumerable: true,
+					configurable: false
+				});
+
+				var answer = ko.observable(args.answer);
+				Object.defineProperty(self, 'Answer',{
+					get: function()
+					{
+						return answer;
+					},
+					enumerable: true,
+					configurable: false
+				});
+
+				var value = ko.observable(args.value);
+				Object.defineProperty(self, 'Value',{
+					get: function()
+					{
+						return value;
+					},
+					enumerable: true,
+					configurable: false
+				});
+
+				var category = ko.observable(args.category);
+				Object.defineProperty(self, 'Category',{
+					get: function()
+					{
+						return category;
+					},
+					enumerable: true,
+					configurable: false
+				});
+
+				var hasBeenSelected = ko.observable(args.hasBeenSelected == undefined ? false : !!args.hasBeenSelected);
+				Object.defineProperty(self, 'HasBeenSelected',{
+					get: function()
+					{
+						return hasBeenSelected;
+					},
+					set: function(value)
+					{
+						hasBeenSelected(!!value);
+					},
+					enumerable: true,
+					configurable: false
+				});
 			}
 
 			return JeopardyQuestionModel;
@@ -97,8 +151,24 @@
 				args = args || {};
 				var self = this;
 
-				self.name = args.name;
-				self.questions = args.questions || [];
+				var name = ko.observable(args.name);
+				 Object.defineProperty(self, 'Name',{
+					get: function()
+					{
+						return name;
+					},
+					enumerable: true,
+					configurable: false
+				 });
+				var questions = ko.observableArray(args.questions || []);
+				 Object.defineProperty(self, 'Questions',{
+					get: function()
+					{
+						return questions;
+					},
+					enumerable: true,
+					configurable: false
+				 });
 			}
 
 			return JeopardyCategoryModel;

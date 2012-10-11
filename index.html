@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-	<link rel="stylesheet/less" href="Stylesheets/Contestant.less" />
+	<link rel="stylesheet/less" href="Stylesheets/Jeopardy.less" />
 	<script type="text/javascript">
 		var require = {
 			basePath: 'JS',
@@ -18,19 +18,103 @@
 	</script>
 	<script type="text/javascript" data-main="JS/Script.js" src="JS/libs/require.min.js"></script>
 	<script type="text/html" id="columnTemplate">
+		
+	</script>
+	<script type="text/javascript">
+		var Types = {
+			Function: typeof function() {},
+			Object: typeof {},
+			String: typeof "",
+			Number: typeof 1,
+			Boolean: typeof false,
+			Undefined: typeof undefined
+		};
 
+		var obj = {
+			name: "Daniel",
+			age: 30,
+			address: {
+				street: "381 N. Washington Blvd.",
+				city: "Ogden",
+				zip: 84404
+			},
+			setAge: function(value)
+			{
+				this.age = value;
+			}
+		};
+		var constructorFactory = function(obj, name)
+		{
+			var param = "return function " + name + "(args) {" +
+				"var self = this;" +
+				"args = args || {};" +
+				"for(var key in args)" +
+				"{" +
+					"self[key] = args[key];" +
+				"}" +
+			"}";
+
+			return new Function(param)();
+		}
+
+		var stringify = function(obj)
+		{
+			var rtStr = "{",
+				counter = 0;
+
+			for(var key in obj)
+			{
+				if(counter != 0)
+					rtStr += ", ";
+
+				var data = obj[key],
+					dataType = typeof data;
+				if(dataType === Types.Object)
+				{
+					rtStr += key + ": " + stringify(data);
+				}
+				else if(dataType === Types.Function)
+				{
+					rtStr += key + ": " + data.toString();
+				}
+				else if(dataType === Types.Undefined)
+				{
+					rtStr += key + ": undefined"
+				}
+				else
+					rtStr += key + ": '" + data + "'";
+
+				counter++;
+			}
+
+			rtStr += "}";
+
+			return rtStr;
+		}
+
+		var func = constructorFactory(obj, "ObjMaker");
 	</script>
 </head>
 <body>
-	<div class="header">
-		<div class="title">Jeopardy!</div>
-	</div>
-	<div class="gameBoard" data-bind="foreach: Categories">
-		<div data-bind="text: Name"></div>
-		<!-- ko foreach: Questions -->
-		<div data-bind="text: Name"></div>
-		<div data-bind="text: Answer"></div>
-		<!-- /ko -->
+	<div class="game">
+		<div class="header">
+			<div class="title">Jeopardy!</div>
+		</div>
+		<div class="gameBoard" data-bind="foreach: Categories">
+			<div class="gameColumn">
+				<div class="categoryHeader">
+					<p data-bind="text: Name"></p>
+				</div>
+				<!-- ko foreach: Questions -->
+				<div data-bind="if: !HasBeenSelected(), css: { money: !HasBeenSelected(), hideQuestion: !!HasBeenSelected() }, click: $root.QuestionSelected" class="money">
+					<p data-bind="text: '$' + Value()"></p>
+				</div>
+				<div data-bind="css: { showAnswer: !!HasBeenSelected(), question: !HasBeenSelected() }" class="question">
+					<p data-bind="text: Question"></p>
+				</div>
+				<!-- /ko -->
+			</div>
+		</div>
 	</div>
 </body>
 </html>
