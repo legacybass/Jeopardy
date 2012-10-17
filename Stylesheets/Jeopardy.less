@@ -6,13 +6,10 @@
 
 // Imports
 	@import "CrossBrowser";
-	//@import "Variables";
-
 
 // Variables
 	@backgroundColor: hsl(228, 100%, 25%);
 	@textColor: hsl(42, 100%, 60%);
-
 
 // Mixins
 	.common()
@@ -45,7 +42,6 @@
 
 		font-size: 3em;
 	}
-
 
 // Styles
 	@font-face { font-family: Jeopardy; src: url('Fonts/gyparody-webfont.woff'); }
@@ -97,13 +93,15 @@
 	{
 		.common();
 		.gameSpace();
+		@spacing: 110%;
 
-		font-size: 1em;
+		font-size: @spacing;
 
 		p
 		{
 			.text(white);
 			text-transform: uppercase;
+			line-height: @spacing;
 		}
 	}
 
@@ -173,11 +171,6 @@
 		50%
 		{
 			-webkit-transform: rotateY(180deg);
-			position: fixed;
-			width: 50%;
-			height: 50%;
-			content: '';
-
 		}
 		to
 		{

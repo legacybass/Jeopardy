@@ -4,12 +4,14 @@
 	<link rel="stylesheet/less" href="Stylesheets/Contestant.less" />
 	<script type="text/javascript">
 		var require = {
-			basePath: 'JS',
+			baseUrl: './JS',
 			paths: {
-				jquery: 'JS/libs/jquery-1.7.2.min',
-				knockout: 'JS/libs/Knockout/knockout-2.1.0'
+				jquery: 'libs/jquery-1.7.2.min',
+				knockout: 'libs/knockout-2.1.0',
+				domReady: 'libs/domReady',
+				less: 'libs/less-1.3.0.min'
 			},
-			deps: ['jquery', 'JS/libs/less-1.3.0.min'],
+			deps: ['jquery', 'less'],
 			shim: {
 
 			}
@@ -17,56 +19,51 @@
 	</script>
 	<script type="text/javascript" src="JS/libs/require.min.js"></script>
 	<script type="text/javascript">
-		require(['jquery'], function()
+		require(['ContestantViewModel', 'knockout', 'domReady'], function(cvm, ko)
 		{
-			$(function()
-			{
-				var button = $('.box a.button');
-				var roundButton = $('#newContainer');
-				$('input[type="radio"]').click(function()
-				{
-					var $this = $(this),
-						color = $this.val();
-					button.removeClass();
-					button.addClass('button').addClass(color);
-
-					roundButton.removeClass();
-					roundButton.addClass('box').addClass(color);
-				})
-			});
+			var viewModel = new cvm.ContestantViewModel();
+			window.viewModel = viewModel;
+			ko.applyBindings(viewModel);
 		});
 	</script>
 </head>
 <body>
 	<div id="contestantInfoContainer">
-		<label for="username">Enter your username:</label>
-		<input type="text" id="username" />
+		<div data-bind="visible: !Connected()">
+			You are not yet connected.  Please choose a username and click continue to play.
+		</div>
+		<label for="username" data-bind="text: !Connected() ? 'Enter your username: ' : 'Username: '"></label>
+		<input type="text" id="username" data-bind="enable: !Connected()" />
+		<button type="button" data-bind="click: ConnectBuzzer, visible: !Connected(), enable: !Connected()">Continue</button>
 	</div>
-	<div id="colorSelect">
-		<input type="radio" name="color" value="black" id="black">
-		<label for="black">Black</label>
-		<input type="radio" name="color" value="white" id="white">
-		<label for="white">White</label>
-		<input type="radio" name="color" value="red" id="red">
-		<label for="red">Red</label>
-		<input type="radio" name="color" value="orange" id="orange">
-		<label for="orange">Orange</label>
-		<input type="radio" name="color" value="yellow" id="yellow">
-		<label for="yellow">Yellow</label>
-		<input type="radio" name="color" value="green" id="green" checked="checked">
-		<label for="green">Green</label>
-		<input type="radio" name="color" value="blue" id="blue">
-		<label for="blue">Blue</label>
-		<input type="radio" name="color" value="purple" id="purple">
-		<label for="purple">Purple</label>
-	</div>
-	<div class="box" data-bind="visible: IsConnected">
-		<a class="button">Buzz In</a>
-	</div>
-	<div style="clear: both;"></div>
-	<div id="newContainer" class="box" >
-		<div class="body"></div>
-		<div class="top"><p>Buzz In</p></div>
+	<div id="buzzers" data-bind="visible: Connected" style="display: none;">
+		<div id="colorSelect" data-bind="foreach: Colors, visible: true" style="display: none;">
+			<input type="radio" name="color" data-bind=" attr: { 
+																	value: $data,
+																	id: $data
+																},
+														 checked: $parent.SelectedColor">
+			<label data-bind="attr: {
+										'for': $data
+									},
+							  text: $data"></label>
+		</div>
+		<div id="buzzerSelect">
+			<input type="radio" name="buzzer" value="true" data-bind="checked: SquareBuzzer">
+				<label for="squareBuzzer">Square Buzzer</label>
+			</input>
+			<input type="radio" name="buzzer" value="false" data-bind="checked: SquareBuzzer">
+				<label for="roundBuzzer">Round Buzzer</label>
+			</input>
+		</div>
+		<div class="box" data-bind="visible: SquareBuzzer() == 'true'">
+			<a data-bind="attr: { 'class': SelectedColor() + ' button' }">Buzz In</a>
+		</div>
+		<div style="clear: both;"></div>
+		<div id="newContainer" data-bind="attr: { 'class': SelectedColor() + ' box' }, visible: SquareBuzzer() == 'false'" >
+			<div class="body"></div>
+			<div class="top"><p>Buzz In</p></div>
+		</div>
 	</div>
 </body>
 </html>
