@@ -28,15 +28,18 @@
 	</script>
 </head>
 <body>
-	<div id="contestantInfoContainer">
-		<div data-bind="visible: !Connected()">
-			You are not yet connected.  Please choose a username and click continue to play.
-		</div>
-		<label for="username" data-bind="text: !Connected() ? 'Enter your username: ' : 'Username: '"></label>
-		<input type="text" id="username" data-bind="enable: !Connected()" />
-		<button type="button" data-bind="click: ConnectBuzzer, visible: !Connected(), enable: !Connected()">Continue</button>
+	<div class="loggingIn" data-bind="visible: !Connected()">
+		Connecting to server...
 	</div>
-	<div id="buzzers" data-bind="visible: Connected" style="display: none;">
+	<div id="contestantInfoContainer" data-bind="visible: Connected" style="display: none;">
+		<div data-bind="visible: !LoggedIn()">
+			You are connected, but not yet logged in.  Please choose a username and click continue to play.
+		</div>
+		<label for="username" data-bind="text: !LoggedIn() ? 'Enter your username: ' : 'Username: '"></label>
+		<input type="text" id="username" data-bind="enable: !LoggedIn(), value: userName" />
+		<button type="button" data-bind="click: ConnectUser, visible: !LoggedIn(), enable: !LoggedIn()">Continue</button>
+	</div>
+	<div id="buzzers" data-bind="visible: LoggedIn" style="display: none;">
 		<div id="colorSelect" data-bind="foreach: Colors, visible: true" style="display: none;">
 			<input type="radio" name="color" data-bind=" attr: { 
 																	value: $data,
@@ -56,11 +59,11 @@
 				<label for="roundBuzzer">Round Buzzer</label>
 			</input>
 		</div>
-		<div class="box" data-bind="visible: SquareBuzzer() == 'true'">
+		<div class="box" data-bind="visible: SquareBuzzer() == 'true', click: BuzzIn">
 			<a data-bind="attr: { 'class': SelectedColor() + ' button' }">Buzz In</a>
 		</div>
 		<div style="clear: both;"></div>
-		<div id="newContainer" data-bind="attr: { 'class': SelectedColor() + ' box' }, visible: SquareBuzzer() == 'false'" >
+		<div id="newContainer" data-bind="attr: { 'class': SelectedColor() + ' box' }, visible: SquareBuzzer() == 'false', click: BuzzIn" >
 			<div class="body"></div>
 			<div class="top"><p>Buzz In</p></div>
 		</div>

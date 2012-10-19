@@ -5,6 +5,8 @@
 
 (function()
 {
+	"use strict";
+
 	var Types = {
 		Function: typeof function() {},
 		Object: typeof {},
@@ -24,22 +26,25 @@
 			var target = module['exports'] || exports;
 			var exceptions = module['ExceptionModule'];
 			var ko = module['knockout'];
+			var extensions = module['ExtensionsModule'];
+			var webSocket = module['WebSocketModule'];
 
-			factory(target, exceptions, ko);
+			factory(target, exceptions, ko, webSocket);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'ExceptionModule', 'knockout'], factory);
+			define(['exports', 'ExceptionModule', 'knockout', 'WebSocketModule', 'ExtensionsModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['ContestantViewModel'] = {},
 					window['ExceptionModule'],
-					window['ko']);
+					window['ko'],
+					window['WebSocketModule']);
 		}
-	})(function(ContestantViewModelExports, Exceptions, ko)
+	})(function(ContestantViewModelExports, Exceptions, ko, Socket)
 	{
 		var ContestantViewModel = typeof ContestantViewModelExports !== Types.Undefined ? ContestantViewModelExports : {};
 
@@ -73,57 +78,108 @@
 				'blue',
 				'purple'
 			];
+		var MessageTypes = {
+				Disconnect: 0,
+				LogOn: 1,
+				BuzzIn: 2,
+				ClearBuzz: 3,
+				QuestionReady: 4,
+				NextQuestion: 5
+			}
+
+		function DisplayError(message)
+		{
+			console.log(message);
+			alert(message);
+		}
 
 		ContestantViewModel.ContestantViewModel = function(args)
 		{
 			var self = this,
 				connected = ko.observable(false),
+				loggedIn = ko.observable(false),
 				webSocket,
-				userID,
-				userName;
+				userID;
+
+			if(!(webSocket = new Socket.Socket(
+				{
+					server: 'ws://localhost:1337/',
+					ReceivedMessage: OnLoggedIn,
+					ConnectionOpen: OnConnectionOpen,
+					ConnectionError: OnConnectionError,
+					ConnectionClosed: OnConnectionClose
+				}))
+			  )
+			{
+				alert("Your browser doesn't support the required features.");
+				return;
+			}
 			
 			self.SelectedColor = ko.observable(colors[Math.floor(Math.random() * colors.length)]);
+			self.userName = ko.observable();
 			self.Colors = colors;
 			self.Connected = ko.computed(function()
 				{
 					return !!connected();
 				});
+			self.LoggedIn = ko.computed(function()
+				{
+					return !!loggedIn();
+				});
 			self.SquareBuzzer = ko.observable('false');
 			self.HasAnsweredQuestion = ko.observable('false');
 
-			function OnConnectionOpen(event)
+			function OnConnectionOpen()
 			{
 				connected(true);
+				webSocket.Send({
+					
+				});
 			}
 
-			function OnReceiveMessage(event)
+			function OnLoggedIn(data)
 			{
-
+				webSocket.ReceivedMessage = OnReceiveMessage;
 			}
 
-			function OnConnectionClose(event)
+			function OnReceiveMessage(data)
+			{
+				console.log(data);
+			}
+
+			function OnConnectionError(data)
+			{
+				console.log(data);
+			}
+
+			function OnConnectionClose()
 			{
 				connected(false);
+				loggedIn(false);
+				userID = undefined;
+				self.userName(undefined);
+				self.HasAnsweredQuestion(false);
 			}
 
-			self.ConnectBuzzer = function(username)
+			self.ConnectUser = function()
 			{
-				self.webSocket = new WebSocket('ws://localhost:56097/');
-				webSocket = self.webSocket;
+				var username = self.userName(),
+					nameType = typeof username;
+				if(nameType !== Types.String || username.IsNullOrWhitespace)
+				{
+					DisplayError('Username cannot be empty.');
+					return;
+				}
 
-				userName = username;
-
-				webSocket.onopen = OnConnectionOpen;
-				webSocket.onmessage = OnReceiveMessage;
-				webSocket.onclose = OnConnectionClose;
+				webSocket.Send(username);
 			}
 
 			self.BuzzIn = function()
 			{
-
+				webSocket.Send(userID);
 			}
 		}
+
+		return ContestantViewModel;
 	});
 })();
-
-fYwot%J3Ssg?
