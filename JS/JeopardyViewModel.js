@@ -43,22 +43,6 @@
 	})(function(JeopardyExports, JeopardyGame, ko, Exceptions)
 	{
 		var Jeopardy = typeof JeopardyExports !== Types.Undefined ? JeopardyExports : {};
-
-		
-		// Code in case the "bind" method hasn't been implemented by the browser
-		if(!Function.prototype['bind'])
-		{
-			Function.prototype['bind'] = function(object)
-			{
-				var originalFunction = this,
-					args = Array.prototype.slice.call(arguments),
-					object = args.shift();
-				return function()
-				{
-					return originalFunction.apply(object, args.concat(Array.prototype.slice.call(arguments)));
-				}
-			}
-		}
 		
 		// Start JeopardyViewModel module code here
 		// Any publicly accessible methods should be attached to the "JeopardyViewModel" object created above
@@ -87,7 +71,7 @@
 			Object.defineProperty(self, 'Categories', {
 				get: function()
 				{
-					return (categories().length > 1 ? categories : []) ;
+					return (categories() && categories().length > 1 ? categories : function() { return []; }) ;
 				},
 				enumerable: true,
 				configurable: false

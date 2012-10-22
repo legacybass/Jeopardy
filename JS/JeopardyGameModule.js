@@ -24,57 +24,31 @@
 			var target = module['exports'] || exports;
 			var DataObj = module['DataContext'];
 			var exceptions = module['ExceptionModule'];
-			factory(target, DataObj);
+			var extensions = module['ExtensionsModule'];
+			factory(target, DataObj, exceptions, extensions);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'DataContext', 'ExceptionModule'], factory);
+			define(['exports', 'DataContext', 'ExceptionModule', 'ExtensionsModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['JeopardyGame'] = window['JeopardyGame'] || {},
-					window['DataContext']);
+					window['DataContext'],
+					window['ExceptionModule'],
+					window['ExtensionsModule']);
 		}
-	})(function(JeopardyGameExports, DataObj)
+	})(function(JeopardyGameExports, DataObj, Exceptions, Extensions)
 	{
 		var Jeopardy = typeof JeopardyGameExports !== Types.Undefined ? JeopardyGameExports : {};
-
-		
-		// Code in case the "bind" method hasn't been implemented by the browser
-		if(!Function.prototype['bind'])
-		{
-			Function.prototype['bind'] = function(object)
-			{
-				var originalFunction = this,
-					args = Array.prototype.slice.call(arguments),
-					object = args.shift();
-				return function()
-				{
-					return originalFunction.apply(object, args.concat(Array.prototype.slice.call(arguments)));
-				}
-			}
-		}
 		
 		// Start JeopardyGame module code here
 		// Any publicly accessible methods should be attached to the "JeopardyGame" object created above
 		// Any private functions or variables can be placed anywhere
 		Jeopardy.JeopardyGame = (function()
 		{
-			var self = this,
-				round = 0,
-				categories = [];
-
-			Object.defineProperty(self, 'Categories', {
-				get: function()
-				{
-					return categories;
-				},
-				enumerable: true,
-				configurable: false
-			});
-
 			/*	Begin the game
 			 *	@param {Object} args Information about game setup
 			 *		Structure:	{
@@ -84,7 +58,8 @@
 			function StartGame(args)
 			{
 				args = args || {};
-				GetNextRound({
+				this.round = 0;
+				this.GetNextRound({
 					RequiredCategories: args.RequiredCategories
 				});
 			}
@@ -98,28 +73,40 @@
 			function GetNextRound(args)
 			{
 				args = args || {};
-				categories = DataObj.GetCategories({
+				this.categories = DataObj.GetCategories({
 					RequiredCategories: args.RequiredCategories
 				});
-				round++;
+				this.round++;
 			}
 
-			return function(args)
+			var JeopardyGame = function(args)
 			{
 				args = args || {};
-				var self = this;
+				var self = this,
+					dataContext = {
+						round: 0,
+						categories: []
+					},
+					LocalStartGame = StartGame.bind(dataContext),
+					LocalGetNextRound = GetNextRound.bind(dataContext);
+				
+				dataContext.StartGame = LocalStartGame;
+				dataContext.GetNextRound = LocalGetNextRound;
 
-				self.StartGame = StartGame;
-				self.GetNextRound = GetNextRound;
+
+				self.StartGame = LocalStartGame;
+				self.GetNextRound = LocalGetNextRound;
 				Object.defineProperty(self, 'Categories', {
 					get: function()
 					{
-						return categories;
+						return dataContext.categories;
 					},
 					enumerable: true,
 					configurable: false
 				});
 			}
+
+			return JeopardyGame;
 		})();
 
 		return Jeopardy;

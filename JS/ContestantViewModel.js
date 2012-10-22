@@ -47,22 +47,6 @@
 	})(function(ContestantViewModelExports, Exceptions, ko, Socket)
 	{
 		var ContestantViewModel = typeof ContestantViewModelExports !== Types.Undefined ? ContestantViewModelExports : {};
-
-		
-		// Code in case the "bind" method hasn't been implemented by the browser
-		if(!Function.prototype['bind'])
-		{
-			Function.prototype['bind'] = function(object)
-			{
-				var originalFunction = this,
-					args = Array.prototype.slice.call(arguments),
-					object = args.shift();
-				return function()
-				{
-					return originalFunction.apply(object, args.concat(Array.prototype.slice.call(arguments)));
-				}
-			}
-		}
 		
 		// Start ContestantViewModel module code here
 		// Any publicly accessible methods should be attached to the "ContestantViewModel" object created above
