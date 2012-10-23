@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+	<link rel="stylesheet/less" href="Stylesheets/Jeopardy.less" />
+	<script type="text/javascript">
+		var require = {
+			baseUrl: 'JS',
+			paths: {
+				jquery: 'libs/jquery-1.7.2.min',
+				knockout: 'libs/knockout-2.1.0',
+				domReady: 'libs/domReady',
+				less: 'libs/less-1.3.0.min'
+			},
+			deps: ['jquery', 'less'],
+			shim: {
+
+			}
+		}
+	</script>
+	<script type="text/javascript" data-main="Script.js" src="JS/libs/require.min.js"></script>
+	<script type="text/html" id="columnTemplate">
+		
+	</script>
+</head>
+<body>
+	<div class="game">
+		<div class="header">
+			<div class="title">Jeopardy!</div>
+		</div>
+		<div class="gameBoard" data-bind="foreach: Categories, visible: Categories().length > 1">
+					<div class="gameColumn">
+						<div class="categoryHeader">
+					<p data-bind="text: Name"></p>
+				</div>
+				<!-- ko foreach: Questions -->
+				<div data-bind="if: !HasBeenSelected(), css: { money: !HasBeenSelected(), hideQuestion: !!HasBeenSelected() }, click: $root.QuestionSelected" class="money">
+					<p data-bind="text: '$' + Value"></p>
+				</div>
+				<div data-bind="css: { showAnswer: !!HasBeenSelected() && !HasBeenShown(), question: !HasBeenSelected() || !!HasBeenShown() }, click: $root.QuestionDone" class="question">
+					<p data-bind="text: Question"></p>
+				</div>
+				<!-- /ko -->
+			</div>
+		</div>
+		<div data-bind="visible: Categories().length <= 0" class="noQuestions">
+			No questions have been loaded for this game.
+		</div>
+	</div>
+</body>
+</html>

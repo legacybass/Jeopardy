@@ -1,0 +1,27 @@
+/*	Jeopardy Main Stylesheet
+ *	Author:		Daniel Beus
+ *	Date:  		10/22/2012
+ */
+
+// Imports
+@import "Fonts";
+
+
+.header
+{
+	height: 10%;
+}
+
+.title
+{
+	font-size: 5em;
+	text-align: center;
+	font-family: Jeopardy;
+	color: hsl(0, 0, 0);
+    -webkit-mask-image: -webkit-gradient(linear, left bottom, left top, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.1)));
+    -webkit-mask-image: -webkit-linear-gradient(left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.1))); /* Chrome 10+, Saf5.1+ */
+    -moz-mask-image: -moz-linear-gradient(left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.1))); /* FF3.6 */
+    -ms-mask-image: -ms-linear-gradient(left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.1))); /* IE10 */
+    -o-mask-image: -o-linear-gradient(left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.1))); /* Opera 11.10+ */
+    -mask-image: linear-gradient(left bottom, from(rgba(0,0,0,1)), to(rgba(0,0,0,0.1))); /* W3C */
+}
