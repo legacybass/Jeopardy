@@ -24,29 +24,32 @@
 			var target = module['exports'] || exports;
 			var extensions = module['ExtensionsModule'];
 			var datacontext = module['DatabaseModelsModule'];
+			var knockout = module['knockout'];
 
-			factory(target, extensions, datacontext);
+			factory(target, extensions, datacontext, knockout);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'ExtensionsModule', 'DatabaseModelsModule'], factory);
+			define(['exports', 'ExtensionsModule', 'DatabaseModelsModule', 'knockout'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['DataManagement'] = {},
 				window['ExtensionsModule'],
-				window['DatabaseModelsModule']);
+				window['DatabaseModelsModule'],
+				window['ko']);
 		}
-	})(function(DataManagementExports, Extensions, DataContext)
+	})(function(DataManagementExports, Extensions, DataContext, ko)
 	{
 		var DataManagement = typeof DataManagementExports !== Types.Undefined ? DataManagementExports : {};
 		
 		// Start DataManagement module code here
 		// Any publicly accessible methods should be attached to the "DataManagement" object created above
 		// Any private functions or variables can be placed anywhere
-		
+
+// Begin Private Static Variables
 		var categories = [
 			{
 				name: 'Dependency Injection',
@@ -509,28 +512,17 @@
 		}
 // End Private Functions
 
-		DataManagement.DataManagement = (function(undefined){
-			// Dependencies
-		
+		DataManagement.DataManagement = (function(undefined)
+		{
 			// Private Static Variables
 		
 			// Private Static Methods
-			var LoadRecords = function(args)
-			{
-				var categories = 
-			}
-		
-			// Init stuff
-		
-			// public API -- Methods
-		
-			// public API -- Prototype Methods
 			
 			// public API -- Constructor
 			var DataManagement = function(data)
 			{
 				var self = this;
-				var headers;
+				var headers = ko.observableArray();
 				Object.defineProperty(self, 'Headers',{
 					get: function()
 					{
@@ -539,7 +531,8 @@
 					enumerable: true,
 					configurable: false
 				});
-				var records;
+
+				var records = ko.observableArray();
 				Object.defineProperty(self, 'Records',{
 					get: function()
 					{
@@ -548,6 +541,17 @@
 					enumerable: true,
 					configurable: false
 				});
+
+				var LoadRecords = function(args)
+				{
+					
+				}
+
+				context.GetCategories({
+					callback: LoadRecords.bind(self),
+					databaseName: 'Jeopardy',
+					databaseVersion: '1.0'
+				});
 			}
 		
 			DataManagement.prototype.version = '1.0'
@@ -555,5 +559,7 @@
 			// Return Constructor
 			return DataManagement;
 		})();
+
+		return DataManagement;
 	});
 })();

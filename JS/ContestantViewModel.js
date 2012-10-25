@@ -87,7 +87,7 @@
 
 			if(!(webSocket = new Socket.Socket(
 				{
-					server: 'ws://localhost:1337/',
+					server: 'ws://www.legacybass.com:1337/',
 					ReceivedMessage: OnLoggedIn,
 					ConnectionOpen: OnConnectionOpen,
 					ConnectionError: OnConnectionError,

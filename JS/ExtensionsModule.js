@@ -94,5 +94,54 @@
 			}
 			
 		}
+
+		var Clone = function()
+		{
+			var rtObj,
+				obj = this;
+
+			if(obj instanceof Array)
+				rtObj = [];
+			else
+				rtObj = {}
+
+			for(var key in obj)
+			{
+				var data = obj[key],
+					dataType = typeof data;
+
+				if(dataType === Types.Function && data === Clone)
+					continue;
+
+				if(dataType === Types.Object)
+				{
+					rtObj[key] = data.Clone();
+				}
+				else
+				{
+					rtObj[key] = data;
+				}
+			}
+
+			return rtObj;
+		}
+
+		if(!Object.prototype['Clone'])
+		{
+			Object.prototype.Clone = Clone;
+			if(Object.defineProperty)
+			{
+				Object.defineProperty(Object.prototype, 'Clone', { enumerable: false });
+			}
+		}
+
+		if(!Array.prototype['Clone'])
+		{
+			Array.prototype.Clone = Clone;
+			if(Object.defineProperty)
+			{
+				Object.defineProperty(Array.prototype, 'Clone', { enumerable: false });
+			}
+		}
 	});
 })();

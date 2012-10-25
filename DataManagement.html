@@ -2,6 +2,8 @@
 <html>
 <head>
 	<title>Jeopardy Data Management</title>
+	<link rel="stylesheet/less" href="Stylesheets/DataManagement.less" />
+
 	<script type="text/javascript">
 		var require = {
 			baseUrl: 'JS',
@@ -33,7 +35,7 @@
 			headers.push(key);
 		}
 	</script>
-	<script type="text/javascript" data-main="DataManagementViewModel" src="libs/require.min.js"></script>
+	<script type="text/javascript" data-main="DataManagementViewModel" src="JS/libs/require.min.js"></script>
 	<script type="text/html" id="tableTemplate"></script>
 </head>
 <body>
@@ -44,11 +46,11 @@
 	</div>
 
 	
-	<div class="content">
+	<div class="content" style="display: none;" data-bind="visible: true">
 		<!-- Categories Table -->
 		<div class="table">
 			<div class="thead">
-				<div class="tr" data-bind="foreach: headers">
+				<div class="tr">
 					<div class="th">ID</div>
 					<div class="th">Name</div>
 				</div>
@@ -62,7 +64,7 @@
 		<!-- Questions Table -->
 		<div class="table">
 			<div class="thead">
-				<div class="tr" data-bind="foreach: headers">
+				<div class="tr">
 					<div class="th">ID</div>
 					<div class="th">Name</div>
 				</div>
@@ -76,7 +78,7 @@
 		<!-- Category Questions Table -->
 		<div class="table">
 			<div class="thead">
-				<div class="tr" data-bind="foreach: headers">
+				<div class="tr">
 					<div class="th">ID</div>
 					<div class="th">Name</div>
 				</div>
