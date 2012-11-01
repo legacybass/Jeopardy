@@ -22,8 +22,8 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var extensions = module['ExtensionsModule'];
-			var datacontext = module['DatabaseModelsModule'];
+			var extensions = module['Modules/ExtensionsModule'];
+			var datacontext = module['Models/DatabaseModels'];
 			var knockout = module['knockout'];
 
 			factory(target, extensions, datacontext, knockout);
@@ -31,14 +31,15 @@
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'ExtensionsModule', 'DatabaseModelsModule', 'knockout'], factory);
+			define(['exports', 'Modules/ExtensionsModule', 'Models/DatabaseModels',
+						'knockout'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['DataManagement'] = {},
+			factory(window['DataManagementViewModel'] = window['DataManagementViewModel'] || {},
 				window['ExtensionsModule'],
-				window['DatabaseModelsModule'],
+				window['DatabaseModels'],
 				window['ko']);
 		}
 	})(function(DataManagementExports, Extensions, DataContext, ko)
@@ -512,7 +513,7 @@
 		}
 // End Private Functions
 
-		DataManagement.DataManagement = (function(undefined)
+		DataManagement.DataManagementViewModel = (function(undefined)
 		{
 			// Private Static Variables
 		

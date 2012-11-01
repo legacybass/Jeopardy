@@ -22,14 +22,14 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var exceptions = module['ExceptionModule'];
+			var exceptions = module['Modules/ExceptionModule'];
 			var knockout = module['knockout'];
 			factory(target, knockout, exceptions);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'ExceptionModule', 'knockout'], factory);
+			define(['exports', 'Modules/ExceptionModule', 'knockout'], factory);
 		}
 		else
 		{

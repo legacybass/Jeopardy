@@ -22,38 +22,23 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var exception = module['Exception'] || Exception;
+			var exception = module['Modules/Exception'] || Exception;
 			factory(target, exception);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'ExceptionModule'], factory);
+			define(['exports', 'Modules/ExceptionModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['Database'] = {}, window['Exception']);
+			factory(window['Database'] = {},
+					window['Exception']);
 		}
 	})(function(DatabaseExports, exception)
 	{
 		var Database = typeof DatabaseExports !== Types.Undefined ? DatabaseExports : {};
-
-		
-		// Code in case the "bind" method hasn't been implemented by the browser
-		if(!Function.prototype['bind'])
-		{
-			Function.prototype['bind'] = function(object)
-			{
-				var originalFunction = this,
-					args = Array.prototype.slice.call(arguments),
-					object = args.shift();
-				return function()
-				{
-					return originalFunction.apply(object, args.concat(Array.prototype.slice.call(arguments)));
-				}
-			}
-		}
 		
 		// Start Database module code here
 		// Any publicly accessible methods should be attached to the "Database" object created above

@@ -24,22 +24,23 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var exceptions = module['ExceptionModule'];
+			var exceptions = module['Modules/ExceptionModule'];
 			var ko = module['knockout'];
-			var extensions = module['ExtensionsModule'];
-			var webSocket = module['WebSocketModule'];
+			var extensions = module['Modules/ExtensionsModule'];
+			var webSocket = module['Modules/WebSocketModule'];
 
 			factory(target, exceptions, ko, webSocket);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'ExceptionModule', 'knockout', 'WebSocketModule', 'ExtensionsModule'], factory);
+			define(['exports', 'Modules/ExceptionModule', 'knockout', 'Modules/WebSocketModule',
+						'Modules/ExtensionsModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['ContestantViewModel'] = {},
+			factory(window['ContestantViewModel'] = window['ContestantViewModel'] || {},
 					window['ExceptionModule'],
 					window['ko'],
 					window['WebSocketModule']);

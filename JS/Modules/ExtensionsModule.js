@@ -22,45 +22,25 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			factory(target);
+			var shim = module['shim'];
+			var sham = module['sham'];
+			factory(target, shim, sham);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports'], factory);
+			define(['exports', 'shim', 'sham'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['HelperFunctions'] = {});
+			factory(window['Extensions'] = {},
+				window['es5-shim'],
+				window['es5-sham']);
 		}
-	})(function(HelperFunctionsExports)
+	})(function(HelperFunctionsExports, shim, sham)
 	{
 		var HelperFunctions = typeof HelperFunctionsExports !== Types.Undefined ? HelperFunctionsExports : {};
-
-		
-		// Code in case the "bind" method hasn't been implemented by the browser
-		if(!Function.prototype['bind'])
-		{
-			Function.prototype['bind'] = function(object)
-			{
-				var originalFunction = this,
-					args = Array.prototype.slice.call(arguments),
-					object = args.shift();
-				return function()
-				{
-					return originalFunction.apply(object, args.concat(Array.prototype.slice.call(arguments)));
-				}
-			}
-		}
-		
-		if(!String.prototype['Trim'])
-		{
-			String.prototype.Trim = function()
-			{
-				return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-			}
-		}
 
 		if(!String.prototype['IsNullOrWhitespace'])
 		{
@@ -76,22 +56,14 @@
 				return moddedStr.length <= 0;
 			}
 
-
-			if(!!Object.defineProperty)
-			{
-				Object.defineProperty(String.prototype, 'IsNullOrWhitespace',{
-					get: function()
-					{
-						return IsNullOrWhitespace.call(this);
-					},
-					enumerable: false,
-					configurable: false
-				});
-			}
-			else
-			{
-				String.prototype['IsNullOrWhitespace'] = IsNullOrWhitespace;
-			}
+			Object.defineProperty(String.prototype, 'IsNullOrWhitespace',{
+				get: function()
+				{
+					return IsNullOrWhitespace.call(this);
+				},
+				enumerable: false,
+				configurable: false
+			});
 			
 		}
 
@@ -128,20 +100,12 @@
 
 		if(!Object.prototype['Clone'])
 		{
-			Object.prototype.Clone = Clone;
-			if(Object.defineProperty)
-			{
-				Object.defineProperty(Object.prototype, 'Clone', { enumerable: false });
-			}
+			Object.defineProperty(Object.prototype, 'Clone', { enumerable: false });
 		}
 
 		if(!Array.prototype['Clone'])
 		{
-			Array.prototype.Clone = Clone;
-			if(Object.defineProperty)
-			{
-				Object.defineProperty(Array.prototype, 'Clone', { enumerable: false });
-			}
+			Object.defineProperty(Array.prototype, 'Clone', { enumerable: false });
 		}
 	});
 })();

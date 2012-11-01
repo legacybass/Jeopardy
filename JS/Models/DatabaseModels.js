@@ -22,20 +22,20 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var extensions = module['ExtensionsModule'];
+			var extensions = module['Modules/ExtensionsModule'];
 
 			factory(target, extensions);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'ExtensionsModule'], factory);
+			define(['exports', 'Modules/ExtensionsModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['DatabaseModelsModule'] = {},
-				window['ExtensionsModule']);
+			factory(window['DatabaseModels'] = window['DatabaseModels'] || {},
+				window['Extensions']);
 		}
 	})(function(DatabaseModelsModuleExports, Extensions)
 	{

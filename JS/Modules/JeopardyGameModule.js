@@ -22,15 +22,15 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var DataObj = module['DataContext'];
-			var exceptions = module['ExceptionModule'];
-			var extensions = module['ExtensionsModule'];
+			var DataObj = module['Modules/DataContextModule'];
+			var exceptions = module['Modules/ExceptionModule'];
+			var extensions = module['Modules/ExtensionsModule'];
 			factory(target, DataObj, exceptions, extensions);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'DataContext', 'ExceptionModule', 'ExtensionsModule'], factory);
+			define(['exports', 'Modules/DataContextModule', 'Modules/ExceptionModule', 'Modules/ExtensionsModule'], factory);
 		}
 		else
 		{

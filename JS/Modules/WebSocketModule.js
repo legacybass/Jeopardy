@@ -32,7 +32,7 @@
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['WebSocket'] = {});
+			factory(window['WebSocket'] = window['WebSocket'] || {});
 		}
 	})(function(WebSocketExports)
 	{

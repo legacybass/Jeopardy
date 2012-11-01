@@ -22,20 +22,20 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var models = module['JeopardyGameModule'] || window['JeopardyGameModule'];
-			var ko = module['ko'] || window['ko'];
-			var exceptions = module['ExceptionModule'];
+			var models = module['Modules/JeopardyGameModule'];
+			var ko = module['knockout'];
+			var exceptions = module['Modules/ExceptionModule'];
 			factory(target, models, data, ko);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'JeopardyGameModule', 'knockout', 'ExceptionModule'], factory);
+			define(['exports', 'Modules/JeopardyGameModule', 'knockout', 'Modules/ExceptionModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['Jeopardy'] = window['Jeopardy'] || {},
+			factory(window['JeopardyViewModel'] = window['JeopardyViewModel'] || {},
 					window['JeopardyGameModule'],
 					window['ko'],
 					window['ExceptionModule']);

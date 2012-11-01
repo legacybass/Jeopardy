@@ -2,30 +2,8 @@
 <html>
 <head>
 	<link rel="stylesheet/less" href="Stylesheets/Contestant.less" />
-	<script type="text/javascript">
-		var require = {
-			baseUrl: './JS',
-			paths: {
-				jquery: 'libs/jquery-1.7.2.min',
-				knockout: 'libs/knockout-2.1.0',
-				domReady: 'libs/domReady',
-				less: 'libs/less-1.3.0.min',
-			},
-			deps: ['jquery', 'less', 'es5-sham.min', 'es5-shim.min'],
-			shim: {
-
-			}
-		}
-	</script>
-	<script type="text/javascript" src="JS/libs/require.min.js"></script>
-	<script type="text/javascript">
-		require(['ContestantViewModel', 'knockout', 'domReady'], function(cvm, ko)
-		{
-			var viewModel = new cvm.ContestantViewModel();
-			window.viewModel = viewModel;
-			ko.applyBindings(viewModel);
-		});
-	</script>
+	<script type="text/javascript" src="../JS/RequireParameters.js"></script>
+	<script type="text/javascript" data-main="Contestant" src="../JS/libs/require.min.js"></script>
 </head>
 <body>
 	<div class="loggingIn" data-bind="visible: !Connected()">
