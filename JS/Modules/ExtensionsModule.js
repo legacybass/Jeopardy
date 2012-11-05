@@ -22,8 +22,8 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var shim = module['shim'];
-			var sham = module['sham'];
+			var shim = require('shim');
+			var sham = require('sham');
 			factory(target, shim, sham);
 		}
 		else if(typeof define === Types.Function && define['amd'])
@@ -64,7 +64,6 @@
 				enumerable: false,
 				configurable: false
 			});
-			
 		}
 
 		var Clone = function()
@@ -107,5 +106,35 @@
 		{
 			Object.defineProperty(Array.prototype, 'Clone', { enumerable: false });
 		}
+
+		if(!window['console'])
+		{
+			var Console = {
+				log: function()
+				{
+
+				},
+				debug: function()
+				{
+
+				},
+				error: function()
+				{
+
+				},
+				warn: function()
+				{
+
+				},
+				trace: function()
+				{
+
+				}
+			}
+
+			window['console'] = Console;
+		}
+
+		return HelperFunctions;
 	});
 })();

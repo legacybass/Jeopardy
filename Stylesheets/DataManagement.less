@@ -1,0 +1,66 @@
+/*	
+ *
+ */
+
+// Imports
+@import "Variables";
+@import "Header";
+
+
+// Variables
+
+
+
+// Mixins
+
+
+
+// Styles
+table
+{
+	text-align: center;
+	border: 5px solid gray;
+
+	&, & *
+	{
+		border-collapse: collapse;
+	}
+
+	thead
+	{
+		th
+		{
+			border: 1px solid black;
+			background-color: @darkestblue;
+			padding: 2px 5px;
+			text-transform: uppercase;
+
+		}
+	}
+
+	tbody
+	{
+		tr
+		{
+			&:nth-child(2n)
+			{
+				background-color: @lightestblue;
+			}
+
+			&:nth-child(2n + 1)
+			{
+				background-color: @blue;
+			}
+
+			td
+			{
+				border: 1px solid black;
+			}
+		}
+	}
+}
+
+.loading
+{
+	
+}

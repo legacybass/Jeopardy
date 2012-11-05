@@ -22,27 +22,31 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var extensions = module['Modules/ExtensionsModule'];
-			var datacontext = module['Models/DatabaseModels'];
-			var knockout = module['knockout'];
+			var extensions = require('Modules/ExtensionsModule');
+			var datacontext = require('DataContext');
+			var exception = require('Modules/ExceptionModule');
+			var knockout = require('knockout');
+			var knockoutMapping = require('komapping');
 
-			factory(target, extensions, datacontext, knockout);
+			factory(target, extensions, datacontext, exception, knockout, knockoutMapping);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'Modules/ExtensionsModule', 'Models/DatabaseModels',
-						'knockout'], factory);
+			define(['exports', 'Modules/ExtensionsModule', 'DataContext',
+						'Modules/ExceptionModule', 'knockout', 'komapping'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['DataManagementViewModel'] = window['DataManagementViewModel'] || {},
 				window['ExtensionsModule'],
-				window['DatabaseModels'],
-				window['ko']);
+				window['DataContext'],
+				window['Exception'],
+				window['ko'],
+				window['komapping']);
 		}
-	})(function(DataManagementExports, Extensions, DataContext, ko)
+	})(function(DataManagementExports, Extensions, DataContext, Exception, ko, mapping)
 	{
 		var DataManagement = typeof DataManagementExports !== Types.Undefined ? DataManagementExports : {};
 		
@@ -51,467 +55,12 @@
 		// Any private functions or variables can be placed anywhere
 
 // Begin Private Static Variables
-		var categories = [
-			{
-				name: 'Dependency Injection',
-				questions: [
-				 	{
-				 		text: 'testing 1',
-				 		answer: 'answer 1',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 2',
-				 		answer: 'answer 2',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 3',
-				 		answer: 'answer 3',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 4',
-				 		answer: 'answer 4',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 5',
-				 		answer: 'answer 5',
-				 		value: 1000
-				 	},
-				 	{
-				 		text: 'testing 6',
-				 		answer: 'answer 6',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 7',
-				 		answer: 'answer 7',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 8',
-				 		answer: 'answer 8',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 9',
-				 		answer: 'answer 9',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 10',
-				 		answer: 'answer 10',
-				 		value: 1000
-				 	}
-				]	
-			},
-			{
-				name: 'MVC 3',
-				questions: [
-				 	{
-				 		text: 'testing 1',
-				 		answer: 'answer 1',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 2',
-				 		answer: 'answer 2',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 3',
-				 		answer: 'answer 3',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 4',
-				 		answer: 'answer 4',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 5',
-				 		answer: 'answer 5',
-				 		value: 1000
-				 	},
-				 	{
-				 		text: 'testing 6',
-				 		answer: 'answer 6',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 7',
-				 		answer: 'answer 7',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 8',
-				 		answer: 'answer 8',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 9',
-				 		answer: 'answer 9',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 10',
-				 		answer: 'answer 10',
-				 		value: 1000
-				 	}
-				]	
-			},
-			{
-				name: 'Object Orientation',
-				questions: [
-				 	{
-				 		text: 'testing 1',
-				 		answer: 'answer 1',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 2',
-				 		answer: 'answer 2',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 3',
-				 		answer: 'answer 3',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 4',
-				 		answer: 'answer 4',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 5',
-				 		answer: 'answer 5',
-				 		value: 1000
-				 	},
-				 	{
-				 		text: 'testing 6',
-				 		answer: 'answer 6',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 7',
-				 		answer: 'answer 7',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 8',
-				 		answer: 'answer 8',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 9',
-				 		answer: 'answer 9',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 10',
-				 		answer: 'answer 10',
-				 		value: 1000
-				 	}
-				]	
-			},
-			{
-				name: 'SQL',
-				questions: [
-				 	{
-				 		text: 'testing 1',
-				 		answer: 'answer 1',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 2',
-				 		answer: 'answer 2',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 3',
-				 		answer: 'answer 3',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 4',
-				 		answer: 'answer 4',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 5',
-				 		answer: 'answer 5',
-				 		value: 1000
-				 	},
-				 	{
-				 		text: 'testing 6',
-				 		answer: 'answer 6',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 7',
-				 		answer: 'answer 7',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 8',
-				 		answer: 'answer 8',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 9',
-				 		answer: 'answer 9',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 10',
-				 		answer: 'answer 10',
-				 		value: 1000
-				 	}
-				]	
-			},
-			{
-				name: 'Things I Wish I Knew Before Graduating',
-				questions: [
-				 	{
-				 		text: 'testing 1',
-				 		answer: 'answer 1',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 2',
-				 		answer: 'answer 2',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 3',
-				 		answer: 'answer 3',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 4',
-				 		answer: 'answer 4',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 5',
-				 		answer: 'answer 5',
-				 		value: 1000
-				 	},
-				 	{
-				 		text: 'testing 6',
-				 		answer: 'answer 6',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 7',
-				 		answer: 'answer 7',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 8',
-				 		answer: 'answer 8',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 9',
-				 		answer: 'answer 9',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 10',
-				 		answer: 'answer 10',
-				 		value: 1000
-				 	}
-				]	
-			},
-			{
-				name: 'Test Driven Development',
-				questions: [
-				 	{
-				 		text: 'testing 1',
-				 		answer: 'answer 1',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 2',
-				 		answer: 'answer 2',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 3',
-				 		answer: 'answer 3',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 4',
-				 		answer: 'answer 4',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 5',
-				 		answer: 'answer 5',
-				 		value: 1000
-				 	},
-				 	{
-				 		text: 'testing 6',
-				 		answer: 'answer 6',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 7',
-				 		answer: 'answer 7',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 8',
-				 		answer: 'answer 8',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 9',
-				 		answer: 'answer 9',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 10',
-				 		answer: 'answer 10',
-				 		value: 1000
-				 	}
-				]	
-			},
-			{
-				name: 'IDEs and Their Usefulness',
-				questions: [
-				 	{
-				 		text: 'testing 1',
-				 		answer: 'answer 1',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 2',
-				 		answer: 'answer 2',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 3',
-				 		answer: 'answer 3',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 4',
-				 		answer: 'answer 4',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 5',
-				 		answer: 'answer 5',
-				 		value: 1000
-				 	},
-				 	{
-				 		text: 'testing 6',
-				 		answer: 'answer 6',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 7',
-				 		answer: 'answer 7',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 8',
-				 		answer: 'answer 8',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 9',
-				 		answer: 'answer 9',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 10',
-				 		answer: 'answer 10',
-				 		value: 1000
-				 	}
-				]	
-			},
-			{
-				name: 'Dr. Horrible\'s Single-Along Blog',
-				questions: [
-				 	{
-				 		text: 'testing 1',
-				 		answer: 'answer 1',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 2',
-				 		answer: 'answer 2',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 3',
-				 		answer: 'answer 3',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 4',
-				 		answer: 'answer 4',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 5',
-				 		answer: 'answer 5',
-				 		value: 1000
-				 	},
-				 	{
-				 		text: 'testing 6',
-				 		answer: 'answer 6',
-				 		value: 200
-				 	},
-				 	{
-				 		text: 'testing 7',
-				 		answer: 'answer 7',
-				 		value: 400
-				 	},
-				 	{
-				 		text: 'testing 8',
-				 		answer: 'answer 8',
-				 		value: 600
-				 	},
-				 	{
-				 		text: 'testing 9',
-				 		answer: 'answer 9',
-				 		value: 800
-				 	},
-				 	{
-				 		text: 'testing 10',
-				 		answer: 'answer 10',
-				 		value: 1000
-				 	}
-				]	
-			}
-		];
 
-		var context = new DataContext.DataContext();
 // End Variables
 
-// Begin Private Functions
-		var CreateDatabase = function(args)
-		{
-			
-		}
-		var CreateTable = function(args)
-		{
+// Begin Global Private Functions
 
-		}
-
-		var InsertDataIntoTable = function(args)
-		{
-
-		}
-// End Private Functions
+// End Global Private Functions
 
 		DataManagement.DataManagementViewModel = (function(undefined)
 		{
@@ -520,45 +69,90 @@
 			// Private Static Methods
 			
 			// public API -- Constructor
-			var DataManagement = function(data)
+			var DataManagementViewModel = function(data)
 			{
-				var self = this;
-				var headers = ko.observableArray();
-				Object.defineProperty(self, 'Headers',{
-					get: function()
-					{
-						return headers;
-					},
-					enumerable: true,
-					configurable: false
-				});
+				var self = this,
+					db,
+					Tables = ko.observableArray(),
+					Loading = ko.observable(false);
 
-				var records = ko.observableArray();
-				Object.defineProperty(self, 'Records',{
-					get: function()
-					{
-						return records;
-					},
-					enumerable: true,
-					configurable: false
-				});
-
-				var LoadRecords = function(args)
+				self.LoadDatabase = function(dbName, version, description, size)
 				{
-					
+					Loading(true);
+					Tables.removeAll();
+
+					db = new DataContext.DataContext({
+						name: dbName,
+						version: version,
+						description: description,
+						size: size
+					});
+
+					var counter = 0;
+					db.GetTables(function(tableNames)
+					{
+						for(var i = 0; i < tableNames.length; i++)
+						{
+							var tableName = tableNames[i];
+							db.GetTableInfo(tableName, function(tableInfo)
+							{
+								// TODO: Make these work with mapping
+								// Until then, this should do the same basic thing
+								var observableTableInfo = {};
+								for(var key in tableInfo)
+								{
+									var obj = tableInfo[key];
+
+									if(obj instanceof Array || (obj.length && obj.push))
+									{
+										observableTableInfo[key] = ko.observableArray(obj);
+									}
+									else
+									{
+										observableTableInfo[key] = ko.observable(obj);
+									}
+								}
+
+								Tables.push(observableTableInfo);
+
+								counter++;
+								if(counter == tableNames.length - 1)
+									Loading(false);
+							});
+						}
+					});
 				}
 
-				context.GetCategories({
-					callback: LoadRecords.bind(self),
-					databaseName: 'Jeopardy',
-					databaseVersion: '1.0'
-				});
+				self.AddRow = function(table)
+				{
+					var newRow = {};
+					table.columns().forEach(function(col)
+					{
+						newRow[col] = 'Empty';
+					});
+
+					table.records.push(newRow);
+				}
+
+				self.SaveRow = function()
+				{
+
+				}
+
+				self.RemoveRow = function(table, item)
+				{
+					console.log(table);
+					console.log(item);
+				}
+
+				self.Loading = Loading;
+				self.Tables = Tables;
 			}
 		
-			DataManagement.prototype.version = '1.0'
+			DataManagementViewModel.prototype.version = '1.0'
 		
 			// Return Constructor
-			return DataManagement;
+			return DataManagementViewModel;
 		})();
 
 		return DataManagement;

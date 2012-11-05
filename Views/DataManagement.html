@@ -2,24 +2,17 @@
 <html>
 <head>
 	<title>Jeopardy Data Management</title>
-	<link rel="stylesheet/less" href="Stylesheets/DataManagement.less" />
+	<link rel="stylesheet/less" href="../Stylesheets/DataManagement.less" />
+	<link rel="stylesheet" href="../Stylesheets/jquery-ui-1.9.1.custom.min.css" />
 
 	<script type="text/javascript" src="../JS/RequireParameters.js"></script>
 	<script type="text/javascript">
-		var headers = [];
-		var records = [
-			{
-				id: 0,
-				name: 'Name 1'
-			},
-			{
-				id: 1,
-				name: 'Name 2'
-			}
-		];
-		for(var key in records[0])
+		require.paths['DataContext'] = 'DataContexts/DataManagementDataContext';
+		require.deps.push('jqueryui');
+
+		function MakeDraggable()
 		{
-			headers.push(key);
+			$('table').draggable();
 		}
 	</script>
 	<script type="text/javascript" data-main="Scripts/DataManagement" src="../JS/libs/require.min.js"></script>
@@ -28,52 +21,44 @@
 <body>
 	<div class="header">
 		<div class="title">
-			Data Mangement
+			Data Management
 		</div>
 	</div>
 
 	
-	<div class="content" style="display: none;" data-bind="visible: true">
-		<!-- Categories Table -->
-		<div class="table">
-			<div class="thead">
-				<div class="tr">
-					<div class="th">ID</div>
-					<div class="th">Name</div>
-				</div>
-			</div>
-			<div class="tbody" data-bind="foreach: records">
-				<div class="td" data-bind="text: ID"></div>
-				<div class="td" data-bind="text: Name"></div>
-			</div>
-		</div>
-
-		<!-- Questions Table -->
-		<div class="table">
-			<div class="thead">
-				<div class="tr">
-					<div class="th">ID</div>
-					<div class="th">Name</div>
-				</div>
-			</div>
-			<div class="tbody" data-bind="foreach: records">
-				<div class="td" data-bind="text: ID"></div>
-				<div class="td" data-bind="text: Name"></div>
-			</div>
-		</div>
-
-		<!-- Category Questions Table -->
-		<div class="table">
-			<div class="thead">
-				<div class="tr">
-					<div class="th">ID</div>
-					<div class="th">Name</div>
-				</div>
-			</div>
-			<div class="tbody" data-bind="foreach: records">
-				<div class="td" data-bind="text: ID"></div>
-				<div class="td" data-bind="text: Name"></div>
-			</div>
+	<div class="content" style="display: none;" data-bind="visible: true, css: { loading: Loading }">
+		<div class="tables" data-bind="foreach: Tables">
+			<table>
+				<thead>
+					<tr>
+						<!-- ko foreach: columns -->
+						<th data-bind="text: $data"></th>
+						<!-- /ko -->
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- ko foreach: { data: records, afterRender: MakeDraggable } -->
+					<tr>
+						<td data-bind="text: id"></td>
+						<td data-bind="text: Text"></td>
+						<td data-bind="text: Answer"></td>
+						<td data-bind="text: Value"></td>
+						<td>
+							<a href="#" data-bind="click: function(data, event)
+														  {
+														  	$root.RemoveRow($parent, data);
+														  }">Remove</a>
+						</td>
+					</tr>
+					<!-- /ko -->
+					<tr>
+						<td colspan="5">
+							<a href="" data-bind="click: $root.AddRow">Add Row</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
 

@@ -22,19 +22,20 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			factory(target);
+			var extensions = require('Modules/ExtensionsModule');
+			factory(target, extensions);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports'], factory);
+			define(['exports', 'Modules/ExtensionsModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['Exception'] = window['Exception'] || {});
 		}
-	})(function(ExceptionExports)
+	})(function(ExceptionExports, Extensions)
 	{
 		var Exception = typeof ExceptionExports !== Types.Undefined ? ExceptionExports : {};
 		
@@ -42,7 +43,7 @@
 		// Any publicly accessible methods should be attached to the "Exception" object created above
 		// Any private functions or variables can be placed anywhere
 
-		Exception.Exception = (function()
+		Exception.Exception = (function(undefined)
 		{
 			var Exception = function (message)
 			{
@@ -69,10 +70,12 @@
 				{
 					return message;
 				}
+
+				console.error(message);
 			}
 
 			return Exception;
-		});
+		})();
 
 		Exception.NotImplementedException = (function(undefined){
 			// public API -- Constructor

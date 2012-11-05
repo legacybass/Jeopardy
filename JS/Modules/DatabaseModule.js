@@ -22,100 +22,142 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var exception = module['Modules/Exception'] || Exception;
-			factory(target, exception);
+			var exception = require('Modules/ExceptionModule');
+			var extensions = require('Modules/ExtensionsModule');
+			factory(target, exception, extensions);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'Modules/ExceptionModule'], factory);
+			define(['exports', 'Modules/ExceptionModule', 'Modules/ExtensionsModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['Database'] = {},
-					window['Exception']);
+					window['Exception'],
+					window['Extensions']);
 		}
-	})(function(DatabaseExports, exception)
+	})(function(DatabaseExports, Exception, Extensions)
 	{
-		var Database = typeof DatabaseExports !== Types.Undefined ? DatabaseExports : {};
+		var DatabaseMod = typeof DatabaseExports !== Types.Undefined ? DatabaseExports : {};
 		
 		// Start Database module code here
 		// Any publicly accessible methods should be attached to the "Database" object created above
 		// Any private functions or variables can be placed anywhere
 
-// Begin Classes
+		var openDatabase = window['openDatabase'];
 
-		function Database(dbName)
+		if(!openDatabase)
 		{
-			if(dbName == undefined || typeof dbName !== Types.String || dbName.length <=0)
-				throw new Exception("Database name must be a valid string");
-
-			var self = this;
-			self.dbName = dbName;
-
-			self.CreateTable = function(tableName, columns)
-			{
-				var tempTable = new Table(tableName, columns);
-				self[tableName] = tempTable;
-			}
-
-			self.DropTable = function()
-			{
-				throw new Exception("Not yet implemented");
-			}
+			throw new Exception.NotImplementedException("Web databases are not implemented in this browser.");
 		}
-		Database.prototype = new Array();
+// Begin Private Static Variables
 
-		/*	Holds data like a DB table
-		 *	@param {String} tableName Holds the name of the table
-		 *	@param {Object} columns Holds information about the columns in the table
-		 *		Should have the following structure [
-		  												{
-		  													name: 'ColName',
-		  													type: 'String/Numeric',
-		  													required: true/false
-		  												}
-		  											]
-		 */
-		function Table(tableName, columns)
-		{
-			if(tableName == undefined || typeof tableName !== Types.String || tableName.length <= 0)
-				throw new Exception("Table name must be a valid string");
+	
 
-			var self = this;
-			self.tableName = tableName;
+// End Static Variables
 
-			
-
-			self.Insert = function()
-			{
-				throw new Exception("Not yet implemented");
-			}
-
-			self.Update = function()
-			{
-				throw new Exception("Not yet implemented");
-			}
-
-			self.Select = function()
-			{
-				throw new Exception("Not yet implemented");
-			}
-		}
-
-		
-
-// End Classes
 
 // Begin Helper Functions //
 
-		function RowFactory(str)
-		{
-			var code = "";
-			return new Function(code);
-		}
+		
 
 // End Helper Functions //
+
+
+// Begin Classes
+
+		var Database = (function(undefined){
+			// public API -- Constructor
+			var Database = function(data)
+			{
+				var self = this,
+					db;
+
+				if(typeof data === Types.Undefined || data.name == undefined || data.version == undefined)
+					throw new Exception.InvalidArgumentException("Database must have a valid name and version.")
+
+				db = openDatabase(data.name, data.version, data.description, data.size, data.callback);
+
+
+				self.executeSql = function(sqlText, params, callback)
+				{
+					callback = callback || function() { };
+					db.transaction(function(tx)
+					{
+						tx.executeSql(sqlText, params, function(tx, items)
+							{
+								var len = items.rows.length,
+									results = [];
+								for(var i = 0; i < len; i++)
+								{
+									results.push(items.rows.item(i));
+								}
+
+								callback(results);
+							});
+					});
+				}
+
+				self.readTransaction = function(sqlText, params, callback)
+				{
+					callback = callback || function() { };
+					db.readTransaction(function(tx)
+					{
+						var operation = function(tx, items)
+						{
+							var len = items.rows.length,
+								results = [];
+							for(var i = 0; i < len; i++)
+							{
+								results.push(items.rows.item(i));
+							}
+
+							callback(results);
+						};
+						
+						tx.executeTransaction(sqlText, params, operation);
+					});
+				}
+			}
+		
+			Database.prototype.version = '1.0'
+		
+			// Return Constructor
+			return Database;
+		})();
+		
+// End Classes
+
+
+		/*	Open or create the specified database
+		 *	@param {Object} args Arguments about the database
+		 *		@Structure: {
+								name:					The name of the database
+								version:				The version of the database to open
+								description (nullable):	A description of the database's use
+								size (nullable):		The size to create the db
+								callback (nullable):	A function to call when the DB has been created/opened
+							}
+		 */
+		DatabaseMod.openDatabase = function(args)
+		{
+			if(typeof args == Types.Undefined || args.name == undefined || args.version == undefined)
+				throw new Exception.InvalidArgumentException("Database must have a name and version.");
+
+			args.description = args.description || "";
+			args.size = args.size || (1024 * 1024 * 2);
+			args.callback = args.callback || function() { };
+
+			var db = new Database({
+				name: args.name,
+				version: args.version,
+				description: args.description,
+				OnCreated: args.callback
+			});
+
+			return db;
+		}
 	});
 })();

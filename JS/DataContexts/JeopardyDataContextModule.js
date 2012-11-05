@@ -1,4 +1,4 @@
-/*		DataContext JavaScript Module
+/*		Jeopardy Game DataContext JavaScript Module
  *		Author: Daniel Beus
  *		Date: 10/4/2012
  */
@@ -23,22 +23,24 @@
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
 			var exception = module['Modules/ExceptionModule'];
-			var Models = module['Models/JeopardyModels']
-			factory(target, exception, Models);
+			var Models = module['Models/JeopardyModels'];
+			var db = module['Modules/DatabaseModule'];
+			factory(target, exception, Models, db);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'Modules/ExceptionModule', 'Models/JeopardyModels'], factory);
+			define(['exports', 'Modules/ExceptionModule', 'Models/JeopardyModels', 'Modules/DatabaseModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['DataContext'] = window['DataContext'] || {},
 					window['Exception'],
-					window['JeopardyModels']);
+					window['JeopardyModels'],
+					window['Database']);
 		}
-	})(function(DataContextExports, Exception, Models)
+	})(function(DataContextExports, Exception, Models, Database)
 	{
 		var DataContext = typeof DataContextExports !== Types.Undefined ? DataContextExports : {};
 		
@@ -80,7 +82,7 @@
 				// ? Then populate each question in category
 				if(database == undefined)
 				{
-					database = openDatabase('Jeopardy', '1.0', 'Jeopardy Game Database', 2 * 1024 * 1024);
+					database = Database.openDatabase('Jeopardy', '1.0', 'Jeopardy Game Database', 2 * 1024 * 1024);
 				}
 				else
 				{
