@@ -60,6 +60,9 @@
 		{
 			var JeopardyQuestionModel = function(args)
 			{
+				if(!(this instanceof JeopardyQuestionModel))
+					return new JeopardyQuestionModel(args);
+
 				args = args || {};
 				var self = this,
 					DataObj = args.DataObj;
@@ -146,6 +149,9 @@
 
 			var JeopardyCategoryModel = function(args)
 			{
+				if(!(this instanceof JeopardyCategoryModel))
+					return new JeopardyCategoryModel(args);
+
 				args = args || {};
 				var self = this;
 

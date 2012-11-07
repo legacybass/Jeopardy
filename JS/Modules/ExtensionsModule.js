@@ -44,16 +44,20 @@
 
 		if(!String.prototype['IsNullOrWhitespace'])
 		{
-			function IsNullOrWhitespace()
+			function IsNullOrWhitespace(str)
 			{
-				var origStr = this;
-				
-				if(origStr == null || origStr == undefined)
+				if(str == undefined || str == null)
+					str = this;
+
+				if(str == undefined || str == null)
 					return true;
 
-				var moddedStr = origStr.Trim();
+				if(!(str instanceof String))
+					throw new TypeError("Not a string");
 
-				return moddedStr.length <= 0;
+				var trimmed = str.trim();
+
+				return trimmed.length <= 0;
 			}
 
 			Object.defineProperty(String.prototype, 'IsNullOrWhitespace',{
@@ -66,9 +70,11 @@
 			});
 		}
 
-		var Clone = function()
+		var Clone = function(obj)
 		{
-			var rtObj,
+			var rtObj;
+
+			if(obj == undefined || obj == null)
 				obj = this;
 
 			if(obj instanceof Array)
@@ -99,12 +105,22 @@
 
 		if(!Object.prototype['Clone'])
 		{
-			Object.defineProperty(Object.prototype, 'Clone', { enumerable: false });
+			Object.defineProperty(Object.prototype, 'Clone', {
+				enumerable: false,
+				writable: false,
+				configurable: false,
+				value: Clone
+			});
 		}
 
 		if(!Array.prototype['Clone'])
 		{
-			Object.defineProperty(Array.prototype, 'Clone', { enumerable: false });
+			Object.defineProperty(Array.prototype, 'Clone', {
+				enumerable: false,
+				writable: false,
+				configurable: false,
+				value: Clone
+			});
 		}
 
 		if(!window['console'])
@@ -133,6 +149,143 @@
 			}
 
 			window['console'] = Console;
+		}
+
+		if(!String.prototype['Capitalize'])
+		{
+			Object.defineProperty(String.prototype, 'Capitalize', {
+				enumerable: false,
+				writable: false,
+				configurable: false,
+				value: function(str)
+				{
+					if(str == undefined || str == null)
+						str = this;
+
+					if(!(str instanceof String))
+						throw new TypeError("Not a string");
+
+					if(str == null || str == undefined || str.IsNullOrWhitespace)
+						return str + "";
+
+					return str.substring(0, 1).toUpperCase() + this.substring(1);
+				}
+			});
+		}
+
+		if(!String.prototype['CapitalizeAll'])
+		{
+			Object.defineProperty(String.prototype, 'CapitalizeAll', {
+				enumerable: false,
+				writable: false,
+				configurable: false,
+				value: function(str)
+				{
+					if(str == undefined || str == null)
+						str = this;
+
+					if(str == null || str == undefined || str.IsNullOrWhitespace)
+						return str;
+
+					var strArr = str.split(" ");
+					var rtStr = "",
+						counter = 0;
+					strArr.forEach(function(item)
+					{
+						rtStr += item.Capitalize();
+						counter++;
+
+						if(counter < strArr.length)
+							rtStr += " ";
+					});
+
+					return rtStr;
+				}
+			});
+		}
+
+		function Stringify(obj)
+		{
+			if(obj == undefined || obj == null)
+				obj = this;
+
+			if(obj == undefined || obj == null)
+				return "";
+
+			var rtStr = "",
+				isArray = Array.isArray(obj),
+				counter = 0;
+
+			if(isArray)
+				rtStr += "[ ";
+			else
+				rtStr += "{ ";
+
+			for(var key in obj)
+			{
+				var data = obj[key],
+					dataType = typeof data;
+				rtStr += '"' + key + '": ';
+				if(dataType === Types.Object)
+				{
+					rtStr += Stringify(data);
+				}
+				else if(dataType === Types.String)
+				{
+					rtStr += '"' + data + '"';
+				}
+				else
+					rtStr += data;
+
+				rtStr += ", ";
+			}
+
+			rtStr = rtStr.substring(0, rtStr.length - 2);
+
+			if(isArray)
+				rtStr += " ]";
+			else
+				rtStr += " }";
+
+			return rtStr;
+		}
+
+		if(!Object.prototype['Stringify'])
+		{
+			Object.defineProperty(Object.prototype, 'Stringify', {
+				enumerable: false,
+				writable: false,
+				configurable: false,
+				value: Stringify
+			})
+		}
+
+		if(!Array.prototype['Stringify'])
+		{
+			Object.defineProperty(Array.prototype, 'Strinfify', {
+				enumerable: false,
+				writable: false,
+				configurable: false,
+				value: Stringify
+			})
+		}
+
+		if(!Object.prototype['Count'])
+		{
+			Object.defineProperty(Object.prototype, 'Count', {
+				enumerable: false,
+				configurable: false,
+				get: function()
+				{
+					if(typeof this !== Types.Object || !(this instanceof Object))
+						throw new TypeError("Count property could not be found on " + typeof this);
+					
+					var count = 0;
+					for(var key in this)
+						count++;
+					return count;
+				}
+			});
 		}
 
 		return HelperFunctions;

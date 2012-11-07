@@ -49,3 +49,4 @@ These are in no particular order and are not guaranteed to be included, but are 
 7. Scoring showing on the contestants' and presenter's computers.
 8. Daily Doubles - Ability for the contestants to wager money and answer the question alone.
 9. Final Jeopardy - A single question that no one buzzes in for, but that everyone can answer.  This will require contestants to answer from their own computers in multiplayer server mode, and so will require feature 1 to be implemented first.  Games played from the same computer will require a new interface.
+10. Creating Presenter-less game.  Create a game as a contestant and play against other people on the same or different computers.  Requires being able to create a session and send that info to other players.  Also requires features 1, 4, 6, and 7 to be implemented first.

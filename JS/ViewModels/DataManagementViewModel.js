@@ -26,15 +26,16 @@
 			var datacontext = require('DataContext');
 			var exception = require('Modules/ExceptionModule');
 			var knockout = require('knockout');
+			var models = require('Models/DataManagementModels');
 			var knockoutMapping = require('komapping');
 
-			factory(target, extensions, datacontext, exception, knockout, knockoutMapping);
+			factory(target, extensions, datacontext, exception, knockout, models, knockoutMapping);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
 			define(['exports', 'Modules/ExtensionsModule', 'DataContext',
-						'Modules/ExceptionModule', 'knockout', 'komapping'], factory);
+						'Modules/ExceptionModule', 'knockout', 'Models/DataManagementModels', 'komapping'], factory);
 		}
 		else
 		{
@@ -44,9 +45,10 @@
 				window['DataContext'],
 				window['Exception'],
 				window['ko'],
+				window['DataManagementModels'],
 				window['komapping']);
 		}
-	})(function(DataManagementExports, Extensions, DataContext, Exception, ko, mapping)
+	})(function(DataManagementExports, Extensions, DataContext, Exception, ko, Models, mapping)
 	{
 		var DataManagement = typeof DataManagementExports !== Types.Undefined ? DataManagementExports : {};
 		
@@ -59,6 +61,67 @@
 // End Variables
 
 // Begin Global Private Functions
+		ko.bindingHandlers.foreachkey = (function()
+		{
+			return {
+				init: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext)
+				{
+					var child = ko.virtualElements.firstChild(element),
+						childElems = [],
+						value = valueAccessor(),
+						allBindings = allBindingsAccessor();
+
+					if(typeof value !== Types.Object || !value.data)
+						value = {
+							data: value
+						};
+
+					while(child)
+					{
+						if(child.tagName != undefined)
+							childElems.push(child);
+
+						child = ko.virtualElements.nextSibling(child);
+					}
+
+					var items = [];
+					if(value.items && value.items.length > 0)
+					{
+						for(var i = 0; i < value.items.length; i++)
+						{
+							items[i] = value.items[i].toLowerCase();
+						}
+					}
+
+					var childNodes = [];
+					for(var key in value.data)
+					{
+						if(items.length > 0 && items.indexOf(("" + key).toLowerCase()) < 0)
+							continue;
+
+						var obj = value.data[key],
+							objType = typeof obj,
+							childContext = bindingContext.createChildContext(obj);
+
+						for(var j = 0; j < childElems.length; j++)
+						{
+							var clonedChild = childElems[j].cloneNode(true);
+							childNodes.push(clonedChild);
+							ko.applyBindings(childContext, clonedChild);
+						}
+					}
+
+					ko.virtualElements.setDomNodeChildren(element, childNodes);
+
+					return { controlsDescendantBindings: true };
+				},
+				update: function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext)
+				{
+					
+				}
+			}
+		})();
+		ko.virtualElements.allowedBindings.foreachkey = true;
 
 // End Global Private Functions
 
@@ -96,27 +159,14 @@
 							var tableName = tableNames[i];
 							db.GetTableInfo(tableName, function(tableInfo)
 							{
-								// TODO: Make these work with mapping
-								// Until then, this should do the same basic thing
-								var observableTableInfo = {};
-								for(var key in tableInfo)
-								{
-									var obj = tableInfo[key];
-
-									if(obj instanceof Array || (obj.length && obj.push))
-									{
-										observableTableInfo[key] = ko.observableArray(obj);
-									}
-									else
-									{
-										observableTableInfo[key] = ko.observable(obj);
-									}
-								}
-
-								Tables.push(observableTableInfo);
+								Tables.push(new Models.Table({
+									name: tableInfo.name,
+									records: tableInfo.records,
+									columns: tableInfo.columns
+								}));
 
 								counter++;
-								if(counter == tableNames.length - 1)
+								if(counter >= tableNames.length - 3)
 									Loading(false);
 							});
 						}
@@ -125,24 +175,68 @@
 
 				self.AddRow = function(table)
 				{
+					Loading(true);
 					var newRow = {};
-					table.columns().forEach(function(col)
+					table.Columns.forEach(function(col)
 					{
-						newRow[col] = 'Empty';
+						newRow[col] = undefined;
 					});
 
-					table.records.push(newRow);
+					var row = table.Add(newRow);
+
+					table.ColumnData.forEach(function(col)
+					{
+						if(col.IsRequired)
+						{
+							newRow[col.Name] = 0;
+						}
+						if(col.IsPrimaryKey)
+							delete newRow[col.Name];
+					});
+
+					db.AddTableRow(table.Name(), newRow, function(data)
+					{
+						row.id.Data(data.ID);
+						Loading(false);
+					});
 				}
 
-				self.SaveRow = function()
+				self.EditRow = function(table, row)
 				{
+					if(row.IsEditing())
+					{
+						Loading(true);
+						var obj = {};
 
+						for(var key in row)
+						{
+							var data = row[key];
+							if(!data.Writable)
+								continue;
+
+							obj[key] = data.Data();
+						}
+
+						obj.ID = row.id.Data();
+
+						db.SaveChanges(table.Name(), obj, function(data)
+						{
+							Loading(false);
+							row.IsEditing(false);
+						});
+					}
+					else
+						row.IsEditing(true);
 				}
 
 				self.RemoveRow = function(table, item)
 				{
-					console.log(table);
-					console.log(item);
+					Loading(true);
+					db.DeleteTableRow(table.Name(), item.id.Data(), function()
+						{
+							table.Remove(item);
+							Loading(false);
+						});
 				}
 
 				self.Loading = Loading;

@@ -12,7 +12,13 @@
 
 		function MakeDraggable()
 		{
-			$('table').draggable();
+			$('table').draggable()/*.resizable({
+				maxHeight: 250,
+				maxWidth: 350,
+				minHeight: 150,
+				minWidth: 200,
+				animate: true
+			})*/;
 		}
 	</script>
 	<script type="text/javascript" data-main="Scripts/DataManagement" src="../JS/libs/require.min.js"></script>
@@ -27,23 +33,41 @@
 
 	
 	<div class="content" style="display: none;" data-bind="visible: true, css: { loading: Loading }">
-		<div class="tables" data-bind="foreach: Tables">
+		<div class="tables" data-bind="foreach: {data: Tables, afterRender: MakeDraggable}">
 			<table>
 				<thead>
 					<tr>
-						<!-- ko foreach: columns -->
-						<th data-bind="text: $data"></th>
+						<th data-bind="text: Name" colspan="6" class="name"></th>
+					</tr>
+					<tr>
+						<!-- ko foreach: Columns -->
+						<th data-bind="text: $data"></span></th>
 						<!-- /ko -->
+						<th></th>
 						<th></th>
 					</tr>
 				</thead>
 				<tbody>
-					<!-- ko foreach: { data: records, afterRender: MakeDraggable } -->
+					<!-- ko foreach: Records -->
 					<tr>
-						<td data-bind="text: id"></td>
-						<td data-bind="text: Text"></td>
-						<td data-bind="text: Answer"></td>
-						<td data-bind="text: Value"></td>
+						<!-- ko foreachkey: { data: $data, items: $parent.Columns } -->
+							
+						<td >
+						<!-- ko if: $parent.IsEditing() && Writable -->
+							<input data-bind="value: $data.Data" />
+						<!-- /ko -->
+						<!-- ko if: !$parent.IsEditing() || !Writable -->
+							<span data-bind="text: $data.Data"></span>
+						<!-- /ko -->
+						</td>
+						<!-- /ko -->
+						<td>
+							<a href="#" data-bind="text: (IsEditing() ? 'Save' : 'Edit'),
+														click: function(data, event)
+														{
+														  	$root.EditRow($parent, data);
+														}"></a>
+						</td>
 						<td>
 							<a href="#" data-bind="click: function(data, event)
 														  {
@@ -53,7 +77,7 @@
 					</tr>
 					<!-- /ko -->
 					<tr>
-						<td colspan="5">
+						<td colspan="6">
 							<a href="" data-bind="click: $root.AddRow">Add Row</a>
 						</td>
 					</tr>

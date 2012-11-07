@@ -46,7 +46,7 @@
 		// Any publicly accessible methods should be attached to the "Database" object created above
 		// Any private functions or variables can be placed anywhere
 
-		var openDatabase = window['openDatabase'];
+		var openDatabase = window['openDatabase'] || window['mozOpenDatabase'];
 
 		if(!openDatabase)
 		{
