@@ -22,7 +22,7 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var DataObj = module['Modules/DataContextModule'];
+			var DataObj = module['DataContext'];
 			var exceptions = module['Modules/ExceptionModule'];
 			var extensions = module['Modules/ExtensionsModule'];
 			factory(target, DataObj, exceptions, extensions);
@@ -30,7 +30,7 @@
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'Modules/DataContextModule', 'Modules/ExceptionModule', 'Modules/ExtensionsModule'], factory);
+			define(['exports', 'DataContext', 'Modules/ExceptionModule', 'Modules/ExtensionsModule'], factory);
 		}
 		else
 		{
@@ -49,61 +49,80 @@
 		// Any private functions or variables can be placed anywhere
 		Jeopardy.JeopardyGame = (function()
 		{
-			/*	Begin the game
-			 *	@param {Object} args Information about game setup
-			 *		Structure:	{
-			  		          		RequiredCategories: Array of category names
-			  		          	}
-			 */
-			function StartGame(args)
-			{
-				args = args || {};
-				this.round = 0;
-				this.GetNextRound({
-					RequiredCategories: args.RequiredCategories
-				});
-			}
-
-			/*	Get the next round of categories
-			 *	@param {Object} args Information about the next round to start
-			 *		Structure:	{
-			  		          		
-			  		          	}
-			 */
-			function GetNextRound(args)
-			{
-				args = args || {};
-				this.categories = DataObj.GetCategories({
-					RequiredCategories: args.RequiredCategories
-				});
-				this.round++;
-			}
-
 			var JeopardyGame = function(args)
 			{
+				if(!(this instanceof JeopardyGame))
+					return new JeopardyGame(args);
+
 				args = args || {};
 				var self = this,
-					dataContext = {
-						round: 0,
-						categories: []
-					},
-					LocalStartGame = StartGame.bind(dataContext),
-					LocalGetNextRound = GetNextRound.bind(dataContext);
-				
-				dataContext.StartGame = LocalStartGame;
-				dataContext.GetNextRound = LocalGetNextRound;
+					round = 0,
+					dataContext = new DataObj.DataContext();
 
-
-				self.StartGame = LocalStartGame;
-				self.GetNextRound = LocalGetNextRound;
+				var categories = [];
 				Object.defineProperty(self, 'Categories', {
 					get: function()
 					{
-						return dataContext.categories;
+						return categories;
 					},
 					enumerable: true,
 					configurable: false
 				});
+
+
+				self.StartGame = (function StartGame(args, callback)
+				{
+					args = args || {};
+					round = 0;
+					self.GetNextRound({
+						RequiredCategories: args.RequiredCategories
+					}, callback);
+				}).bind(self);
+
+				self.GetNextRound = (function GetNextRound(args, callback)
+				{
+					args = args || {};
+					round++;
+					dataContext.GetCategories(
+						{
+							RequiredCategories: args.RequiredCategories
+						},
+						function(categoryList)
+						{
+							categories = categoryList;
+							var callbackArr = [];
+							for(var i = 0; i < categories.length; i++)
+							{
+								callbackArr[i] = false;
+							}
+
+							for(var i = 0; i < categories.length; i++)
+							{
+								var handler = (function(index, questions)
+								{
+									callbackArr[index] = true;
+									categories[index].questions = questions;
+									var HasCompleted = true;
+									for(var j = 0; j < callbackArr.length; j++)
+									{
+										HasCompleted = HasCompleted && callbackArr[j];
+									}
+
+									if(HasCompleted)
+										callback && callback(categories);
+
+								}).bind(self, i);
+
+								dataContext.GetQuestions(
+									{
+										ID:categories[i].ID
+									},
+									handler
+								);
+							};
+						}
+					);
+				}).bind(self);
 			}
 
 			return JeopardyGame;

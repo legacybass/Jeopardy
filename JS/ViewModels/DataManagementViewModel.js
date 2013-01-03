@@ -241,6 +241,35 @@
 
 				self.Loading = Loading;
 				self.Tables = Tables;
+
+				var ExportDB = function()
+				{
+					Loading(true);
+					var tableData = db.ExportDB(db.ExportTypes.JSON);
+					var uriContent = "data:application/octet-stream," + encodeURIComponent(tableData);
+					var newWindow = window.open(uriContent, 'filename.txt');
+					Loading(false);
+				}
+				Object.defineProperty(self, 'ExportDB', {
+					enumerable: false,
+					configurable: false,
+					writable: false,
+					value: ExportDB
+				});
+
+				/*	Description
+				 *	Params Descriptions
+				 */
+				function ImportDB()
+				{
+						
+				}
+				Object.defineProperty(self, 'ImportDB', {
+					enumerable: false,
+					configurable: false,
+					writable: false,
+					value: ImportDB
+				});
 			}
 		
 			DataManagementViewModel.prototype.version = '1.0'

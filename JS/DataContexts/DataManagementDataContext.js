@@ -23,19 +23,20 @@
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
 			var db = require('Modules/DatabaseModule');
-			factory(target, db);
+			var base = require('DataContexts/DataContextBase');
+			factory(target, db, base);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'Modules/DatabaseModule'], factory);
+			define(['exports', 'Modules/DatabaseModule', 'DataContexts/DataContextBase'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['DataContext'] = {});
 		}
-	})(function(DataContextExports, Database)
+	})(function(DataContextExports, Database, Base)
 	{
 		var DataContext = typeof DataContextExports !== Types.Undefined ? DataContextExports : {};
 
@@ -44,37 +45,38 @@
 		// Any private functions or variables can be placed anywhere
 
 		DataContext.DataContext = (function(undefined){
-			// Dependencies
-		
-			// Private Variables
-		
-			// Private Methods
-		
-			// Init stuff
-		
-			// public API -- Methods
-		
-			// public API -- Prototype Methods
-			
-			// public API -- Constructor
 			var DataContext = function(data)
 			{
 				var self = this,
-					db;
-				db = Database.openDatabase(data);
+					db = Database.openDatabase(data),
+					tables = new Array();
+				Base.ContextBase.apply(this, [tables]);
+
 
 				self.GetTables = function(callback)
 				{
 					var sql = "SELECT * FROM sqlite_master WHERE type='table';"
-					db.executeSql(sql, [], function(tables)
+					db.executeSql(sql, [], function(tableNames)
 					{
 						var rtArr = [];
-						tables.forEach(function(item)
+						tableNames.forEach(function(item)
 						{
 							rtArr.push(item.name);
+							if(item.name.match(/(^__)|(__$)/) == undefined)
+								tables.push(new Base.Table({ Name: item.name }));
 						});
 						callback(rtArr);
 					});
+				}
+
+				function GetTable(tableName)
+				{
+					for(var i = 0; i < tables.length; i++)
+					{
+						if(tables[i].Name == tableName)
+							return i;
+					}
+					return -1;
 				}
 
 				self.GetTableInfo = function(table, callback)
@@ -84,7 +86,8 @@
 					{
 						var columnParts = info[0].sql.replace(/^[^\(]+\(([^\)]+)\)/g, '$1').split(','); ///// RegEx
 						var columnInfo = [],
-							columnNames = [];
+							columnNames = [],
+							t = tables[GetTable(table)];
 
 						for(i in columnParts) {
 							var temp = columnParts[i];
@@ -92,11 +95,19 @@
 							{
 								temp = temp.trim();
 								var parts = temp.split(" ");
+								if(parts[0].toUpperCase() == "CONSTRAINT")
+									continue;
+								
 								columnInfo.push({
 									name: parts[0],
 									props: parts.slice(1, parts.length).join(" ")
 								});
 								columnNames.push(parts[0]);
+								t && t.Columns.push(new Base.Column(
+									{
+										Name: parts[0],
+										Props: parts.shift()
+									}));
 							}
 						}
 
@@ -113,7 +124,8 @@
 
 				self.GetTableData = function(table, columns, callback, orderby)
 				{
-					var sql = 'SELECT ';
+					var sql = 'SELECT ',
+						t = tables[GetTable(table)];
 
 					if(columns == undefined || columns.length == 0)
 						sql += '* ';
@@ -140,6 +152,7 @@
 						for(var i = 0; i < len; i++)
 						{
 							dataArr.push(info[i]);
+							t && t.Rows.push(info[i]);
 						}
 
 						callback(dataArr);
@@ -218,16 +231,6 @@
 					});
 				}
 
-				self.Export = function()
-				{
-					// TODO: Add functionality to export the entire database
-				}
-
-				self.Import = function(jsonData)
-				{
-					// TODO: Add functionality to import database data from JSON
-				}
-
 				self.SaveChanges = function(table, data, callback)
 				{
 					var sql = "UPDATE " + table + " SET ",
@@ -250,8 +253,11 @@
 						callback && callback(results);
 					})
 				}
+
+				Object.freeze(self);
 			}
-		
+			
+			DataContext.prototype = new Base.ContextBase();
 			DataContext.prototype.version = '1.0'
 		
 			// Return Constructor

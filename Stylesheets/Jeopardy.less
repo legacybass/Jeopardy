@@ -12,6 +12,8 @@
 // Variables
 	@backgroundColor: hsl(228, 100%, 25%);
 	@textColor: hsl(42, 100%, 60%);
+	@animationTime: 1.5s;
+
 
 // Mixins
 	.common()
@@ -45,6 +47,25 @@
 		font-size: 3em;
 	}
 
+	.screen(@amount: 5%)
+	{
+		background-image: -webkit-linear-gradient(top, lighten(@backgroundColor, @amount), darken(@backgroundColor, @amount));
+	}
+
+	.finalQuestionSize()
+	{
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 95%;
+		height: 95%;
+		margin: 3%;
+		background: @backgroundColor;
+		z-index: 10;
+		text-align: center;
+		display: block;
+	}
+
 // Styles
 	html, html *
 	{
@@ -66,7 +87,7 @@
 	.gameColumn
 	{
 		float: left;
-		width: 20%;
+		width: 16.5%;
 		min-width: 80px;
 	}
 
@@ -83,18 +104,21 @@
 			.text(white);
 			text-transform: uppercase;
 			line-height: @spacing;
+			width: 97%;
 		}
 	}
 
 	.money
 	{
 		.moneyCommon();
+		.screen();
 
 		cursor: pointer;
 
 		&:hover
 		{
-			background: lighten(@backgroundColor, 10%);
+			//background: lighten(@backgroundColor, 10%);
+			.screen()
 		}
 
 		p
@@ -108,6 +132,7 @@
 	.hideQuestion
 	{
 		.moneyCommon();
+		.screen();
 
 		cursor: default;
 
@@ -125,19 +150,11 @@
 	.showAnswer
 	{
 		.moneyCommon();
-		-webkit-animation: showQuestionAnimation 5s linear;
+		.screen();
+		
+		-webkit-animation: showQuestionAnimation @animationTime linear;
 
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 95%;
-		height: 95%;
-		margin: 3%;
-		background: @backgroundColor;
-		z-index: 10;
-		text-align: center;
-		display: block;
-
+		.finalQuestionSize();
 	}
 
 // Animations
@@ -145,9 +162,15 @@
 	{
 		from
 		{
-			-webkit-transform: rotateY(0deg);
 			z-index: 10;
-			
+			position: fixed;
+			top: 45%;
+			left: 45%;
+			height: 5%;
+			width: 5%;
+			background: @backgroundColor;
+			text-align: center;
+			content: "";
 		}
 		50%
 		{
@@ -155,16 +178,6 @@
 		}
 		to
 		{
-			-webkit-transform: rotateZ(360deg);
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 95%;
-			height: 95%;
-			margin: 3%;
-			background: @backgroundColor;
-			z-index: 10;
-			text-align: center;
-			display: block;
+			.finalQuestionSize();
 		}
 	}

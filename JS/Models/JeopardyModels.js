@@ -56,7 +56,7 @@
 		  							DataObj: //Object that can retrieve and persist data
 		  						}
 		 */
-		Jeopardy.JeopardyQuestionModel = (function()
+		var JeopardyQuestionModel = (function()
 		{
 			var JeopardyQuestionModel = function(args)
 			{
@@ -111,7 +111,7 @@
 					configurable: false
 				});
 
-				var hasBeenSelected = ko.observable(args.hasBeenSelected == undefined ? false : !!args.hasBeenSelected);
+				var hasBeenSelected = ko.observable(false);
 				Object.defineProperty(self, 'HasBeenSelected',{
 					get: function()
 					{
@@ -125,7 +125,7 @@
 					configurable: false
 				});
 
-				var hasBeenShown = ko.observable(args.hasBeenShown == undefined ? false : !!args.hasBeenShown);
+				var hasBeenShown = ko.observable(false);
 				Object.defineProperty(self, 'HasBeenShown',{
 					get: function()
 					{
@@ -133,7 +133,7 @@
 					},
 					set: function(value)
 					{
-						hasBeenShown(value);
+						hasBeenShown(!!value);
 					},
 					enumerable: true,
 					configurable: false
@@ -143,7 +143,9 @@
 			return JeopardyQuestionModel;
 		})();
 
-		Jeopardy.JeopardyCategoryModel = (function()
+		Jeopardy.JeopardyQuestionModel = JeopardyQuestionModel;
+
+		var JeopardyCategoryModel = (function()
 		{
 
 
@@ -156,27 +158,41 @@
 				var self = this;
 
 				var name = ko.observable(args.name);
-				 Object.defineProperty(self, 'Name',{
+				Object.defineProperty(self, 'Name',{
 					get: function()
 					{
 						return name;
 					},
 					enumerable: true,
 					configurable: false
-				 });
-				var questions = ko.observableArray(args.questions || []);
-				 Object.defineProperty(self, 'Questions',{
+				});
+
+				var questions = ko.observableArray();
+				Object.defineProperty(self, 'Questions',{
 					get: function()
 					{
 						return questions;
 					},
 					enumerable: true,
 					configurable: false
-				 });
+				});
+
+				args.questions = args.questions || [];
+				args.questions.forEach(function(question)
+				{
+					questions.push(new JeopardyQuestionModel({
+						question: question.Text,
+						answer: question.Answer,
+						value: question.Value,
+						category: name
+					}));
+				});
 			}
 
 			return JeopardyCategoryModel;
 		})();
+
+		Jeopardy.JeopardyCategoryModel = JeopardyCategoryModel;
 
 // End Classes
 	

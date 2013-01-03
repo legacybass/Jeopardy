@@ -2,12 +2,27 @@
 <html>
 <head>
 	<title>Question Answer Window</title>
-	<link rel="stylesheet/less" href="Stylesheets/AnswerStyles.less">
+	<link rel="stylesheet/less" href="../Stylesheets/AnswerStyles.less">
+
+	<script type="text/javascript" src="../JS/RequireParameters.js"></script>
+	<script type="text/javascript" data-main="Scripts/AnswerWindow" src="../JS/libs/require.min.js"></script>
+	<script type="text/javascript">
+		var viewmodel = {
+			showAnswer: function(answer)
+			{
+				$('.title + p').remove();
+				$('#answer').text(answer);
+			}
+		}
+	</script>
 </head>
 <body>
 	<div class="header">
+		<div class="title">
+			Answer Window
+		</div>
 		<p>This window will contain the answer to the selected question.  Please hide it from the players' view.</p>
 	</div>
-	<div class="answer" id="answer"></div>
+	<div class="answer">Answer: <span id="answer"></span></div>
 </body>
 </html>

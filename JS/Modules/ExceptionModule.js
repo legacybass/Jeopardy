@@ -47,6 +47,9 @@
 		{
 			var Exception = function (message)
 			{
+				if(!(this instanceof Exception))
+					return new Exception(message);
+
 				var self = this;
 				Object.defineProperty(self, 'message',{
 					get: function()
@@ -66,12 +69,18 @@
 					configurable: true
 				});
 
-				self.prototype.toString = function()
+				var toString = function()
 				{
-					return message;
+					console.error(message);
 				}
 
-				console.error(message);
+				self.prototype = {
+					toString: toString
+				}
+				self.toString = toString();
+
+
+				//console.error(message);
 			}
 
 			return Exception;
@@ -81,6 +90,9 @@
 			// public API -- Constructor
 			var NotImplementedException = function(message)
 			{
+				if(!(this instanceof NotImplementedException))
+					return new NotImplementedException(message);
+
 				var self = this;
 				Exception.Exception.call(self, message);
 			}
@@ -97,6 +109,9 @@
 			// public API -- Constructor
 			var InvalidOperationException = function(message)
 			{
+				if(!(this instanceof InvalidOperationException))
+					return new InvalidOperationException(message);
+
 				var self = this;
 				Exception.Exception.call(self, message);
 			}
@@ -114,6 +129,9 @@
 			// public API -- Constructor
 			var InvalidArgumentException = function(message)
 			{
+				if(!(this instanceof InvalidArgumentException))
+					return new InvalidArgumentException(message);
+
 				var self = this;
 				Exception.Exception.call(self, message);
 			}

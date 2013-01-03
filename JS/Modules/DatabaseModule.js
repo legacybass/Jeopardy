@@ -72,6 +72,9 @@
 			// public API -- Constructor
 			var Database = function(data)
 			{
+				if(!(this instanceof Database))
+					return new Database(data);
+
 				var self = this,
 					db;
 
@@ -79,7 +82,6 @@
 					throw new Exception.InvalidArgumentException("Database must have a valid name and version.")
 
 				db = openDatabase(data.name, data.version, data.description, data.size, data.callback);
-
 
 				self.executeSql = function(sqlText, params, callback)
 				{
@@ -119,6 +121,25 @@
 						
 						tx.executeTransaction(sqlText, params, operation);
 					});
+				}
+
+				self.Export = function(ExportType)
+				{
+					switch(ExportType)
+					{
+						case ExportTypes.COMMA:
+							return ExportComma();
+						case ExportTypes.SQL:
+							return ExportSQL();
+						case ExportTypes.JSON:
+						default:
+							return ExportJson();
+					}
+				}
+
+				self.Import = function(jsonData)
+				{
+					// TODO: Add functionality to import database data from JSON
 				}
 			}
 		

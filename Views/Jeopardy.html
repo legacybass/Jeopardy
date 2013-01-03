@@ -1,9 +1,12 @@
 <!doctype html>
 <html>
 <head>
-	<link rel="stylesheet/less" href="Stylesheets/Jeopardy.less" />
+	<link rel="stylesheet/less" href="../Stylesheets/Jeopardy.less" />
 	<script type="text/javascript" src="../JS/RequireParameters.js"></script>
-	<script type="text/javascript" data-main="Jeopardy" src="../JS/libs/require.min.js"></script>
+	<script type="text/javascript">
+		require.paths['DataContext'] = 'DataContexts/JeopardyDataContext';
+	</script>
+	<script type="text/javascript" data-main="Scripts/Jeopardy" src="../JS/libs/require.min.js"></script>
 	<script type="text/html" id="columnTemplate">
 		
 	</script>
@@ -13,18 +16,23 @@
 		<div class="header">
 			<div class="title">Jeopardy!</div>
 		</div>
-		<div class="gameBoard" data-bind="foreach: Categories, visible: Categories().length > 1">
-					<div class="gameColumn">
-						<div class="categoryHeader">
+		<div class="gameBoard" data-bind="foreach: Categories, visible: Loaded" style="display: none;">
+			<div class="gameColumn">
+				<div class="categoryHeader">
 					<p data-bind="text: Name"></p>
 				</div>
 				<!-- ko foreach: Questions -->
-				<div data-bind="if: !HasBeenSelected(), css: { money: !HasBeenSelected(), hideQuestion: !!HasBeenSelected() }, click: $root.QuestionSelected" class="money">
-					<p data-bind="text: '$' + Value"></p>
-				</div>
-				<div data-bind="css: { showAnswer: !!HasBeenSelected() && !HasBeenShown(), question: !HasBeenSelected() || !!HasBeenShown() }, click: $root.QuestionDone" class="question">
-					<p data-bind="text: Question"></p>
-				</div>
+					<div data-bind="if: !HasBeenSelected(),
+									css: { money: !HasBeenSelected(),
+									hideQuestion: !!HasBeenSelected() },
+									click: $root.QuestionSelected" class="money">
+						<p data-bind="text: '$' + Value"></p>
+					</div>
+					<div data-bind="css: { showAnswer: !!HasBeenSelected() && !HasBeenShown(),
+											question: !HasBeenSelected() || !!HasBeenShown() },
+											click: $root.QuestionDone" class="question">
+						<p data-bind="text: Question"></p>
+					</div>
 				<!-- /ko -->
 			</div>
 		</div>

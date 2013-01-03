@@ -145,15 +145,15 @@
 				self.Records.remove(item);
 			}
 
-			function Add(objFactory, item)
+			function Add(objFactory, IsNew, item)
 			{
 				var self = this;
-				var newRow = new objFactory(item);
+				var newRow = new objFactory(item, IsNew);
 				self.Records.push(newRow);
 				return newRow;
 			}
 
-			function RowObjFactory(data)
+			function RowObjFactory(data, editing)
 			{
 				var func = "var self = this; ";
 				
@@ -167,9 +167,9 @@
 					func += "}; ";
 				});
 
-				func += "self.IsEditing = ko.observable(false); ";
+				func += "self.IsEditing = ko.observable(editing); ";
 
-				return (new Function("ko", "data", func)).bind(this, ko);
+				return (new Function("ko", "data", "editing", func)).bind(this, ko);
 			}
 
 			// public API -- Constructor
@@ -196,13 +196,14 @@
 				objFactory = RowObjFactory(columnData);
 
 				self.Remove = Remove.bind(self);
-				self.Add = Add.bind(self, objFactory);
+				self.Add = Add.bind(self, objFactory, true);
+				var internalAdd = Add.bind(self, objFactory, false);
 				self.ColumnData = columnData;
 
 				for(var key in data.records)
 				{
 					var obj = data.records[key];
-					self.Add(obj);
+					internalAdd(obj);
 				}
 			}
 		

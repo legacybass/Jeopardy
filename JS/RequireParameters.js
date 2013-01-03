@@ -12,7 +12,10 @@ var require = {
 	},
 	deps: ['jquery', 'less'],
 	shim: {
-
+		'nate': {
+			deps: ['jquery', 'less', 'knockout'],
+			exports: 'Nate'
+		}
 	}
 }
 

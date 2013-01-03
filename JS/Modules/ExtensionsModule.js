@@ -44,12 +44,11 @@
 
 		if(!String.prototype['IsNullOrWhitespace'])
 		{
-			function IsNullOrWhitespace(str)
+			function IsNullOrWhitespace()
 			{
-				if(str == undefined || str == null)
-					str = this;
+				var str = this;
 
-				if(str == undefined || str == null)
+				if(!str)
 					return true;
 
 				if(!(str instanceof String))
@@ -221,6 +220,8 @@
 			else
 				rtStr += "{ ";
 
+			var len = rtStr.length;
+
 			for(var key in obj)
 			{
 				var data = obj[key],
@@ -232,7 +233,7 @@
 				}
 				else if(dataType === Types.String)
 				{
-					rtStr += '"' + data + '"';
+					rtStr += '"' + data.replace(/"/g, '\\"') + '"';
 				}
 				else
 					rtStr += data;
@@ -240,7 +241,8 @@
 				rtStr += ", ";
 			}
 
-			rtStr = rtStr.substring(0, rtStr.length - 2);
+			if(rtStr.length > len)
+				rtStr = rtStr.substring(0, rtStr.length - 2);
 
 			if(isArray)
 				rtStr += " ]";
@@ -279,13 +281,32 @@
 				{
 					if(typeof this !== Types.Object || !(this instanceof Object))
 						throw new TypeError("Count property could not be found on " + typeof this);
-					
-					var count = 0;
-					for(var key in this)
-						count++;
-					return count;
+
+					return Object.keys(this).length;
 				}
 			});
+		}
+
+		if(!Array.prototype['Randomize'])
+		{
+			Object.defineProperty(Array.prototype, 'Randomize', {
+				enumerable: false,
+				configurable: false,
+				writable: false,
+				value: function()
+				{
+					if(!Array.isArray(this))
+						throw new TypeError("Object " + this + " is not an array.");
+
+					this.sort(function()
+					{
+						var val = Math.floor(Math.random() * 10) % 2;
+						if(val == 0)
+							return -1;
+						return 1;
+					});
+				}
+			})
 		}
 
 		return HelperFunctions;

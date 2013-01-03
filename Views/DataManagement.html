@@ -33,6 +33,10 @@
 
 	
 	<div class="content" style="display: none;" data-bind="visible: true, css: { loading: Loading }">
+		<div class="controls">
+			<a href="" data-bind="click: ExportDB">Export Database</a>
+			<a href="" data-bind="click: ImportDB">Import Database</a>
+		</div>
 		<div class="tables" data-bind="foreach: {data: Tables, afterRender: MakeDraggable}">
 			<table>
 				<thead>
@@ -65,13 +69,13 @@
 							<a href="#" data-bind="text: (IsEditing() ? 'Save' : 'Edit'),
 														click: function(data, event)
 														{
-														  	$root.EditRow($parent, data);
+															$root.EditRow($parent, data);
 														}"></a>
 						</td>
 						<td>
 							<a href="#" data-bind="click: function(data, event)
 														  {
-														  	$root.RemoveRow($parent, data);
+															$root.RemoveRow($parent, data);
 														  }">Remove</a>
 						</td>
 					</tr>
