@@ -14,7 +14,7 @@
 		Undefined: typeof undefined
 	};
 
-	(function(factory)
+	(function(root, factory)
 	{
 		// Support three module loading scenarios
 		// Taken from Knockout.js library
@@ -35,12 +35,12 @@
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['DatabaseInteractions'] = window['DatabaseInteractions'] || {},
-				window['Database'],
-				window['Exception'],
-				window['Extensions']);
+			factory(root['DatabaseInteractions'] = root['DatabaseInteractions'] || {},
+				root['Database'],
+				root['Exception'],
+				root['Extensions']);
 		}
-	})(function(DatabaseInteractionsExports, Database, Exception, Extensions)
+	})(this, function(DatabaseInteractionsExports, Database, Exception, Extensions)
 	{
 		var DatabaseInteractions = typeof DatabaseInteractionsExports !== Types.Undefined ? DatabaseInteractionsExports : {};
 

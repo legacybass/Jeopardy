@@ -18,7 +18,7 @@
 		Undefined: typeof undefined
 	};
 
-	(function(factory)
+	(function(root, factory)
 	{
 		var dependencies = ['Modules/ExtensionsModule'];
 
@@ -47,13 +47,13 @@
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			var args = [window['EventAggregator'] = {}];
+			var args = [root['EventAggregator'] = {}];
 			for(var key in dependencies)
-				args.push(window[dependencies[key]]);
+				args.push(root[dependencies[key]]);
 
 			factory.apply(this, args);
 		}
-	})(function(EventAggregatorModuleExports)
+	})(this, function(EventAggregatorModuleExports)
 	{
 		var EventAggregatorModule = typeof EventAggregatorModuleExports !== Types.Undefined ? EventAggregatorModuleExports : {};
 

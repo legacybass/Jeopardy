@@ -2,12 +2,12 @@
 <html>
 <head>
 	<title>Jeopardy Data Management</title>
-	<link rel="stylesheet/less" href="../Stylesheets/Views/DataManagement.less" />
-	<link rel="stylesheet" href="../Stylesheets/jquery-ui-1.9.1.custom.min.css" />
+	<link rel="stylesheet/less" href="/public/Stylesheets/Views/DataManagement.less" />
+	<link rel="stylesheet" href="/public/Stylesheets/jquery-ui-1.9.1.custom.min.css" />
 
-	<script type="text/javascript" src="../JS/RequireParameters.js"></script>
+	<script type="text/javascript" src="/public/JS/RequireParameters.js"></script>
 	<script type="text/javascript">
-		require.paths['DataContext'] = 'DataContexts/DataManagementDataContext';
+		// require.paths['DataContext'] = 'DataContexts/DataManagementDataContext';
 		require.deps.push('jquery');
 		require.deps.push('jqueryui');
 
@@ -22,7 +22,7 @@
 			})*/;
 		}
 	</script>
-	<script type="text/javascript" data-main="Scripts/DataManagement" src="../JS/libs/require.min.js"></script>
+	<script type="text/javascript" data-main="Scripts/DataManagement" src="/public/JS/libs/require.min.js"></script>
 	<script type="text/html" id="tableTemplate"></script>
 </head>
 <body>

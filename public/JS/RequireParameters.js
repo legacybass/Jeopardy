@@ -1,5 +1,5 @@
 var require = {
-	baseUrl: '../JS/',
+	baseUrl: '/public/JS/',
 	paths: {
 		jquery: 'libs/jquery-1.7.2.min',
 		jqueryui: 'libs/jquery-ui-1.9.1.custom.min',
@@ -11,8 +11,14 @@ var require = {
 		sham: 'libs/es5-sham.min'
 	},
 	deps: ['less'],
-	shim: {
-		
+	shim: { },
+	map: {
+		'Scripts/Jeopardy': {
+			'DataContext': 'DataContexts/JeopardyDataContext'
+		},
+		'Scripts/DataManagement': {
+			'DataContext': 'DataContexts/DataManagementDataContext'
+		}
 	}
 }
 

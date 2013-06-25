@@ -14,7 +14,7 @@
 		Undefined: typeof undefined
 	};
 
-	(function(factory)
+	(function(root, factory)
 	{
 		// Support three module loading scenarios
 		// Taken from Knockout.js library
@@ -33,9 +33,9 @@
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['Exception'] = window['Exception'] || {});
+			factory(root['Exception'] = root['Exception'] || {});
 		}
-	})(function(ExceptionExports, Extensions)
+	})(this, function(ExceptionExports, Extensions)
 	{
 		var Exception = typeof ExceptionExports !== Types.Undefined ? ExceptionExports : {};
 		

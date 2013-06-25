@@ -15,7 +15,7 @@
 		Undefined: typeof undefined
 	};
 
-	(function(factory)
+	(function(root, factory)
 	{
 		// Support three module loading scenarios
 		// Taken from Knockout.js library
@@ -33,9 +33,9 @@
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['EntityFramework'] = {});
+			factory(root['EntityFramework'] = {});
 		}
-	})(function(EntityFrameworkExports)
+	})(this, function(EntityFrameworkExports)
 	{
 		var EntityFramework = typeof EntityFrameworkExports !== Types.Undefined ? EntityFrameworkExports : {};
 		

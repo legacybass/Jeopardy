@@ -14,7 +14,7 @@
 		Undefined: typeof undefined
 	};
 
-	(function(factory)
+	(function(root, factory)
 	{
 		// Support three module loading scenarios
 		// Taken from Knockout.js library
@@ -39,15 +39,15 @@
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['JeopardyGame'] = window['JeopardyGame'] || {},
-					window['DataContext'],
-					window['JeopardyModels'],
-					window['ExceptionModule'],
-					window['ExtensionsModule'],
-					window['EventAggregatorModule'],
-					window['TimerModule']);
+			factory(root['JeopardyGame'] = root['JeopardyGame'] || {},
+					root['DataContext'],
+					root['JeopardyModels'],
+					root['ExceptionModule'],
+					root['ExtensionsModule'],
+					root['EventAggregatorModule'],
+					root['TimerModule']);
 		}
-	})(function(JeopardyGameExports, DataObj, Models, Exceptions, Extensions, EventAggregator, Timer)
+	})(this, function(JeopardyGameExports, DataObj, Models, Exceptions, Extensions, EventAggregator, Timer)
 	{
 		var Jeopardy = typeof JeopardyGameExports !== Types.Undefined ? JeopardyGameExports : {};
 		

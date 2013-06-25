@@ -14,7 +14,7 @@
 		Undefined: typeof undefined
 	};
 
-	(function(factory)
+	(function(root, factory)
 	{
 		// Support three module loading scenarios
 		// Taken from Knockout.js library
@@ -33,9 +33,9 @@
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['WebSocket'] = window['WebSocket'] || {});
+			factory(root['WebSocket'] = root['WebSocket'] || {});
 		}
-	})(function(WebSocketExports, EventAggregator)
+	})(this, function(WebSocketExports, EventAggregator)
 	{
 		var WebSocketNamespace = typeof WebSocketExports !== Types.Undefined ? WebSocketExports : {};
 		

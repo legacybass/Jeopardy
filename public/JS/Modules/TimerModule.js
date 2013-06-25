@@ -14,7 +14,7 @@
 		Undefined: typeof undefined
 	};
 
-	(function(factory)
+	(function(root, factory)
 	{
 		// Support three module loading scenarios
 		// Taken from Knockout.js library
@@ -36,12 +36,12 @@
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['Timer'] = {},
-				window['ExtensionsModule'],
-				window['ExceptionModule'],
-				window['EventAggregatorModule']);
+			factory(root['Timer'] = {},
+				root['ExtensionsModule'],
+				root['ExceptionModule'],
+				root['EventAggregatorModule']);
 		}
-	})(function(TimerExports, Extensions, Exceptions, EventAggregator)
+	})(this, function(TimerExports, Extensions, Exceptions, EventAggregator)
 	{
 		var Timer = typeof TimerExports !== Types.Undefined ? TimerExports : {};
 

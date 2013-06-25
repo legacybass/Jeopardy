@@ -1,0 +1,15 @@
+{
+	"name": "Jeopardy",
+	"version": "1.0.0",
+	"private": false,
+	"scripts": {
+		"start": "node app.js"
+	},
+	"dependencies": {
+		"express": "3.2.5",
+		"mongoose": "*",
+		"jade": "*",
+		"socket.io": "*"
+	},
+	"author": "Daniel Beus"
+}

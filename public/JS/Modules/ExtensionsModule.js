@@ -3,6 +3,8 @@
  *		Date: 10/18/2012
  */
 
+var wind;
+
 (function()
 {
 	var Types = {
@@ -14,8 +16,9 @@
 		Undefined: typeof undefined
 	};
 
-	(function(factory)
+	(function(root, factory)
 	{
+		wind = root;
 		// Support three module loading scenarios
 		// Taken from Knockout.js library
 		if(typeof require === Types.Function && typeof exports === Types.Object && typeof model === Types.Object)
@@ -34,11 +37,11 @@
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(window['Extensions'] = {},
-				window['es5-shim'],
-				window['es5-sham']);
+			factory(root['Extensions'] = {},
+				root['es5-shim'],
+				root['es5-sham']);
 		}
-	})(function(HelperFunctionsExports, shim, sham)
+	})(this, function(HelperFunctionsExports, shim, sham)
 	{
 		var HelperFunctions = typeof HelperFunctionsExports !== Types.Undefined ? HelperFunctionsExports : {};
 
@@ -122,7 +125,7 @@
 			});
 		}
 
-		if(!window['console'])
+		if(!wind['console'])
 		{
 			var Console = {
 				log: function()
@@ -147,7 +150,7 @@
 				}
 			}
 
-			window['console'] = Console;
+			wind['console'] = Console;
 		}
 
 		if(!String.prototype['Capitalize'])
