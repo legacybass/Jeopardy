@@ -5,13 +5,13 @@
 
 
 // Imports
-	@import "CrossBrowser";
-	@import "Fonts";
-	@import "Header";
+	@import "../CrossBrowser";
+	@import "../Fonts";
+	@import "../Header";
+	@import "../Classes/Animations";
+	@import "../Classes/Colors";
 
 // Variables
-	@backgroundColor: hsl(228, 100%, 25%);
-	@textColor: hsl(42, 100%, 60%);
 	@animationTime: 1.5s;
 
 
@@ -101,7 +101,7 @@
 
 		p
 		{
-			.text(white);
+			.text(@white);
 			text-transform: uppercase;
 			line-height: @spacing;
 			width: 97%;
@@ -151,6 +151,7 @@
 	{
 		.moneyCommon();
 		.screen();
+		.text(@white);
 		
 		-webkit-animation: showQuestionAnimation @animationTime linear;
 
@@ -158,26 +159,4 @@
 	}
 
 // Animations
-	@-webkit-keyframes showQuestionAnimation
-	{
-		from
-		{
-			z-index: 10;
-			position: fixed;
-			top: 45%;
-			left: 45%;
-			height: 5%;
-			width: 5%;
-			background: @backgroundColor;
-			text-align: center;
-			content: "";
-		}
-		50%
-		{
-			-webkit-transform: rotateY(180deg);
-		}
-		to
-		{
-			.finalQuestionSize();
-		}
-	}
+	.showQuestionAnimation();

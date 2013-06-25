@@ -22,19 +22,20 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			factory(target);
+			var eventor = require('Modules/EventAggregatorModule');
+			factory(target, eventor);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports'], factory);
+			define(['exports', 'Modules/EventAggregatorModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['WebSocket'] = window['WebSocket'] || {});
 		}
-	})(function(WebSocketExports)
+	})(function(WebSocketExports, EventAggregator)
 	{
 		var WebSocketNamespace = typeof WebSocketExports !== Types.Undefined ? WebSocketExports : {};
 		
@@ -83,32 +84,37 @@
 					throw "This doesn't look like JSON: " + err;
 				}
 			}
-		
-			// Init stuff
-		
-			// public API -- Methods
-		
-			// public API -- Prototype Methods
-			
-			// public API -- Constructor
+
 			var Socket = function(args)
 			{
+				if(!(this instanceof Socket))
+					return new Socket(args);
+
+				
 				if(!window.WebSocket)
 					throw "Websockets not supported.";
 
 				var self = this,
-					webSocket = new WebSocket(args.server);
-
-				webSocket.onopen = OnConnectionOpen.bind(self);
-				webSocket.onmessage = OnReceiveMessage.bind(self);
-				webSocket.onerror = OnConnectionError.bind(self);
-				webSocket.onclose = OnConnectionClose.bind(self);
+					webSocket = new WebSocket(args.server),
+					eventor = new EventAggregator.EventAggregator();
 
 
-				self.ReceivedMessage = args.ReceivedMessage;
-				self.ConnectionError = args.ConnectionError;
-				self.ConnectionClosed = args.ConnectionClosed;
-				self.ConnectionOpen = args.ConnectionOpen;
+				webSocket.onopen = function(event)
+				{
+					eventor.GetEvent("NotifyWebsocketOpen").Publish(event);
+				}
+				webSocket.onmessage = function(message)
+				{
+					eventor.GetEvent("NotifyWebsocketMessage").Publish(message);
+				}
+				webSocket.onerror = function(message)
+				{
+					eventor.GetEvent("NotifyWebsocketError").Publish(message);
+				}
+				webSocket.onclose = function(event)
+				{
+					eventor.GetEvent("NotifyWebsocketClose").Publish(event);
+				}
 
 				self.Send = function(args)
 				{
@@ -116,8 +122,6 @@
 						args = JSON.stringify(args);
 					webSocket.send(args);
 				}
-
-				return true;
 			}
 		
 			Socket.prototype.version = '1.0'

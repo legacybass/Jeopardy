@@ -1,0 +1,40 @@
+/*		Styles for making a div look like a screen
+ *		
+ */
+
+// Imports
+@import "../CrossBrowser";
+@import "../Classes/Colors";
+
+
+// Variables
+
+
+
+// Mixins
+.screen(@height: 15%, @width: 16.5%, @fontSize: 3em, @minHeight: 80px, @minWidth: 80px, @maxHeight: 100px, @maxWidth: 100px)
+{
+	.background(top, @backgroundColor, darken(@backgroundColor, 10%));
+	border: 5px solid black;
+	border-collapse: separate;
+	height: @height;
+	width: @width;
+	min-height: @minHeight;
+	min-width: @minWidth;
+	max-height: @maxHeight;
+	max-width: @maxWidth;
+	font-size: @fontSize;
+	cursor: pointer;
+
+	p
+	{
+		color: @textColor;
+		font-family: Helvetica, Arial, sans-serif;
+		font-weight: bold;
+		text-shadow: 4px 5px 0px black;
+		text-align: center;
+	}
+}
+
+
+// Styles

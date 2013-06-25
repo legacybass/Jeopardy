@@ -220,8 +220,6 @@
 			else
 				rtStr += "{ ";
 
-			var len = rtStr.length;
-
 			for(var key in obj)
 			{
 				var data = obj[key],
@@ -241,8 +239,7 @@
 				rtStr += ", ";
 			}
 
-			if(rtStr.length > len)
-				rtStr = rtStr.substring(0, rtStr.length - 2);
+			rtStr = rtStr.substring(0, rtStr.length - 2);
 
 			if(isArray)
 				rtStr += " ]";
@@ -264,7 +261,7 @@
 
 		if(!Array.prototype['Stringify'])
 		{
-			Object.defineProperty(Array.prototype, 'Strinfify', {
+			Object.defineProperty(Array.prototype, 'Stringify', {
 				enumerable: false,
 				writable: false,
 				configurable: false,
@@ -307,6 +304,125 @@
 					});
 				}
 			})
+		}
+
+		
+		if(!Array.prototype['ToObject'])
+		{
+			Object.defineProperty(Array.prototype, 'ToObject', {
+				enumerable: false,
+				configurable: false,
+				writable: false,
+				value: function(IncludeFunctions)
+				{
+					var self = this,
+						rtObj = {};
+					for(key in self)
+						if(IncludeFunctions || typeof self[key] !== Types.Function)
+							rtObj['' + key] = self[key];
+					return rtObj;
+				}
+			});
+		}
+
+		function ToURLString(name, obj)
+		{
+			if(obj == undefined || obj == null)
+				obj = this;
+			if(obj == undefined || obj == null || obj == window)
+				return "undefined";
+
+			var rtStr = '';
+			for(var key in obj)
+			{
+				var data = obj[key],
+				start,
+				value = parseInt(key);
+
+				if(typeof data === Types.Function)
+					continue;
+
+				if(isNaN(value))
+				{
+					start = name + "." + key;
+				}
+				else
+				{
+					start = name + "[" + key + "]";
+				}
+
+				if(typeof data === Types.Object)
+				{
+					rtStr += ToURLString(start, data);
+				}
+				else
+				{
+					rtStr += start + '=' + data;
+				}
+				rtStr += '&'
+			}
+			rtStr = rtStr.substring(0, rtStr.length - 1);
+			return rtStr;
+		}
+
+		if(!Array.prototype['ToURLString'])
+		{
+			Object.defineProperty(Array.prototype, 'ToURLString',{
+				enumerable: false,
+				writable: false,
+				configurable: false,
+				value: ToURLString
+			});
+		}
+
+		if(!Object.prototype['ToUrlString'])
+		{
+			Object.defineProperty(Object.prototype, 'ToURLString',{
+				enumerable: false,
+				writable: false,
+				configurable: false,
+				value: ToURLString
+			});
+		}
+
+		if(!Object.prototype['Extend'] && !Object.prototype['extend'])
+		{
+			var extend;
+			if(Object.extend || Object.Extend)
+				extend = Object.extend || Object.Extend;
+			else
+			{
+				extend = function(obj1, obj2)
+				{
+					var rtObj = {};
+					for(var key in obj1)
+					{
+						rtObj[key] = obj1[key];
+					}
+					for(var key in obj2)
+					{
+						rtObj[key] = obj2[key];
+					}
+					return rtObj;
+				}
+			}
+
+			var func = function(obj1, obj2)
+			{
+				if(obj2 == undefined || obj2 == null)
+				{
+					obj2 = obj1;
+					obj1 = this;
+				}
+				return extend(obj1, obj2);
+			}
+
+			Object.defineProperty(Object.prototype, 'Extend', {
+				enumerable: false,
+				configurable: false,
+				writable: false,
+				value: func
+			});
 		}
 
 		return HelperFunctions;

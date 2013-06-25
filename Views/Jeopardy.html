@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-	<link rel="stylesheet/less" href="../Stylesheets/Jeopardy.less" />
+	<link rel="stylesheet/less" href="../Stylesheets/Views/Jeopardy.less" />
 	<script type="text/javascript" src="../JS/RequireParameters.js"></script>
 	<script type="text/javascript">
 		require.paths['DataContext'] = 'DataContexts/JeopardyDataContext';
@@ -22,23 +22,29 @@
 					<p data-bind="text: Name"></p>
 				</div>
 				<!-- ko foreach: Questions -->
-					<div data-bind="if: !HasBeenSelected(),
-									css: { money: !HasBeenSelected(),
-									hideQuestion: !!HasBeenSelected() },
-									click: $root.QuestionSelected" class="money">
-						<p data-bind="text: '$' + Value"></p>
+					<div data-bind="if: !HasBeenSelected(),	click: $root.QuestionSelected" class="money">
+					    <p data-bind="text: '$' + Value, visible: !HasBeenSelected()"></p>
 					</div>
-					<div data-bind="css: { showAnswer: !!HasBeenSelected() && !HasBeenShown(),
+					<!-- <div data-bind="css: { showAnswer: !!HasBeenSelected() && !HasBeenShown(),
 											question: !HasBeenSelected() || !!HasBeenShown() },
 											click: $root.QuestionDone" class="question">
 						<p data-bind="text: Question"></p>
-					</div>
+					</div> -->
 				<!-- /ko -->
 			</div>
+		</div>
+
+		<div data-bind="css: { showAnswer: SelectedQuestion() != undefined }, visible: SelectedQuestion() != undefined, click: QuestionDone">
+			<div data-bind="with: SelectedQuestion">
+				<p data-bind="text: Question"></p>
+			</div>
+			<p>Timer: </p>
+			<div class="timer" data-bind="text: $root.Count, visible: $root.ShowCount"></div>
 		</div>
 		<div data-bind="visible: Categories().length <= 0" class="noQuestions">
 			No questions have been loaded for this game.
 		</div>
 	</div>
+
 </body>
 </html>

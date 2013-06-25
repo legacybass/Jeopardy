@@ -22,25 +22,32 @@
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var DataObj = module['DataContext'];
-			var exceptions = module['Modules/ExceptionModule'];
-			var extensions = module['Modules/ExtensionsModule'];
-			factory(target, DataObj, exceptions, extensions);
+			var DataObj = require('DataContext');
+			var models = require('Models/JeopardyModels');
+			var exceptions = require('Modules/ExceptionModule');
+			var extensions = require('Modules/ExtensionsModule');
+			var eventor = require('Modules/EventAggregatorModule');
+			var timer = require('Modules/TimerModule');
+			factory(target, DataObj, models, exceptions, extensions, eventor, timer);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'DataContext', 'Modules/ExceptionModule', 'Modules/ExtensionsModule'], factory);
+			define(['exports', 'DataContext', 'Models/JeopardyModels', 'Modules/ExceptionModule', 'Modules/ExtensionsModule',
+				'Modules/EventAggregatorModule', 'Modules/TimerModule'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
 			factory(window['JeopardyGame'] = window['JeopardyGame'] || {},
 					window['DataContext'],
+					window['JeopardyModels'],
 					window['ExceptionModule'],
-					window['ExtensionsModule']);
+					window['ExtensionsModule'],
+					window['EventAggregatorModule'],
+					window['TimerModule']);
 		}
-	})(function(JeopardyGameExports, DataObj, Exceptions, Extensions)
+	})(function(JeopardyGameExports, DataObj, Models, Exceptions, Extensions, EventAggregator, Timer)
 	{
 		var Jeopardy = typeof JeopardyGameExports !== Types.Undefined ? JeopardyGameExports : {};
 		
@@ -57,7 +64,11 @@
 				args = args || {};
 				var self = this,
 					round = 0,
-					dataContext = new DataObj.DataContext();
+					dataContext = new DataObj.DataContext(),
+					eventor = new EventAggregator.EventAggregator(),
+					timer = new Timer.StopWatch({
+						Duration: args.TimerDuration || 5
+					});
 
 				var categories = [];
 				Object.defineProperty(self, 'Categories', {
@@ -69,17 +80,26 @@
 					configurable: false
 				});
 
-
-				self.StartGame = (function StartGame(args, callback)
+				/*	Description
+				 *	Params Descriptions
+				 */
+				function StartGame(args)
 				{
 					args = args || {};
 					round = 0;
 					self.GetNextRound({
 						RequiredCategories: args.RequiredCategories
-					}, callback);
-				}).bind(self);
+					});
+				}
+				Object.defineProperty(self, 'StartGame', {
+					enumerable: false,
+					configurable: false,
+					writable: false,
+					value: StartGame.bind(self)
+				});
 
-				self.GetNextRound = (function GetNextRound(args, callback)
+				
+				function GetNextRound(args)
 				{
 					args = args || {};
 					round++;
@@ -89,19 +109,21 @@
 						},
 						function(categoryList)
 						{
-							categories = categoryList;
 							var callbackArr = [];
 							for(var i = 0; i < categories.length; i++)
 							{
 								callbackArr[i] = false;
 							}
 
-							for(var i = 0; i < categories.length; i++)
+							for(var i = 0; i < categoryList.length; i++)
 							{
 								var handler = (function(index, questions)
 								{
 									callbackArr[index] = true;
-									categories[index].questions = questions;
+									categories[index] = new Models.JeopardyCategoryModel({
+										name: categoryList[index].Name,
+										questions: questions
+									});
 									var HasCompleted = true;
 									for(var j = 0; j < callbackArr.length; j++)
 									{
@@ -109,20 +131,55 @@
 									}
 
 									if(HasCompleted)
-										callback && callback(categories);
+										eventor.GetEvent("NotifyQuestionsLoaded").Publish(categories);
 
 								}).bind(self, i);
 
 								dataContext.GetQuestions(
 									{
-										ID:categories[i].ID
+										ID:categoryList[i].ID
 									},
 									handler
 								);
 							};
 						}
 					);
-				}).bind(self);
+				}
+				Object.defineProperty(self, 'GetNextRound', {
+					enumerable: false,
+					configurable: false,
+					writable: false,
+					value: GetNextRound.bind(self)
+				});
+
+				/*	Description
+				 *	Params Descriptions
+				 */
+				function QuestionSelected(question)
+				{
+					question.HasBeenSelected(true);
+					timer.Start();
+				}
+				Object.defineProperty(self, 'QuestionSelected', {
+					enumerable: false,
+					configurable: false,
+					writable: false,
+					value: QuestionSelected.bind(self)
+				});
+
+				/*	Description
+				 *	Params Descriptions
+				 */
+				function QuestionAnswered(question, correct)
+				{
+					
+				}
+				Object.defineProperty(self, 'QuestionAnswered', {
+					enumerable: false,
+					configurable: false,
+					writable: false,
+					value: QuestionAnswered.bind(self)
+				});
 			}
 
 			return JeopardyGame;

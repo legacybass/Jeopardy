@@ -10,12 +10,9 @@ var require = {
 		shim: 'libs/es5-shim.min',
 		sham: 'libs/es5-sham.min'
 	},
-	deps: ['jquery', 'less'],
+	deps: ['less'],
 	shim: {
-		'nate': {
-			deps: ['jquery', 'less', 'knockout'],
-			exports: 'Nate'
-		}
+		
 	}
 }
 

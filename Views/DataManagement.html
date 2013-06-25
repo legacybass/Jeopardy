@@ -2,12 +2,13 @@
 <html>
 <head>
 	<title>Jeopardy Data Management</title>
-	<link rel="stylesheet/less" href="../Stylesheets/DataManagement.less" />
+	<link rel="stylesheet/less" href="../Stylesheets/Views/DataManagement.less" />
 	<link rel="stylesheet" href="../Stylesheets/jquery-ui-1.9.1.custom.min.css" />
 
 	<script type="text/javascript" src="../JS/RequireParameters.js"></script>
 	<script type="text/javascript">
 		require.paths['DataContext'] = 'DataContexts/DataManagementDataContext';
+		require.deps.push('jquery');
 		require.deps.push('jqueryui');
 
 		function MakeDraggable()

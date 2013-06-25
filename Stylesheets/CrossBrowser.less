@@ -44,6 +44,15 @@
 	-ms-user-select: none;
 	user-select: none;
 }
+.mask-image(@start: left bottom, @fromColor: rgba(0, 0, 0, 1), @toColor: rgba(0, 0, 0, 0.1), @end: left top)
+{
+	-webkit-mask-image: -webkit-gradient(linear, @start, @end, from(@fromColor), to(@toColor));
+    -webkit-mask-image: -webkit-linear-gradient(@start, from(@fromColor), to(@toColor)); /* Chrome 10+, Saf5.1+ */
+    -moz-mask-image: -moz-linear-gradient(@start, from(@fromColor), to(@toColor)); /* FF3.6 */
+    -ms-mask-image: -ms-linear-gradient(@start, from(@fromColor), to(@toColor)); /* IE10 */
+    -o-mask-image: -o-linear-gradient(@start, from(@fromColor), to(@toColor)); /* Opera 11.10+ */
+    -mask-image: linear-gradient(@start, from(@fromColor), to(@toColor)); /* W3C */
+}
 .background(@start, @startColor, @endColor, @fallbackColor:white, @fallbackImage:'', @end:bottom)
 {
 	background: @fallbackColor; /* Old browsers */

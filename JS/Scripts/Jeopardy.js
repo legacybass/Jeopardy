@@ -1,6 +1,12 @@
-require(['ViewModels/JeopardyViewModel', 'knockout', 'domReady'], function(jvm, ko)
+require(['ViewModels/JeopardyViewModel', 'knockout', 'libs/purl', 'domReady'], function(jvm, ko, purl)
 {
-	var jeopardy = new jvm.JeopardyViewModel();
+	var url = purl();
+
+	var jeopardy = new jvm.JeopardyViewModel({
+		Categories: url.param('categories')[1],
+		OnlineUrl: url.param('onlineUrl')[1],
+		TimerDuration: url.param('timer')[1]
+	});
 	/* #DEBUG */ if(typeof debug != typeof undefined) window['viewmodel'] = jeopardy;
 	jeopardy.StartGame();
 	ko.applyBindings(jeopardy);
