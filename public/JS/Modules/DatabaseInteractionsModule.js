@@ -49,18 +49,6 @@
 		// Any private functions or variables can be placed anywhere
 
 		DatabaseInteractions.DatabaseInteractions = (function(undefined){
-			// Dependencies
-		
-			// Private Variables
-		
-			// Private Methods
-		
-			// Init stuff
-		
-			// public API -- Methods
-		
-			// public API -- Prototype Methods
-			
 			// public API -- Constructor
 			var DatabaseInteractions = function(data)
 			{
@@ -84,7 +72,7 @@
 														}
 									}
 				 */
-				self.Create = (function(args)
+				self.Create = (function (args)
 				{
 					var sql = 'CREATE TABLE ';
 					args.callback = args.callback || function() { };
@@ -124,7 +112,7 @@
 										values: key/value pairs to insert
 									}
 				 */
-				self.Insert = (function(args)
+				self.Insert = (function (args)
 				{
 					var sql = 'INSERT INTO ' + args.tableName + ' (',
 						valuesStr = '( ',
@@ -155,12 +143,12 @@
 					db.executeSql(sql, values, args.callback);
 				}).bind(self);
 
-				self.Select = (function(args)
+				self.Select = (function (selectArr, whereDict, callback)
 				{
 					db.executeSql(args.sql, args.params || [], args.callback);
 				}).bind(self);
 
-				self.Update = (function()
+				self.Update = (function ()
 				{
 					
 				}).bind(self);

@@ -147,8 +147,6 @@
 
 		var JeopardyCategoryModel = (function()
 		{
-
-
 			var JeopardyCategoryModel = function(args)
 			{
 				if(!(this instanceof JeopardyCategoryModel))

@@ -211,7 +211,7 @@
 				/**
 				 *	@define {number}
 				 */
-				var timer = ko.observable();
+				var timer = ko.observable(10);
 				Object.defineProperty(self, 'Timer',{
 					get: function()
 					{

@@ -262,7 +262,7 @@
 				 */
 				function ImportDB()
 				{
-						
+					alert('ImportDB not yet implemented.');
 				}
 				Object.defineProperty(self, 'ImportDB', {
 					enumerable: false,

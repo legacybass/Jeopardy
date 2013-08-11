@@ -13,11 +13,14 @@ var require = {
 	deps: ['less'],
 	shim: { },
 	map: {
-		'Scripts/Jeopardy': {
+		'ViewModels/JeopardyViewModel': {
 			'DataContext': 'DataContexts/JeopardyDataContext'
 		},
-		'Scripts/DataManagement': {
+		'ViewModels/DataManagementViewModel': {
 			'DataContext': 'DataContexts/DataManagementDataContext'
+		},
+		'Modules/JeopardyGameModule': {
+			'DataContext': 'DataContexts/JeopardyDataContext'
 		}
 	}
 }

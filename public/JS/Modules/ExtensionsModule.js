@@ -3,8 +3,6 @@
  *		Date: 10/18/2012
  */
 
-var wind;
-
 (function()
 {
 	var Types = {
@@ -27,21 +25,22 @@ var wind;
 			var target = module['exports'] || exports;
 			var shim = require('shim');
 			var sham = require('sham');
-			factory(target, shim, sham);
+			factory(root, target, shim, sham);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'shim', 'sham'], factory);
+			define(['exports', 'shim', 'sham'], factory.bind(this, root));
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			factory(root['Extensions'] = {},
+			factory(root,
+				root['Extensions'] = {},
 				root['es5-shim'],
 				root['es5-sham']);
 		}
-	})(this, function(HelperFunctionsExports, shim, sham)
+	})(this, function(wind, HelperFunctionsExports, shim, sham)
 	{
 		var HelperFunctions = typeof HelperFunctionsExports !== Types.Undefined ? HelperFunctionsExports : {};
 

@@ -22,16 +22,39 @@ exports.boot = function(params)
 	return app;
 }
 
+function RenderPage(path, options, fn)
+{
+	var key = path + ':string';
+	if(typeof options == 'function')
+	{
+		fn = options;
+		options = {};
+	}
+
+	try
+	{
+		var str = options.cache
+					? exports.cache[key] || (exports.cache[key] = fs.readFileSync(path, 'utf8'))
+					: fs.readFileSync(path, 'utf8');
+		fn(null, str);
+	}
+	catch (err)
+	{
+		console.log("couldn't render page " + path);
+		fn(err);
+	}
+}
+
 // Setup any server configurations
 function BootApplication(app)
 {
 	// all environments
 	app.set('port', process.env.PORT || 3000);
+	app.use("/public", express.static(path.join(__dirname, 'public')));
 
 	app.set('views', __dirname + '/Views');
 	app.set('view engine', 'html');
-	app.engine('html', require('jade').__express);
-
+	app.engine('html', RenderPage);
 
 	app.use(express.favicon());
 	app.use(express.logger('dev'));
@@ -41,7 +64,6 @@ function BootApplication(app)
 	app.use(express.cookieParser('legacybass'));
 	app.use(express.session());
 
-	app.use("/public", express.static(path.join(__dirname, 'public')));
 	app.use(app.router);
 
 	app.configure('development', function()
