@@ -30,3 +30,8 @@ exports.Jeopardy = function(req, res)
 {
 	RenderPage(req, res, 'Jeopardy', { });
 }
+
+exports.AnswerWindow = function(req, res)
+{
+	RenderPage(req, res, 'AnswerWindow', {});
+}

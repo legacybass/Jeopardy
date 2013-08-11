@@ -4,7 +4,7 @@ var fs = require('fs'),
 module.exports = function(app)
 {
 	app.get("/:controller?", router);
-	app.get("/:controller.:format?", router);
+	app.get("/Views/:action.:format", router);
 	app.get("/:controller/:from-:to.:format?", router);
 
 	app.post("/:controller", router);
@@ -15,7 +15,7 @@ module.exports = function(app)
 	app.put("/:controller/:action", router);
 	app.del("/:controller/:action", router);
 
-	app.get("/:controller/:action/:id.:format?", router);
+	app.get("/:controller/:action/:id?", router);
 	app.post("/:controller/:action/:id", router);
 	app.put("/:controller/:action/:id", router);
 	app.del("/:controller/:action/:id", router);
