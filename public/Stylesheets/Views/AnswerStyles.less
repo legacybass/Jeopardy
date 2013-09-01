@@ -24,7 +24,13 @@
 	font-size: 50px;
 }
 
-#answer
+.answerText
 {
-	color: @red;
+	color: @blue;
+
+	&.Hidden
+	{
+		color: @red;
+		text-decoration: line-through;
+	}
 }

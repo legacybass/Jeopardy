@@ -13,14 +13,28 @@ var require = {
 	deps: ['less'],
 	shim: { },
 	map: {
+		'Scripts/Jeopardy': {
+			'ViewModels/JeopardyViewModel': 'ViewModels/JeopardyViewModelNew'
+		},
 		'ViewModels/JeopardyViewModel': {
-			'DataContext': 'DataContexts/JeopardyDataContext'
+			//'DataContext': 'DataContexts/JeopardyDataContext'
+			'DataContext': 'DataContexts/JeopardyWebDataContext',
+			'Modules/JeopardyGameModule': 'Modules/JeopardyGameModuleNew'
+		},
+		'ViewModels/JeopardyViewModelNew': {
+			'DataContext': 'DataContexts/JeopardyWebDataContext',
+			'Modules/JeopardyGameModule': 'Modules/JeopardyGameModuleNew'
 		},
 		'ViewModels/DataManagementViewModel': {
-			'DataContext': 'DataContexts/DataManagementDataContext'
+			//'DataContext': 'DataContexts/DataManagementDataContext'
+			'DataContext': 'DataContexts/DataManagementWebDataContext'
 		},
 		'Modules/JeopardyGameModule': {
 			'DataContext': 'DataContexts/JeopardyDataContext'
+		},
+		'Modules/JeopardyGameModuleNew': {
+			//'DataContext': 'DataContexts/JeopardyDataContext'
+			'DataContext': 'DataContexts/JeopardyWebDataContext'
 		}
 	}
 }

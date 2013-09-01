@@ -152,23 +152,26 @@
 					});
 
 					var counter = 0;
-					db.GetTables(function(tableNames)
+					db.GetTables(function (error, tableInfo)
 					{
-						for(var i = 0; i < tableNames.length; i++)
+						if(error)
 						{
-							var tableName = tableNames[i];
-							db.GetTableInfo(tableName, function(tableInfo)
+							alert(error);
+						}
+						else
+						{
+							if(tableInfo && Array.isArray(tableInfo) && tableInfo.length > 0)
 							{
-								Tables.push(new Models.Table({
-									name: tableInfo.name,
-									records: tableInfo.records,
-									columns: tableInfo.columns
-								}));
-
-								counter++;
-								if(counter >= tableNames.length - 3)
-									Loading(false);
-							});
+								tableInfo.forEach(function (item)
+								{
+									Tables.push(new Models.Table({
+										name: item.Name,
+										records: item.Records,
+										columns: item.Columns
+									}));
+								});
+								Loading(false);
+							}
 						}
 					});
 				}
@@ -194,35 +197,51 @@
 							delete newRow[col.Name];
 					});
 
-					db.AddTableRow(table.Name(), newRow, function(data)
-					{
-						row.id.Data(data.ID);
-						Loading(false);
-					});
+					Loading(false);
 				}
 
 				self.EditRow = function(table, row)
 				{
-					if(row.IsEditing())
+					if(row.IsEditing() && !Loading())
 					{
 						Loading(true);
-						var obj = {};
+						var obj = {
+							ForeignKeys: []
+						};
 
 						for(var key in row)
 						{
 							var data = row[key];
+							if(data.ForeignKey)
+							{
+								obj.ForeignKeys.push(data.Reference);
+							}
 							if(!data.Writable)
 								continue;
 
 							obj[key] = data.Data();
 						}
 
-						obj.ID = row.id.Data();
+						obj.ID = row.ID.Data();
 
-						db.SaveChanges(table.Name(), obj, function(data)
+						db.SaveChanges(table.Name(), obj, function(err, data)
 						{
-							Loading(false);
-							row.IsEditing(false);
+							if(err)
+								alert(err);
+							else
+							{
+								row.ID.Data(data.ID);
+								if(data.ForeignKeys)
+								{
+									for(var key in data.ForeignKeys)
+									{
+										if(row[key] && row[key].Data)
+											row[key].Data(data.ForeignKeys[key]);
+									}
+								}
+								Loading(false);
+								row.IsEditing(false);
+							}
 						});
 					}
 					else
@@ -232,10 +251,15 @@
 				self.RemoveRow = function(table, item)
 				{
 					Loading(true);
-					db.DeleteTableRow(table.Name(), item.id.Data(), function()
+					db.DeleteRow(table.Name(), item.ID.Data(), function(err, row)
 						{
-							table.Remove(item);
-							Loading(false);
+							if(err)
+								alert(err);
+							else
+							{
+								table.Remove(item);
+								Loading(false);
+							}
 						});
 				}
 

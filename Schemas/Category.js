@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 	ObjectId = Schema.ObjectId;
 
 var CategoryModel = new Schema({
-	ID: ObjectId,
+	ID: { type: ObjectId, index: true },
 	Name: { type: String, required: true },
 	Questions: [{ type: ObjectId, ref: 'Question' }]
 });

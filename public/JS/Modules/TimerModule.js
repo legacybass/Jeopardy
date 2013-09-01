@@ -62,7 +62,8 @@
 					eventor = new EventAggregator.EventAggregator(),
 					count = data.Duration || 5,
 					currentTime = count,
-					isRunning = false;;
+					isRunning = false,
+					timeoutToken;
 
 				function PassTime()
 				{
@@ -70,14 +71,15 @@
 						return;
 
 					currentTime--;
-					if(currentTime == 0)
+					if(currentTime <= 0)
 					{
 						Stop();
+						eventor.GetEvent("NotifyTimerExpired").Publish();
 					}
 					else
 					{
 						eventor.GetEvent("NotifyTimerChanged").Publish(currentTime);
-						setTimeout(PassTime, 1000);
+						timeoutToken = setTimeout(PassTime, 1000);
 					}
 				}
 
@@ -86,7 +88,7 @@
 				{
 					currentTime = count;
 					isRunning = true;
-					setTimeout(PassTime, 1000);
+					timeoutToken = setTimeout(PassTime, 1000);
 					eventor.GetEvent("NotifyTimerStarted").Publish(currentTime);
 				}
 				Object.defineProperty(self, 'Start', {
@@ -98,8 +100,9 @@
 
 				function Stop()
 				{
-					eventor.GetEvent("NotifyTimerExpired").Publish();
+					clearTimeout(timeoutToken);
 					isRunning = false;
+					currentTime = count;
 				}
 				Object.defineProperty(self, 'Stop', {
 					enumerable: false,
@@ -140,18 +143,6 @@
 					configurable: false,
 					writable: false,
 					value: Resume.bind(self)
-				});
-
-				function Clear()
-				{
-					isRunning = false;
-					currentTime = count;
-				}
-				Object.defineProperty(self, 'Clear', {
-					enumerable: false,
-					configurable: false,
-					writable: false,
-					value: Clear.bind(self)
 				});
 			}
 		

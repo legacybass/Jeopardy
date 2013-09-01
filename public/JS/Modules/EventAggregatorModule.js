@@ -20,7 +20,7 @@
 
 	(function(root, factory)
 	{
-		var dependencies = ['Modules/ExtensionsModule'];
+		var dependencies = ['Modules/ExtensionsModule', 'Modules/MD5'];
 
 		// Support three module loading scenarios
 		// Taken from Knockout.js library
@@ -33,7 +33,7 @@
 			{
 				args.push(require(dependencies[key]));
 			}
-			factory.apply(this, args);
+			factory.apply(root, args);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
@@ -51,9 +51,9 @@
 			for(var key in dependencies)
 				args.push(root[dependencies[key]]);
 
-			factory.apply(this, args);
+			factory.apply(root, args);
 		}
-	})(this, function(EventAggregatorModuleExports)
+	})(this, function(EventAggregatorModuleExports, Extensions, MD5)
 	{
 		var EventAggregatorModule = typeof EventAggregatorModuleExports !== Types.Undefined ? EventAggregatorModuleExports : {};
 
@@ -83,7 +83,10 @@
 					if(typeof callback !== Types.Function)
 						throw new TypeError("Parameter is not a function.");
 
-					subscribers.push(callback);
+					var index = (new Date()).toISOString();
+					var hash = MD5.MD5(index);
+					subscribers[hash] = callback;
+					return hash;
 				}
 				Object.defineProperty(self, 'Subscribe', 
 				{
@@ -99,10 +102,12 @@
 				function Publish()
 				{
 					args = arguments;
-					subscribers.forEach(function(callback)
+					for(var key in subscribers)
 					{
-						callback.apply(this, args);
-					});
+						var callback = subscribers[key];
+						if(typeof callback === Types.Function)
+							callback.apply(this, args);
+					}
 				}
 				Object.defineProperty(self, 'Publish', 
 				{
@@ -110,6 +115,20 @@
 					configurable: false,
 					writable: false,
 					value: Publish.bind(self)
+				});
+
+				/*	Cancel a subscription
+				 *	Params Descriptions
+				 */
+				function Unsubscribe(id)
+				{
+					delete subscribers[id];
+				}
+				Object.defineProperty(self, 'Unsubscribe', {
+					enumerable: false,
+					configurable: false,
+					writable: false,
+					value: Unsubscribe
 				});
 			}
 		

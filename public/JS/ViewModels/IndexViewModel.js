@@ -139,40 +139,6 @@
 				var self = this;
 				data = data || {};
 				BaseClass.apply(self, arguments);
-				
-				/**
-				 *	@define {boolean}
-				 */
-				var online = ko.observable();
-				Object.defineProperty(self, 'Online',{
-					get: function()
-					{
-						return online;
-					},
-					set: function(value)
-					{
-						online(value);
-					},
-					enumerable: true,
-					configurable: false
-				});
-
-				/**
-				 *	@define {string}
-				 */
-				var onlineUrl = ko.observable();
-				Object.defineProperty(self, 'OnlineUrl',{
-					get: function()
-					{
-						return onlineUrl;
-					},
-					set: function(value)
-					{
-						onlineUrl(value);
-					},
-					enumerable: true,
-					configurable: false
-				});
 
 				/**
 				 *	@define {array}
@@ -274,7 +240,6 @@
 				{
 					window.location = 'Views/Jeopardy.html?' +
 						(categories().length > 0 ? categories().ToURLString('categories') : 'categories=') + '&' +
-						'onlineUrl=' + (online() ? onlineUrl() : '') + '&' +
 						'timer=' + (timer() ? timer() : '');
 				}
 				Object.defineProperty(self, 'StartGame', {

@@ -42,7 +42,7 @@
 			<table>
 				<thead>
 					<tr>
-						<th data-bind="text: Name" colspan="6" class="name"></th>
+						<th data-bind="text: Name, attr: { colspan: Columns.length + 2 }" class="name"></th>
 					</tr>
 					<tr>
 						<!-- ko foreach: Columns -->
@@ -82,7 +82,7 @@
 					</tr>
 					<!-- /ko -->
 					<tr>
-						<td colspan="6">
+						<td data-bind="attr: { colspan: Columns.length + 2 }">
 							<a href="" data-bind="click: $root.AddRow">Add Row</a>
 						</td>
 					</tr>

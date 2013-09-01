@@ -1,8 +1,8 @@
-require(['ViewModels/JeopardyViewModel', 'knockout', 'libs/purl', 'domReady'], function(jvm, ko, purl)
+require(['ViewModels/JeopardyViewModelNew', 'knockout', 'libs/purl', 'domReady'], function(jvm, ko, purl)
 {
 	var url = purl();
 
-	var jeopardy = new jvm.JeopardyViewModel({
+	var jeopardy = new jvm.ViewModel({
 		Categories: url.param('categories')[1],
 		OnlineUrl: url.param('onlineUrl')[1],
 		TimerDuration: url.param('timer')[1]

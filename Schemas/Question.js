@@ -34,7 +34,7 @@ function ValidateValue(val)
 }
 
 var QuestionModel = new Schema({
-	ID: ObjectId,
+	ID: { type: ObjectId, index: true },
 	Question: { type: String, required: true, trim: true },
 	Answer: { type: String, required: true, trim: true },
 	Value: { type: Number, required: true, min: 100, max: 2000, set: ValidateValue },

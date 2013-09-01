@@ -72,7 +72,7 @@
 				var GetQuestions = function(categoryID, callback)
 				{
 					jQuery.ajax({
-						url: 'Data/Questions',
+						url: '/Game/Questions',
 						data: {
 							categoryID: categoryID
 						}
@@ -107,7 +107,7 @@
 				var GetCategories = function(requiredCategories, callback)
 				{
 					jQuery.ajax({
-						url: 'Data/Categories',
+						url: '/Game/Categories',
 						data: {
 							requiredCategories: requiredCategories
 						}
@@ -142,7 +142,7 @@
 				var GetFinalQuestion = function()
 				{
 					jQuery.ajax({
-						url: 'Data/FinalQuestion',
+						url: '/Game/FinalQuestion',
 						data: {
 							
 						}

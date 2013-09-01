@@ -56,7 +56,7 @@
 					return new Column(data);
 				
 				var self = this;
-				data.props = data.props.toLowerCase();
+				//data.props = data.props.toLowerCase();
 				
 				var name;
 				Object.defineProperty(self, 'Name',{
@@ -98,6 +98,16 @@
 					configurable: false
 				});
 
+				var reference;
+				Object.defineProperty(self, 'Reference', {
+					get: function()
+					{
+						return reference;
+					},
+					enumerable: true,
+					configurable: false
+				});
+
 				var hasDefault;
 				Object.defineProperty(self, 'HasDefault',{
 					get: function()
@@ -119,10 +129,15 @@
 				});
 
 				name = data.name;
-				primaryKey = data.props.indexOf('primary key') >= 0;
-				foreignKey = data.props.indexOf('foreign key') >= 0;
-				hasDefault = data.props.indexOf('default') >= 0;
-				required = data.props.indexOf('not null') >= 0 && !primaryKey;
+				// primaryKey = data.props.indexOf('primary key') >= 0;
+				// foreignKey = data.props.indexOf('foreign key') >= 0;
+				// hasDefault = data.props.indexOf('default') >= 0;
+				// required = data.props.indexOf('not null') >= 0 && !primaryKey;
+				primaryKey = data.primaryKey;
+				foreignKey = data.foreignKey;
+				reference = data.reference;
+				hasDefault = data.hasDefault;
+				required = !!data.required && !primaryKey;
 				writable = !primaryKey;
 
 				self.toString = function()
@@ -161,9 +176,18 @@
 				{
 					//func += "self." + item.toLowerCase() + " = ko.observable(data." + item + "); ";
 
-					func += "self." + item.Name.toLowerCase() + " = { ";
-					func += "Writable: " + item.Writable + ", ";
-					func += "Data: ko.observable(data." + item.Name + ")";
+					func += "self." + item.Name + " = { ";
+					func += "Writable: " + item.Writable;
+					func += ", Data: ko.observable(data." + item.Name + ")";
+					if(item.Reference)
+					{
+						func += ", ForeignKey: " + !!item.IsForeignKey;
+						// func += ", Reference: { ";
+						// 	func += "Name: " + item.Reference.Name;
+						// 	func += ", ID: " + item.Reference.ID || item.Reference._id;
+						// func += "}";
+						func += ", Reference: '" + item.Reference + "'";
+					}
 					func += "}; ";
 				});
 
@@ -185,6 +209,7 @@
 				self.Name = ko.observable(data.name);
 				self.Records = ko.observableArray();
 				self.Columns = [];
+				// self.Columns = data.columns;
 
 				data.columns.forEach(function(item)
 				{
