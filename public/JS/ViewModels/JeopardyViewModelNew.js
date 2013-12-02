@@ -208,6 +208,7 @@
 							RequiredCategories: data.Categories
 							, IsOnlineGame: data.IsOnlineGame
 							, Name: data.Name
+							, OnlineUrl: data.OnlineUrl ?? "http://localhost:3000"
 						},
 						/* OnLoaded */
 						function (categoryList)
