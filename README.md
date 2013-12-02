@@ -5,6 +5,10 @@ the style of play and game rules that contestants of the show follow when playin
 such that it can be used in a classroom, but any large setting where there is one presenter and a group of players would
 work.
 
+## Versions ##
+1.5 - Update the game to work on the server side, instead of the client side.  I cound that server side was a more common need and therefore put the emphasis on this.  This means the game no longer uses the client side database for data storage, but now users can connect from other computers and "buzz-in" with the game using websockets.
+
+1.0 - Initial release.  Game play consists of having the host determine who has answered first (by raising hands, physical buzzers, etc.).
 
 ## Navigation ##
 
