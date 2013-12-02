@@ -163,3 +163,6 @@ pip-log.txt
 .DS_Store
 /dbexport.txt
 /node_modules
+/Jeopardy.njsproj
+/Jeopardy.sln
+/Jeopardy
