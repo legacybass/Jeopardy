@@ -130,7 +130,7 @@
 
 					if(args.IsOnlineGame)
 					{
-						socket = io.connect('http://localhost:3000');
+						socket = io.connect(args.OnlineUrl);
 						SetupSockets();
 						
 						socket.emit('NewGame', defaultPacket);
