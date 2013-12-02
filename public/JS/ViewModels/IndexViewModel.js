@@ -191,6 +191,57 @@
 					configurable: false
 				});
 
+				/**
+				 *	@define {string}
+				 */
+				var gameName = ko.observable();
+				Object.defineProperty(self, 'GameName',{
+					get: function()
+					{
+						return gameName;
+					},
+					set: function(value)
+					{
+						gameName(value);
+					},
+					enumerable: true,
+					configurable: false
+				});
+
+				/**
+				 *	@define {string}
+				 */
+				var onlineUrl = ko.observable(window.location.origin);
+				Object.defineProperty(self, 'OnlineUrl',{
+					get: function()
+					{
+						return onlineUrl;
+					},
+					set: function(value)
+					{
+						onlineUrl(value);
+					},
+					enumerable: true,
+					configurable: false
+				});
+
+				/**
+				 *	@define {boolean}
+				 */
+				var onlineGame = ko.observable();
+				Object.defineProperty(self, 'OnlineGame',{
+					get: function()
+					{
+						return onlineGame;
+					},
+					set: function(value)
+					{
+						onlineGame(value);
+					},
+					enumerable: true,
+					configurable: false
+				});
+
 				/*	Description
 				 *	Params Descriptions
 				 */
@@ -238,9 +289,17 @@
 				 */
 				function StartGame()
 				{
-					window.location = 'Views/Jeopardy.html?' +
-						(categories().length > 0 ? categories().ToURLString('categories') : 'categories=') + '&' +
-						'timer=' + (timer() ? timer() : '');
+					if(onlineGame() && !onlineUrl())
+					{
+						onlineUrl(window.location.origin);
+					}
+					// window.location = 'Views/Jeopardy.html?'
+					// 	+ 'categories=' + (categories().length > 0 ? JSON.stringify(categories()) : '')
+					// 	+ '&timer=' + (timer() ? timer() : '')
+					// 	+ '&onlineUrl=' + onlineUrl() || ''
+					// 	+ '&onlineGame=' + !!onlineGame()
+					// 	+ '&name=' + gameName() || '';
+					return true;
 				}
 				Object.defineProperty(self, 'StartGame', {
 					enumerable: false,

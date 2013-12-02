@@ -64,8 +64,6 @@ function BootApplication(app)
 	app.use(express.cookieParser('legacybass'));
 	app.use(express.session());
 
-	app.use(app.router);
-
 	app.configure('development', function()
 	{
 		app.set('db-uri', 'mongodb://localhost/jeopardy-dev');
@@ -83,6 +81,8 @@ function BootApplication(app)
 		app.set('db-uri', 'mongodb://localhost/jeopardy-test');
 		app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 	});
+
+	app.use(app.router);
 }
 
 // Load the controllers into the routing domain
@@ -117,7 +117,15 @@ function BootModels(app)
 	});
 }
 
+// Load the socket configurations and handlers
+function BootSockets(server)
+{
+	require(__dirname + '/Controllers/SocketController')(server);
+}
+
 var app = exports.boot();
-http.createServer(app).listen(app.get('port'), function(){
+var server = http.createServer(app);
+server.listen(app.get('port'), function(){
 	console.log('Express server listening on port %d.', app.get('port'));
 });
+BootSockets(server);

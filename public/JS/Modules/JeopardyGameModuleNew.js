@@ -22,7 +22,7 @@
 	{
 		var requirements = ['DataContext', 'Models/JeopardyModels', 'Modules/ExceptionModule',
 							'Modules/ExtensionsModule', 'Modules/EventAggregatorModule',
-							'Modules/TimerModule'];
+							'Modules/TimerModule', '/socket.io/socket.io.js'];
 
 
 		// Support three module loading scenarios
@@ -64,7 +64,7 @@
 
 			factory.apply(root, mods);
 		}
-	})(this, function(JeopardyGameModuleExports, module, DataContext, Models, Exceptions, Extensions, EventAggregator, Timer)
+	})(this, function(JeopardyGameModuleExports, module, DataContext, Models, Exceptions, Extensions, EventAggregator, Timer, io, linq)
 	{
 		var JeopardyGameModule = typeof JeopardyGameModuleExports !== Types.Undefined ? JeopardyGameModuleExports : {},
 			moduleData = module.config().data;
@@ -91,10 +91,17 @@
 					timer = new Timer.StopWatch({
 						Duration: data.TimerDuration || 5
 					})
+					, socket
+					, defaultPacket = { Hash: undefined, Name: undefined }
+					, currentQuestion
 					, onTimerTickCallback
 					, onTimerFinishCallback
+					, errorCallback
+					, roundEndCallback
 					, timerChangedToken
-					, timerFinishedToken;
+					, timerFinishedToken
+					, endGameCallback
+					, getScoresCallback;
 								
 				/**
 				 *	@define {array}
@@ -112,20 +119,59 @@
 				/*	Start the Game
 				 *	Params Descriptions
 				 */
-				function StartGame(args, callback)
+				function StartGame(args, callback, onError, onRoundEnd)
 				{
 					args = args || {};
 					round = 0;
-					GetNextRound({
-						RequiredCategories: args.RequiredCategories
-						, callback: callback
-					})
+					errorCallback = onError;
+					roundEndCallback = onRoundEnd;
+					defaultPacket.Name = args.Name || (new Date()).toLocaleString();
+					
+
+					if(args.IsOnlineGame)
+					{
+						socket = io.connect('http://localhost:3000');
+						SetupSockets();
+						
+						socket.emit('NewGame', defaultPacket);
+						socket.on('GameCreated', function(data)
+						{
+							defaultPacket.Hash = data.Hash;
+							GetNextRound({
+								RequiredCategories: args.RequiredCategories
+								, callback: callback
+							});
+						});
+					}
+					else
+					{
+						GetNextRound({
+							RequiredCategories: args.RequiredCategories
+							, callback: callback
+						});
+					}
 				}
 				Object.defineProperty(self, 'StartGame', {
 					enumerable: false,
 					configurable: false,
 					writable: false,
 					value: StartGame
+				});
+
+				function EndGame(callback)
+				{
+					if(socket)
+					{
+						endGameCallback = callback;
+						socket.emit('EndGame', defaultPacket);
+					}
+					else callback();
+				}
+				Object.defineProperty(self, 'EndGame', {
+					enumerable: false,
+					configurable: false,
+					writable: false,
+					value: EndGame
 				});
 
 				/*	Get the next round
@@ -145,7 +191,7 @@
 								questions: category.Questions
 							}));
 						});
-
+						
 						args.callback && args.callback(categories);
 					});
 				}
@@ -161,17 +207,55 @@
 				 */
 				function QuestionSelected(question, OnTimerTick, OnTimerFinish)
 				{
+					currentQuestion = question;
 					question.HasBeenSelected(true);
 					onTimerTickCallback = OnTimerTick;
 					onTimerFinishCallback = OnTimerFinish;
-					SetupEvents();
-					timer.Start();
+					
+					socket.emit('QuestionSelected', defaultPacket);
 				}
 				Object.defineProperty(self, 'QuestionSelected', {
 					enumerable: false,
 					configurable: false,
 					writable: false,
 					value: QuestionSelected
+				});
+
+				/*	Description
+				 *	Params Descriptions
+				 */
+				function QuestionAnswered(correct, timeout)
+				{
+					if(currentQuestion == undefined)
+						return;
+
+					UnSubscribe();
+					timer.Stop();
+
+					socket.emit('QuestionAnswered', defaultPacket.Extend({ Correct: !!correct, Timeout: !!timeout, Score: currentQuestion.Value }));
+				}
+				Object.defineProperty(self, 'QuestionAnswered', {
+					enumerable: false,
+					configurable: false,
+					writable: false,
+					value: QuestionAnswered
+				});
+
+				function GetScores(callback)
+				{
+					if(socket)
+					{
+						getScoresCallback = callback;
+						socket.emit('GetScores', defaultPacket);
+					}
+					else
+						callback();
+				}
+				Object.defineProperty(self, 'GetScores', {
+					enumerable: false,
+					configurable: false,
+					writable: false,
+					value: GetScores
 				});
 
 				function SetupEvents()
@@ -188,6 +272,8 @@
 					{
 						if(onTimerFinishCallback)
 							onTimerFinishCallback();
+						
+						QuestionAnswered(false, true);
 					});
 				}
 
@@ -205,22 +291,83 @@
 					}
 				}
 
-				/*	Description
-				 *	Params Descriptions
-				 */
-				function QuestionAnswered(question, correct)
+				function SetupSockets()
 				{
-					UnSubscribe();
-					timer.Stop();
-					onTimerTickCallback = undefined;
-					onTimerFinishCallback = undefined;
+					socket.on('QuestionAnswered', function(data)
+					{
+						onTimerFinishCallback();
+						
+						currentQuestion = undefined;
+						onTimerTickCallback = undefined;
+						onTimerFinishCallback = undefined;
+
+						if(CheckRoundEnded())
+						{
+							roundEndCallback();
+						}
+					});
+
+					socket.on('QuestionSelected', function(data)
+					{
+						SetupEvents();
+						timer.Start();
+					});
+
+					socket.on('Error', function(data)
+					{
+						errorCallback(data);
+					});
+
+					socket.on('Connected', function(data)
+					{
+						eventor.GetEvent('UserConnected')
+							.Publish(data);
+					});
+
+					socket.on('Disconnected', function(data)
+					{
+						eventor.GetEvent('UserDisconnected')
+							.Publish(data);
+					});
+
+					socket.on('BuzzIn', function(data)
+					{
+						timer.Stop();
+						eventor.GetEvent('BuzzIn')
+							.Publish(data);
+					});
+
+					socket.on('GameClosed', function(data)
+					{
+						if(endGameCallback)
+						{
+							endGameCallback(data);
+						}
+					});
+
+					socket.on('GetScores', function(data)
+					{
+						if(getScoresCallback)
+							getScoresCallback(data);
+					})
 				}
-				Object.defineProperty(self, 'QuestionAnswered', {
-					enumerable: false,
-					configurable: false,
-					writable: false,
-					value: QuestionAnswered
-				});
+
+				function CheckRoundEnded()
+				{
+					var allComplete = true;
+					categories.forEach(function(category)
+					{
+						category.Questions().forEach(function(question)
+						{
+							if(!question.HasBeenSelected())
+							{
+								allComplete = false;
+								return false;
+							}
+						});
+					});
+					return allComplete;
+				}
 			}
 		
 			JeopardyGame.prototype.version = '2.0'

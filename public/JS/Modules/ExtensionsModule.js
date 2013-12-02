@@ -19,12 +19,12 @@
 		wind = root;
 		// Support three module loading scenarios
 		// Taken from Knockout.js library
-		if(typeof require === Types.Function && typeof exports === Types.Object && typeof model === Types.Object)
+		if(typeof require === Types.Function && typeof exports === Types.Object && typeof module === Types.Object)
 		{
 			// [1] CommonJS/Node.js
 			var target = module['exports'] || exports;
-			var shim = require('shim');
-			var sham = require('sham');
+			var shim = require('../libs/es5-shim.min');
+			var sham = require('../libs/es5-sham.min');
 			factory(root, target, shim, sham);
 		}
 		else if(typeof define === Types.Function && define['amd'])

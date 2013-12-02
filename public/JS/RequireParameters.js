@@ -11,7 +11,11 @@ var require = {
 		sham: 'libs/es5-sham.min'
 	},
 	deps: ['less'],
-	shim: { },
+	shim: {
+		'/socket.io/socket.io': {
+			exports: 'io'
+		}
+	},
 	map: {
 		'Scripts/Jeopardy': {
 			'ViewModels/JeopardyViewModel': 'ViewModels/JeopardyViewModelNew'

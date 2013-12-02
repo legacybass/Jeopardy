@@ -102,6 +102,23 @@
 				});
 
 				/**
+				 *	@define {string}
+				 */
+				var Question = ko.observable();
+				Object.defineProperty(self, 'Question',{
+					get: function()
+					{
+						return Question;
+					},
+					set: function(value)
+					{
+						Question(value);
+					},
+					enumerable: true,
+					configurable: false
+				});
+
+				/**
 				 *	@define {boolean}
 				 */
 				var isHidden = ko.observable(false);
@@ -121,33 +138,39 @@
 				/*	Show the answer on the screen
 				 *	@param {string} answer The answer to show
 				 */
-				function showAnswer(answer)
+				function showQuestion(question, answer)
 				{
+					if(typeof question === Types.String)
+						Question(question);	
+					else
+						Question('No question passed in.');
+
 					if(typeof answer === Types.String)
 						Answer(answer);	
 					else
 						Answer('No answer passed in.');
+					
 					isHidden(false);
 				}
-				Object.defineProperty(self, 'ShowAnswer', {
+				Object.defineProperty(self, 'ShowQuestion', {
 					enumerable: false,
 					configurable: false,
 					writable: false,
-					value: showAnswer
+					value: showQuestion
 				});
 
 				/*	Indicated the answer is hidden
 				 *	
 				 */
-				function HideAnswer()
+				function HideQuestion()
 				{
 					isHidden(true);
 				}
-				Object.defineProperty(self, 'HideAnswer', {
+				Object.defineProperty(self, 'HideQuestion', {
 					enumerable: false,
 					configurable: false,
 					writable: false,
-					value: HideAnswer
+					value: HideQuestion
 				});
 			}
 		

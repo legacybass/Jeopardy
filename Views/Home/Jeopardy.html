@@ -34,12 +34,26 @@
 			</div>
 		</div>
 
-		<div data-bind="css: { showAnswer: SelectedQuestion() != undefined }, visible: SelectedQuestion() != undefined, click: QuestionDone">
+		<div data-bind="css: { showAnswer: SelectedQuestion() != undefined }, visible: SelectedQuestion() != undefined" style="display: none;">
 			<div data-bind="with: SelectedQuestion">
 				<p data-bind="text: Question"></p>
 			</div>
-			<p>Timer: </p>
-			<div class="timer" data-bind="text: $root.Count, visible: $root.ShowCount"></div>
+			<div class="timerContainer">
+				<div class="timer">
+					<span>Timer: </span>
+					<div data-bind="text: $root.Count, visible: $root.ShowCount"></div>
+				</div>
+			</div>
+			<div class="controls" data-bind="with: $root.CurrentPlayer">
+				<div class="player">
+					<span>Player: </span>
+					<div data-bind="text: Username"></div>
+				</div>
+				<div class="buttons" data-bind="if: $root.OnlineGame">
+					<button type="button" data-bind="click: function() { $root.QuestionDone(true); }">Correct</button>
+					<button type="button" data-bind="click: function() { $root.QuestionDone(false); }">Wrong</button>
+				</div>
+			</div>
 		</div>
 		<div data-bind="visible: Categories().length <= 0" class="noQuestions">
 			No questions have been loaded for this game.

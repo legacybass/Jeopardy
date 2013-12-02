@@ -179,7 +179,7 @@
 				args.questions.forEach(function(question)
 				{
 					questions.push(new JeopardyQuestionModel({
-						question: question.Text,
+						question: question.Question,
 						answer: question.Answer,
 						value: question.Value,
 						category: name

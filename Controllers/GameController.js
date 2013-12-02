@@ -1,21 +1,6 @@
 var mongoose = require('mongoose')
-	, socketio = require('socket.io')
+	//, socketio = require('socket.io')
 	, Helpers = require('./ControllerHelpers');
-
-exports.Login = function (req, res)
-{
-
-}
-
-exports.NewGame = function (req, res)
-{
-
-}
-
-exports.BuzzIn = function (req, res)
-{
-
-}
 
 // Helper functions
 function GetQuestions(categoryID, callback)

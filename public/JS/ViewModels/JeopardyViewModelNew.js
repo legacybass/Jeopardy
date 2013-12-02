@@ -21,7 +21,7 @@
 	(function(root, factory)
 	{
 		var requirements = ['Modules/JeopardyGameModule', 'Models/JeopardyModels', 'knockout',
-							'Modules/ExceptionModule', 'Modules/ExtensionsModule'];
+							'Modules/ExceptionModule', 'Modules/EventAggregatorModule', 'Modules/ExtensionsModule'];
 
 
 		// Support three module loading scenarios
@@ -87,14 +87,33 @@
 					GameObj = new GameModule.JeopardyGame({
 						TimerDuration: data.TimerDuration || 5
 					}),
+					eventor = new Eventor.EventAggregator(),
 					categories = ko.observableArray(),
 					answerWindow,
-					settings;
+					settings,
+					tokens = {};
 				
 				Object.defineProperty(self, 'Categories', {
 					get: function()
 					{
 						return (loaded() ? categories : function() { return []; }) ;
+					},
+					enumerable: true,
+					configurable: false
+				});
+
+				/**
+				 *	@define {boolean}
+				 */
+				var onlineGame = ko.observable(data.IsOnlineGame);
+				Object.defineProperty(self, 'OnlineGame',{
+					get: function()
+					{
+						return onlineGame;
+					},
+					set: function(value)
+					{
+						onlineGame(value);
 					},
 					enumerable: true,
 					configurable: false
@@ -167,6 +186,13 @@
 					configurable: false
 				});
 
+				var currentPlayer = ko.observable();
+				Object.defineProperty(self, 'CurrentPlayer', {
+					get: function() { return currentPlayer; },
+					enumerable: true,
+					configurable: false
+				});
+
 				/*	Initialize the gameboard and perform any server side calls
 				 *	@param {Object} args holds data about starting the new game
 				 *		Structure:	{
@@ -176,14 +202,27 @@
 				function StartGame()
 				{
 					categories.removeAll();
+					Subscribe();
 
 					GameObj.StartGame({
 							RequiredCategories: data.Categories
+							, IsOnlineGame: data.IsOnlineGame
+							, Name: data.Name
 						},
 						/* OnLoaded */
 						function (categoryList)
 						{
 							categories(categoryList);
+						},
+						/* OnError */
+						function(errorMessage, errorData)
+						{
+							alert(errorMessage);
+						},
+						/* OnRoundEnd */
+						function()
+						{
+							GameObj.GetScores(ShowScores);
 						});
 
 					if(!answerWindow && false)
@@ -196,6 +235,37 @@
 					value: StartGame
 				});
 
+				function Subscribe()
+				{
+					tokens.BuzzIn = eventor.GetEvent('BuzzIn')
+						.Subscribe(function(userInfo)
+						{
+							console.log(userInfo.Username + " buzzed in.");
+							currentPlayer(userInfo);
+						});
+
+					tokens.UserConnected = eventor.GetEvent('UserConnected')
+						.Subscribe(function(userInfo)
+						{
+							console.log(userInfo.Username + " connected.");
+						});
+
+					tokens.UserDisconnected = eventor.GetEvent('UserDisconnected')
+						.Subscribe(function(userInfo)
+						{
+							console.warn(userInfo.Username + " disconnected.");
+						});
+				}
+
+				function UnSubscribe()
+				{
+					for(var key in tokens)
+					{
+						eventor.GetEvent(key).Unsubscribe(tokens[key]);
+					}
+					tokens = {};
+				}
+
 				/*	Show the question text, show the answer in the answer window, remove question from selection
 				 *	
 				 */
@@ -207,9 +277,11 @@
 					}
 
 					selectedQuestion(question);
+					count(data.TimerDuration || 5);
 					if(answerWindow)
-						answerWindow.viewModel.ShowAnswer(question.Answer);
+						answerWindow.viewModel.ShowQuestion(question.Question, question.Answer);
 					GameObj.QuestionSelected(question, OnTimerTick, OnTimerFinish);
+					showCount(true);
 				}
 				Object.defineProperty(self, 'QuestionSelected', {
 					enumerable: false,
@@ -218,10 +290,10 @@
 					value: QuestionSelected
 				});
 
-				function QuestionDone()
+				function QuestionDone(isCorrect)
 				{
-					selectedQuestion(undefined);
-					GameObj.QuestionAnswered(selectedQuestion(), true);
+					GameObj.QuestionAnswered(isCorrect);
+					currentPlayer(undefined);
 				}
 				Object.defineProperty(self, 'QuestionDone', {
 					enumerable: false,
@@ -237,8 +309,9 @@
 
 				function OnTimerFinish()
 				{
+					count(0);
 					showCount(false);
-					QuestionDone(selectedQuestion());
+					selectedQuestion(undefined);
 					if(answerWindow)
 						answerWindow.viewModel.HideAnswer();
 				}
@@ -246,15 +319,21 @@
 				/*	Description
 				 *	Params Descriptions
 				 */
-				function ShowScores()
+				function ShowScores(data)
 				{
-					
+					console.log(data);
 				}
 				Object.defineProperty(self, 'ShowScores', {
 					enumerable: false,
 					configurable: false,
 					writable: false,
 					value: ShowScores
+				});
+
+				var eventListener = window.addEventListener || window.attachEvent;
+				eventListener('unload', function()
+				{
+					GameObj.EndGame(ShowScores);
 				});
 			}
 		

@@ -8,7 +8,8 @@
 	"dependencies": {
 		"express": "3.2.5",
 		"mongoose": "*",
-		"socket.io": "*"
+		"socket.io": "*",
+		"linq": "*"
 	},
 	"author": "Daniel Beus"
 }

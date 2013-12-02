@@ -56,9 +56,9 @@
 	{
 		position: fixed;
 		top: 0;
-		left: 0;
-		width: 95%;
-		height: 95%;
+		left: 2%;
+		width: 90%;
+		height: 79%;
 		margin: 3%;
 		background: @backgroundColor;
 		z-index: 10;
@@ -156,6 +156,89 @@
 		-webkit-animation: showQuestionAnimation @animationTime linear;
 
 		.finalQuestionSize();
+	}
+
+	.timerContainer
+	{
+		.moneyCommon();
+		.screen();
+		.text(@white);
+
+		position: fixed;
+		top: 84%;
+		left: 5%;
+		z-index: 10%;
+		text-align: left;
+		width: 90%;
+		height: 6%;
+
+		.timer
+		{
+			font-size: .3em;
+			width: 50%;
+			float: left;
+
+			span
+			{
+				margin-left: 20px;
+				width: 40%;
+				float: left;
+			}
+
+			div
+			{
+				float: left;
+				width: 40%;
+			}
+		}
+	}
+
+	.controls
+	{
+		.moneyCommon();
+		.screen();
+		.text(@white);
+
+		position: fixed;
+		top: 92%;
+		left: 5%;
+		z-index: 10;
+		text-align: left;
+		width: 90%;
+		height: 6%;
+		font-size: 1em;
+
+		.player
+		{
+			width: 50%;
+			float: left;
+
+			span
+			{
+				margin-left: 20px;
+				width: 40%;
+				float: left;
+			}
+
+			div
+			{
+				float: left;
+				width: 40%;
+			}
+		}
+
+		.buttons
+		{
+			width: 50%;
+			float: left;
+
+			button
+			{
+				width: 30%;
+				float: left;
+				margin: 0% 10%;
+			}
+		}
 	}
 
 // Animations

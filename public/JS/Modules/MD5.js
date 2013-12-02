@@ -1,14 +1,10 @@
-/*		MD5 JavaScript Module
- *		Author: 
- *		Date: 
+/*		HelperFunctions JavaScript Module
+ *		Author: Daniel Beus
+ *		Date: 10/18/2012
  */
 
 (function()
 {
-	/**
-	 * Enumeration for comparing types.
-	 * @enum {string}
-	 */
 	var Types = {
 		Function: typeof function() {},
 		Object: typeof {},
@@ -20,64 +16,29 @@
 
 	(function(root, factory)
 	{
-		var requirements = [];
-
-
+		wind = root;
 		// Support three module loading scenarios
 		// Taken from Knockout.js library
-		if(typeof require === Types.Function && typeof exports === Types.Object && typeof model === Types.Object)
+		if(typeof require === Types.Function && typeof exports === Types.Object && typeof module === Types.Object)
 		{
 			// [1] CommonJS/Node.js
-			var mods = [module['exports'] || exports, require('module')];
-			
-			for(var key in requirements)
-			{
-				var data = requirements[key];
-				if(typeof data === Types.String)
-					mods.push(require(data));
-			}
-
-			factory.apply(root, mods);
+			var target = module['exports'] || exports;
+			factory(target);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			var reqs = ['exports', 'module'].concat(requirements);
-			define(reqs, factory);
+			define(['exports'], factory);
 		}
 		else
 		{
 			// [3] No module loader (plain <script> tag) - put directly in global namespace
-			var mods = [root['MD5'] = {}, root['module']];
-
-			for(var key in requirements)
-			{
-				var data = requirements[key];
-				if(typeof data === Types.String)
-				{
-					var parts = data.split('/');
-					mods.push(window[parts[parts.length - 1]]);
-				}
-			}
-
-			factory.apply(root, mods);
+			factory(root['MD5'] = {});
 		}
-	})(this, function(MD5Exports, module)
+	})(this, function(HelperFunctionsExports, shim, sham)
 	{
-		var MD5 = typeof MD5Exports !== Types.Undefined ? MD5Exports : {},
-			moduleData = module.config().data;
+		var HelperFunctions = typeof HelperFunctionsExports !== Types.Undefined ? HelperFunctionsExports : {};
 
-		// Start MD5 module code here
-		// Any publicly accessible methods should be attached to the "MD5" object created above
-		// Any private functions or variables can be placed anywhere
-
-		/**
-		 *
-		 *  MD5 (Message-Digest Algorithm)
-		 *  http://www.webtoolkit.info/
-		 *
-		 **/
-		 
 		var MD5 = function (string) {
 		 
 			function RotateLeft(lValue, iShiftBits) {
@@ -279,8 +240,8 @@
 			return temp.toLowerCase();
 		}
 
-		MD5.MD5 = MD5;
+		HelperFunctions.MD5 = MD5;
 
-		return MD5;
+		return HelperFunctions;
 	});
 })();

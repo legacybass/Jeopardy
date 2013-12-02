@@ -6,6 +6,7 @@
  // Imports
 @import "../CrossBrowser";
 @import "../Variables";
+@import "../Classes/Colors";
 
 
 // Variables
@@ -228,5 +229,43 @@ body *:not(#username)
 		margin-left: 15%;
 		margin-top: 15%;
 		cursor: pointer;
+	}
+}
+
+.ScoreContainer
+{
+	position: absolute;
+	left: 0;
+	top: 75%;
+	font-size: xx-large;
+	//color: hsl(193, 76%, 35%);
+	color: @backgroundColor;
+
+	.score
+	{
+		color: @textColor;
+		font-weight: bolder;
+	}
+}
+
+.player
+{
+	position: absolute;
+	left: 0;
+	top: 70%;
+	font-size: xx-large;
+	color: @backgroundColor;
+}
+
+.indicator
+{
+	color: @red;
+	font-size: large;
+	height: 40px;
+
+	&.Ready
+	{
+		color: @green;
+		font-size: x-large;
 	}
 }

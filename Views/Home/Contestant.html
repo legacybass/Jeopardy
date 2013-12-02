@@ -3,19 +3,38 @@
 <head>
 	<link rel="stylesheet/less" href="/public/Stylesheets/Views/Contestant.less" />
 	<script type="text/javascript" src="/public/JS/RequireParameters.js"></script>
-	<script type="text/javascript" data-main="Contestant" src="/public/JS/libs/require.min.js"></script>
+	<script type="text/javascript" data-main="Scripts/Contestant" src="/public/JS/libs/require.min.js"></script>
 </head>
 <body>
-	<div class="loggingIn" data-bind="visible: !Connected()">
+	<div data-bind="if: Error">
+		<div class="error" data-bind="text: ErrorMessage"></div>
+	</div>
+	<div class="loggingIn" data-bind="visible: Connecting">
 		Connecting to server...
 	</div>
-	<div id="contestantInfoContainer" data-bind="visible: Connected" style="display: none;">
+	<div id="contestantInfoContainer" data-bind="visible: !Connecting()" style="display: none;">
 		<div data-bind="visible: !LoggedIn()">
-			You are connected, but not yet logged in.  Please choose a username and click continue to play.
+			Please choose a username, enter the game name, and click continue to play.
 		</div>
-		<label for="username" data-bind="text: !LoggedIn() ? 'Enter your username: ' : 'Username: '"></label>
-		<input type="text" id="username" data-bind="enable: !LoggedIn(), value: userName" />
-		<button type="button" data-bind="click: ConnectUser, visible: !LoggedIn(), enable: !LoggedIn()">Continue</button>
+		<form data-bind="submit: ConnectUser">
+			<div>
+				<label for="username" data-bind="text: !LoggedIn() ? 'Enter your username: ' : 'Username: '"></label>
+				<input type="text" id="username" data-bind="enable: !LoggedIn(), value: UserName" />
+			</div>
+			<div>
+				<label for="gamename" data-bind="text: !LoggedIn() ? 'Enter the game name: ' : 'GameName: '"></label>
+				<input type="text" id="gamename" data-bind="enable: !LoggedIn(), value: GameName" />
+			</div>
+			<div>
+				<label for="wnumber" data-bind="text: !LoggedIn() ? 'Enter your Wnumber: ' : 'Wnumber: '"></label>
+				<input type="text" id="wnumber" data-bind="enable: !LoggedIn(), value: WNumber" />
+			</div>
+			<div>
+				<label for="host" data-bind="text: !LoggedIn() ? 'Enter the URL of the game: ' : 'Host URL: '"></label>
+				<input type="text" data-bind="enable: !LoggedIn(), value: HostURL" />
+			</div>
+			<button type="submit" data-bind="visible: !LoggedIn(), enable: !LoggedIn()">Continue</button>
+		</form>
 	</div>
 	<div id="buzzers" data-bind="visible: LoggedIn" style="display: none;">
 		<div id="colorSelect" data-bind="foreach: Colors, visible: true" style="display: none;">
@@ -24,10 +43,7 @@
 																	id: $data
 																},
 														 checked: $parent.SelectedColor">
-			<label data-bind="attr: {
-										'for': $data
-									},
-							  text: $data"></label>
+			<label data-bind="attr: { 'for': $data }, text: $data"></label>
 		</div>
 		<div id="buzzerSelect">
 			<input type="radio" name="buzzer" value="true" data-bind="checked: SquareBuzzer">
@@ -37,6 +53,7 @@
 				<label for="roundBuzzer">Round Buzzer</label>
 			</input>
 		</div>
+		<div class="indicator" data-bind="visible: LoggedIn, css: { Ready: CanAnswer }, text: CanAnswer() ? 'Buzz in!' : 'Don\'t buzz in yet.'"></div>
 		<div class="box" data-bind="visible: SquareBuzzer() == 'true', click: BuzzIn">
 			<a data-bind="attr: { 'class': SelectedColor() + ' button' }">Buzz In</a>
 		</div>
@@ -45,6 +62,10 @@
 			<div class="body"></div>
 			<div class="top"><p>Buzz In</p></div>
 		</div>
+	</div>
+	<div class="player" data-bind="text: GameMessage"></div>
+	<div id="score" data-bind="visible: LoggedIn" style="display:none;" class="ScoreContainer">
+		Your current score is: <span class="score" data-bind="text: Score"></span>
 	</div>
 </body>
 </html>

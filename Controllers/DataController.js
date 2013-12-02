@@ -223,13 +223,16 @@ function UpdateHelper(req, res, table, row)
 			{
 				for(var key in row)
 				{
+					if(row.ForeignKeys && row.ForeignKeys.indexOf(key) >= 0)
+						continue;
+
 					model[key] = row[key];
 				}
 
 				model.save(function(err)
 				{
 					if(err)
-						res.json({ Error: err });
+						res.json({ Error: err.message });
 					else
 						res.json({ Row: model });
 				});

@@ -27,14 +27,14 @@
 			var exceptions = module['Modules/ExceptionModule'];
 			var ko = module['knockout'];
 			var extensions = module['Modules/ExtensionsModule'];
-			var webSocket = module['Modules/WebSocketModule'];
+			var webSocket = module['/socket.io/socket.io.js'];
 
 			factory(target, exceptions, ko, webSocket);
 		}
 		else if(typeof define === Types.Function && define['amd'])
 		{
 			// [2] AMD anonymous module
-			define(['exports', 'Modules/ExceptionModule', 'knockout', 'Modules/WebSocketModule',
+			define(['exports', 'Modules/ExceptionModule', 'knockout', '/socket.io/socket.io.js',
 						'Modules/ExtensionsModule'], factory);
 		}
 		else
@@ -43,9 +43,9 @@
 			factory(window['ContestantViewModel'] = window['ContestantViewModel'] || {},
 					window['ExceptionModule'],
 					window['ko'],
-					window['WebSocketModule']);
+					window['Socket.io']);
 		}
-	})(function(ContestantViewModelExports, Exceptions, ko, Socket)
+	})(function(ContestantViewModelExports, Exceptions, ko, io)
 	{
 		var ContestantViewModel = typeof ContestantViewModelExports !== Types.Undefined ? ContestantViewModelExports : {};
 		
@@ -63,14 +63,6 @@
 				'blue',
 				'purple'
 			];
-		var MessageTypes = {
-				Disconnect: 0,
-				LogOn: 1,
-				BuzzIn: 2,
-				ClearBuzz: 3,
-				QuestionReady: 4,
-				NextQuestion: 5
-			}
 
 		function DisplayError(message)
 		{
@@ -78,92 +70,240 @@
 			alert(message);
 		}
 
-		ContestantViewModel.ContestantViewModel = function(args)
-		{
-			var self = this,
-				connected = ko.observable(false),
-				loggedIn = ko.observable(false),
-				webSocket,
-				userID;
-
-			if(!(webSocket = new Socket.Socket(
-				{
-					server: 'ws://www.legacybass.com:1337/',
-					ReceivedMessage: OnLoggedIn,
-					ConnectionOpen: OnConnectionOpen,
-					ConnectionError: OnConnectionError,
-					ConnectionClosed: OnConnectionClose
-				}))
-			  )
+		var ViewModel = (function(undefined) {
+			var ViewModel = function (data)
 			{
-				alert("Your browser doesn't support the required features.");
-				return;
-			}
-			
-			self.SelectedColor = ko.observable(colors[Math.floor(Math.random() * colors.length)]);
-			self.userName = ko.observable();
-			self.Colors = colors;
-			self.Connected = ko.computed(function()
-				{
-					return !!connected();
+				if(!(this instanceof ViewModel))
+					return new ViewModel(data);
+
+				data = data || {};
+
+				var self = this
+					, connecting = ko.observable(false)
+					, isLoggedIn = ko.observable(false)
+					, isLockedOut = false
+					, socket
+					, defaultPacket = { Hash: undefined, Name: undefined, Username: undefined, UserID: undefined, WNumber: undefined };
+
+				var selectedColor = ko.observable(colors[Math.floor(Math.random() * colors.length)]);
+				Object.defineProperty(self, 'SelectedColor', {
+					get: function() { return selectedColor; }
+					, set: function(value) { selectedColor(value); }
+					, configurable: false
+					, enumerable: true
 				});
-			self.LoggedIn = ko.computed(function()
-				{
-					return !!loggedIn();
+
+				var tempHost = window.location.origin || (window.location.protocol + "//" + window.location.host);
+				var hostURL = ko.observable(tempHost);
+				Object.defineProperty(self, 'HostURL', {
+					get: function() { return hostURL; }
+					, set: function(value) { hostURL(value); }
+					, configurable: false
+					, enumerable: true
 				});
-			self.SquareBuzzer = ko.observable('false');
-			self.HasAnsweredQuestion = ko.observable('false');
 
-			function OnConnectionOpen()
-			{
-				connected(true);
-				webSocket.Send({
-					
+				var userName = ko.observable();
+				Object.defineProperty(self, 'UserName', {
+					get: function() { return userName; }
+					, set: function(value) { userName(value); }
+					, configurable: false
+					, enumerable: true
 				});
-			}
 
-			function OnLoggedIn(data)
-			{
-				webSocket.ReceivedMessage = OnReceiveMessage;
-			}
+				var gameName = ko.observable();
+				Object.defineProperty(self, 'GameName', {
+					get: function() { return gameName; }
+					, set: function(value) { gameName(value); }
+					, configurable: false
+					, enumerable: true
+				});
 
-			function OnReceiveMessage(data)
-			{
-				console.log(data);
-			}
+				var wNumber = ko.observable();
+				Object.defineProperty(self, 'WNumber', {
+					get: function() { return wNumber; }
+					, set: function(value) { wNumber(value); }
+					, configurable: false
+					, enumerable: true
+				});
 
-			function OnConnectionError(data)
-			{
-				console.log(data);
-			}
+				var score = ko.observable(0);
+				Object.defineProperty(self, 'Score', {
+					get: function() { return score; },
+					enumerable: true,
+					configurable: false
+				});
 
-			function OnConnectionClose()
-			{
-				connected(false);
-				loggedIn(false);
-				userID = undefined;
-				self.userName(undefined);
-				self.HasAnsweredQuestion(false);
-			}
+				Object.defineProperty(self, 'Colors', {
+					get: function() { return colors; }
+					, configurable: false
+					, enumerable: true
+				});
+				
+				Object.defineProperty(self, 'Connecting', {
+					get: function() { return connecting; },
+					enumerable: false,
+					configurable: false
+				});
 
-			self.ConnectUser = function()
-			{
-				var username = self.userName(),
-					nameType = typeof username;
-				if(nameType !== Types.String || username.IsNullOrWhitespace)
+				Object.defineProperty(self, 'LoggedIn', {
+					get: function() { return isLoggedIn; },
+					configurable: false,
+					enumerable: false,
+				});
+				
+				var canAnswer = ko.observable(false);
+				Object.defineProperty(self, 'CanAnswer', {
+					get: function() { return canAnswer; }
+					, set: function(value) { canAnswer(value); }
+					, configurable: false
+					, enumerable: true
+				});
+
+				var message = ko.observable();
+				Object.defineProperty(self, 'GameMessage', {
+					get: function() { return message; }
+					, set: function(value) { message(value); }
+					, configurable: false
+					, enumerable: true
+				});
+
+				var error = ko.observable();
+				Object.defineProperty(self, 'Error', {
+					get: function() { return error; }
+					, set: function(value) { error(value); }
+					, configurable: false
+					, enumerable: true
+				});
+
+				var errorMessage = ko.observable();
+				Object.defineProperty(self, 'ErrorMessage', {
+					get: function() { return errorMessage; }
+					, set: function(value) { errorMessage(value); }
+					, configurable: false
+					, enumerable: true
+				});
+
+				var squareBuzzer = ko.observable('false');
+				Object.defineProperty(self, 'SquareBuzzer', {
+					get: function() { return squareBuzzer; }
+					, set: function() { squareBuzzer(value); }
+					, configurable: false
+					, enumerable: true
+				});
+
+				var hasAnsweredQuestion = ko.observable('false');
+				Object.defineProperty(self, 'HasAnsweredQuestion', {
+					get: function() { return hasAnsweredQuestion; }
+					, set: function() { hasAnsweredQuestion(value); }
+					, configurable: false
+					, enumerable: true
+				});
+
+				function ConnectUser()
 				{
-					DisplayError('Username cannot be empty.');
-					return;
+					if(hostURL() && userName() && gameName() && wNumber())
+					{
+						connecting(true);
+						socket = io.connect(hostURL());
+						SetupSockets();
+						defaultPacket.Username = userName();
+						defaultPacket.Name = gameName();
+						defaultPacket.WNumber = wNumber();
+						socket.emit('Login', defaultPacket);
+					}
+					else
+					{
+						error(true);
+						errorMessage("Must have a value for all fields.");
+					}
+				}
+				Object.defineProperty(self, "ConnectUser", {
+					enuemrable: false,
+					configurable: false,
+					writable: false,
+					value: ConnectUser
+				});
+
+				var token;
+				function BuzzIn()
+				{
+					socket.emit('BuzzIn', defaultPacket);
+				}
+				Object.defineProperty(self, "BuzzIn", {
+					enuemrable: false,
+					configurable: false,
+					writable: false,
+					value: BuzzIn
+				});
+
+				function SetupSockets()
+				{
+					socket.on("Connected", function(data)
+					{
+						connecting(false);
+						isLoggedIn(true);
+						defaultPacket.Hash = data.Hash;
+					});
+
+					socket.on("BuzzIn", function(data)
+					{
+						message(data.Username + " buzzed in first!");
+						alert(data.Username + " buzzed in first!");
+						canAnswer(false);
+					});
+
+					socket.on("QuestionSelected", function(data)
+					{
+						// Flash screen
+						canAnswer(true);
+						message("");
+					});
+
+					socket.on("QuestionAnswered", function(data)
+					{
+						if(data.Winner)
+						{
+							message(data.Winner + " got the points!");
+						}
+						canAnswer(false);
+					});
+
+					socket.on("ScoreUpdate", function(data)
+					{
+						score(data.Score);
+					});
+
+					socket.on('LockedOut', function(data)
+					{
+						isLockedOut = data.LockedOut;
+					});
+
+					socket.on("Error", function(data)
+					{
+						error(true);
+						errorMessage("Error occured during " + data.Response + ".  " + data.ErrorMessage);
+					});
+
+					socket.on('EndGame', function(data)
+					{
+						// Perform reset
+					});
 				}
 
-				webSocket.Send(username);
+				var eventListener = window.addEventListener || window.attachEvent;
+				eventListener('unload', function()
+				{
+					if(socket)
+					{
+						socket.emit('Disconnect', defaultPacket);
+					}
+				});
 			}
-
-			self.BuzzIn = function()
-			{
-				webSocket.Send(userID);
-			}
-		}
+			
+			ViewModel.prototype.version = '2.0';
+			return ViewModel;
+		})();
+		ContestantViewModel.ViewModel = ViewModel;
 
 		return ContestantViewModel;
 	});

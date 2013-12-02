@@ -86,7 +86,7 @@
 
 				function Start()
 				{
-					currentTime = count;
+					Stop();
 					isRunning = true;
 					timeoutToken = setTimeout(PassTime, 1000);
 					eventor.GetEvent("NotifyTimerStarted").Publish(currentTime);
