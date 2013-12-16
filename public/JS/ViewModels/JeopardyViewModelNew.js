@@ -208,25 +208,25 @@
 							RequiredCategories: data.Categories
 							, IsOnlineGame: data.IsOnlineGame
 							, Name: data.Name
-							, OnlineUrl: data.OnlineUrl ?? "http://localhost:3000"
+							, OnlineUrl: data.OnlineUrl || "http://localhost:3000"
 						},
 						/* OnLoaded */
-						function (categoryList)
+						function OnLoaded(categoryList)
 						{
 							categories(categoryList);
 						},
 						/* OnError */
-						function(errorMessage, errorData)
+						function OnError(errorMessage, errorData)
 						{
 							alert(errorMessage);
 						},
 						/* OnRoundEnd */
-						function()
+						function OnRoundEnd()
 						{
 							GameObj.GetScores(ShowScores);
 						});
 
-					if(!answerWindow && false)
+					if(!answerWindow)
 						answerWindow = window.open('AnswerWindow.html', null, 'height=400,width=400,toolbar=no,titlebar=no,menubar=no,location=no,directories=no');
 				}
 				Object.defineProperty(self, 'StartGame', {
