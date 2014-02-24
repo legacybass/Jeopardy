@@ -72,7 +72,7 @@ function BootApplication(app)
 
 	app.configure('production', function()
 	{
-		app.set('db-uri', 'mongodb://localhost/jeopardy');
+		app.set('db-uri', 'mongodb://jeopardy:T!k^BGFss5kD@ds053178.mongolab.com:53179/heroku_app19032439');
 		app.use(express.errorHandler({ dumpExceptions: false, showStack: false }));
 	});
 
