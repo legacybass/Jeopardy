@@ -1,5 +1,5 @@
 var fs = require('fs'),
-	extensions = require('../public/js/Modules/ExtensionsModule');
+	extensions = require('../public/JS/Modules/ExtensionsModule');
 
 module.exports = function(app)
 {
