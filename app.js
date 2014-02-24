@@ -11,7 +11,7 @@ var express = require('express')
 
 //var app = express();
 process.env.NODE_ENV = 'production';
-//process.env.PORT = '80';
+var debugmode = true;
 
 exports.boot = function(params)
 {
@@ -26,6 +26,7 @@ exports.boot = function(params)
 
 function RenderPage(path, options, fn)
 {
+	locals.DebugLog(path);
 	var key = path + ':string';
 	if(typeof options == 'function')
 	{
@@ -85,6 +86,14 @@ function BootApplication(app)
 	});
 
 	app.use(app.router);
+
+	app.locals.DebugLog = function (str)
+	{
+		if('development' == app.get('env') || debugmode)
+		{
+			console.log(str);
+		}
+	}
 }
 
 // Load the controllers into the routing domain
