@@ -18,6 +18,8 @@ module.exports = function(server)
 		socket.on('QuestionAnswered', function (data) { QuestionAnswered(socket, data || {}); });
 		socket.on('GetScores', function (data) { GetScores(socket, data || {}); });
 		socket.on('Disconnect', function (data) { Disconnect(socket, data || {}); });
+
+		socket.on('disconnect', function(data) { Disconnect(socket, data || {}); });
 	});
 }
 
@@ -40,26 +42,31 @@ function Login(socket, data)
 			EmitError(socket, 'Game not found.', 'Login');
 		else
 		{
-			var user = game.FindUserByUsername(username);
-			if(user === undefined)
+			var user = game.FindUserByUsername(username),
+				index = -1;
+			if(user === undefined || user === null)
 			{
-				var index = game.AddUser({
+				index = game.AddUser({
 					Username: username,
 					Socket: socket,
 					Score: 0,
 					Attempts: 0,
 					WNumber: data.WNumber
 				});
-				socket.set('Index', index, function()
-				{
-					socket.emit('Connected', { UserID: index, Hash: game.Hash });
-					game.Host.emit('Connected', { Username: username, WNumber: data.WNumber });
-				});
 			}
 			else
 			{
-				EmitError(socket, 'Username ' + username + ' already exists.', 'Login');
+				// Assume the user lost connection and reconnect them
+				index = game.GetUserId(user);
+				user.Socket = socket;
+				user.NumberOfConnections++;
 			}
+
+			socket.set('Index', index, function()
+			{
+				socket.emit('Connected', { UserID: index, Hash: game.Hash });
+				game.Host.emit('Connected', { Username: username, WNumber: data.WNumber });
+			});
 		}
 	}
 }
@@ -112,22 +119,32 @@ function Disconnect(socket, data)
 	var game = games[data.Hash];
 	if(!game)
 	{
-		EmitError(socket, 'Game not found.', 'Disconnet');
+		EmitError(socket, 'Game not found.', 'Disconnect');
 	}
 	else
 	{
-		socket.get('Index', function(err, index)
+		IsHost(socket, data, function(isHost)
 		{
-			if(err)
-				EmitError(socket, 'Error looking up index', 'Disconnect');
+			if(isHost)
+			{
+				EndGame(socket, data);
+			}
 			else
 			{
-				var user = game.Users[index];
-				game.RemoveUser(index);
-				if(user)
-					game.Host.emit('Disconnected', { Username: user.Useraname, WNumber: user.WNumber });
-				else
-					console.warn("Something bad happened!  Index: ", index);
+				socket.get('Index', function(err, index)
+				{
+					if(err)
+						EmitError(socket, 'Error looking up index', 'Disconnect');
+					else
+					{
+						var user = game.Users[index];
+						game.RemoveUser(index);
+						if(user)
+							game.Host.emit('Disconnected', { Username: user.Useraname, WNumber: user.WNumber });
+						else
+							console.warn("Something bad happened!  Index: ", index);
+					}
+				});
 			}
 		});
 	}
@@ -149,6 +166,7 @@ function NewGame(socket, data)
 				  Host: socket
 				, Hash: hash
 				, IsLocked: true
+				, Name: name
 			});
 			socket.emit('GameCreated', { Error: false, Hash: hash });
 		});
@@ -247,7 +265,7 @@ function GetScores(socket, data)
 			else
 			{
 				var rtUsers = GetUserScores(game.Users);
-				socket.emit('GetScores', { Error: false, Users: rtUsers });
+				socket.emit('GetScores', { Error: false, Users: rtUsers, Name: game.Name });
 			}
 		}
 		else
@@ -273,7 +291,7 @@ function EndGame(socket, data)
 				Broadcast(users, 'EndGame', {});
 				delete games[data.Hash];
 				var rtUsers = GetUserScores(users);
-				socket.emit('GameClosed', { Error: false, Users: rtUsers });
+				socket.emit('GameClosed', { Error: false, Name: game.Name, Users: rtUsers });
 				
 				// Save user data into database
 			}
@@ -293,7 +311,8 @@ function GetUserScores(users)
 	var rtUsers = [];
 	users.forEach(function(user)
 	{
-		rtUsers.push({ Username: user.Username, Score: user.Score, Attempts: user.Attempts, WNumber: user.WNumber });
+		rtUsers.push({ Username: user.Username, Score: user.Score, Attempts: user.Attempts,
+			WNumber: user.WNumber, Connections: user.NumberOfConnections });
 	});
 	return rtUsers;
 }
@@ -310,6 +329,11 @@ function ResetForQuestion(game)
 {
 	game.IsLocked = true;
 	game.LastUser = undefined;
+
+	game.Users.forEach(function(user)
+	{
+		user.Socket.emit('ScoreUpdate', { Score: user.Score });
+	});
 }
 
 function IsHost(socket, data, callback)

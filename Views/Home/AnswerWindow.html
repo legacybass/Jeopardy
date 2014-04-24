@@ -15,5 +15,8 @@
 		<p>This window will contain the answer to the selected question.  Please hide it from the players' view.</p>
 	</div>
 	<div class="answer">Answer: <span class="answerText" data-bind="text: Answer, css: { Hidden: IsHidden }"></span></div>
+	<div class="console">
+		<span name="console" id="console" data-bind="html: Console.Message"></span>
+	</div>
 </body>
 </html>

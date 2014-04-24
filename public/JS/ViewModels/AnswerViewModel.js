@@ -71,6 +71,72 @@
 		// Any publicly accessible methods should be attached to the "AnswerWindowViewModel" object created above
 		// Any private functions or variables can be placed anywhere
 
+		var Console = (function(undefined){
+			/**
+			 * Console constructor.
+			 * @constructor
+			 */
+			var Console = function Console(data)
+			{
+				if(!(this instanceof Console))
+					return new Console(data);
+				
+				data = data || {};
+				
+				var self = this;
+
+				/**
+				 *	@define {string}
+				 */
+				var message = ko.observable('');
+				Object.defineProperty(self, 'Message',{
+					get: function()
+					{
+						return message;
+					},
+					set: function(value)
+					{
+						message(value);
+					},
+					enumerable: true,
+					configurable: false
+				});
+				
+				/*	Warn of a problem
+				 *	msg The message
+				 */
+				function Warn(msg)
+				{
+					message(message() + '<strong style="color: red">' + msg + "</strong><br />");
+				}
+				Object.defineProperty(self, 'Warn', {
+					enumerable: false,
+					configurable: false,
+					writable: false,
+					value: Warn
+				});
+
+				/*	Log
+				 *	Params Descriptions
+				 */
+				function Log(msg)
+				{
+					message(message() + msg + '<br />');
+				}
+				Object.defineProperty(self, 'Log', {
+					enumerable: false,
+					configurable: false,
+					writable: false,
+					value: Log
+				});
+			}
+		
+			Console.prototype.version = '1.0'
+		
+			// Return Constructor
+			return Console;
+		})();
+
 		var ViewModel = (function(undefined){
 			/**
 			 * ViewModel constructor.
@@ -83,6 +149,19 @@
 				
 				var self = this;
 				data = data || {};
+
+				/**
+				 *	@define {object}
+				 */
+				var console = new Console();
+				Object.defineProperty(self, 'Console',{
+					get: function()
+					{
+						return console;
+					},
+					enumerable: true,
+					configurable: false
+				});
 				
 				/**
 				 *	@define {string}
@@ -172,6 +251,8 @@
 					writable: false,
 					value: HideQuestion
 				});
+
+
 			}
 		
 			ViewModel.prototype.version = '1.0'

@@ -10,7 +10,7 @@ var express = require('express')
 
 
 //var app = express();
-process.env.NODE_ENV = 'production';
+//process.env.NODE_ENV = 'production';
 var debugmode = true;
 
 exports.boot = function(params)
@@ -87,12 +87,21 @@ function BootApplication(app)
 
 	app.use(app.router);
 
-	app.locals.DebugLog = function (str)
+	global.locals = { };
+
+	if(debugmode || 'production' != app.get('env'))
 	{
-		if('development' == app.get('env') || debugmode)
+		global.locals.DebugLog = function (str)
 		{
+			if(arguments.caller)
+				str = arguments.caller + " says: " + str;
+
 			console.log(str);
 		}
+	}
+	else
+	{
+		global.locals.DebugLog = function() { };
 	}
 }
 
