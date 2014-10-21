@@ -21,7 +21,8 @@
 	(function(root, factory)
 	{
 		var requirements = ['Modules/JeopardyGameModule', 'Models/JeopardyModels', 'knockout',
-							'Modules/ExceptionModule', 'Modules/EventAggregatorModule', 'Modules/ExtensionsModule'];
+							'Modules/ExceptionModule', 'Modules/EventAggregatorModule', 'Modules/ExtensionsModule',
+							'highcharts'];
 
 
 		// Support three module loading scenarios
@@ -63,7 +64,8 @@
 
 			factory.apply(root, mods);
 		}
-	})(this, function(JeopardyViewModelExports, module, GameModule, Models, ko, Exceptions, Eventor, Extensions)
+	})(this, function(JeopardyViewModelExports, module, GameModule, Models, ko, Exceptions,
+						Eventor, Extensions, HighCharts)
 	{
 		var JeopardyViewModel = typeof JeopardyViewModelExports !== Types.Undefined ? JeopardyViewModelExports : {},
 			moduleData = module.config().data;
@@ -91,7 +93,9 @@
 					categories = ko.observableArray(),
 					answerWindow,
 					settings,
-					tokens = {};
+					tokens = {},
+					chartElement = data.Chart,
+					tableElement = data.Table;
 				
 				Object.defineProperty(self, 'Categories', {
 					get: function()
@@ -193,6 +197,40 @@
 					configurable: false
 				});
 
+				/**
+				 *	@define {boolean}
+				 */
+				var gameEnded = ko.observable(false);
+				Object.defineProperty(self, 'GameEnded',{
+					get: function()
+					{
+						return gameEnded;
+					},
+					set: function(value)
+					{
+						gameEnded(value);
+					},
+					enumerable: true,
+					configurable: false
+				});
+
+				/**
+				 *	@define {array}
+				 */
+				var players = ko.observableArray();
+				Object.defineProperty(self, 'Players',{
+					get: function()
+					{
+						return players;
+					},
+					set: function(value)
+					{
+						players(value);
+					},
+					enumerable: true,
+					configurable: false
+				});
+
 				/*	Initialize the gameboard and perform any server side calls
 				 *	@param {Object} args holds data about starting the new game
 				 *		Structure:	{
@@ -225,9 +263,9 @@
 						{
 							GameObj.GetScores(ShowScores);
 						});
-
-					if(!answerWindow && false)
-						answerWindow = window.open('AnswerWindow.html', null, 'height=400,width=400,toolbar=no,titlebar=no,menubar=no,location=no,directories=no');
+					
+					if(!answerWindow)
+						answerWindow = window.open('AnswerWindow.html', null, 'height=600,width=625,toolbar=no,titlebar=no,menubar=no,location=no,directories=no');
 				}
 				Object.defineProperty(self, 'StartGame', {
 					enumerable: false,
@@ -241,20 +279,20 @@
 					tokens.BuzzIn = eventor.GetEvent('BuzzIn')
 						.Subscribe(function(userInfo)
 						{
-							console.log(userInfo.Username + " buzzed in.");
+							LogToConsole(userInfo.Username + " buzzed in.");
 							currentPlayer(userInfo);
 						});
 
 					tokens.UserConnected = eventor.GetEvent('UserConnected')
 						.Subscribe(function(userInfo)
 						{
-							console.log(userInfo.Username + " connected.");
+							LogToConsole(userInfo.Username + " connected.");
 						});
 
 					tokens.UserDisconnected = eventor.GetEvent('UserDisconnected')
 						.Subscribe(function(userInfo)
 						{
-							console.warn(userInfo.Username + " disconnected.");
+							LogToConsole(userInfo.Username + " disconnected.", "Warn");
 						});
 				}
 
@@ -314,7 +352,7 @@
 					showCount(false);
 					selectedQuestion(undefined);
 					if(answerWindow)
-						answerWindow.viewModel.HideAnswer();
+						answerWindow.viewModel.HideQuestion();
 				}
 
 				/*	Description
@@ -322,7 +360,37 @@
 				 */
 				function ShowScores(data)
 				{
-					console.log(data);
+					players.removeAll();
+					data.Users.forEach(function(item)
+						{
+							players.push(item);
+						});
+					
+					var chart = new Highcharts.Chart({
+						data: {
+							table: tableElement
+						},
+						chart: {
+							renderTo: chartElement,
+							type: 'column'
+						},
+						title: {
+							text: "Results for " + data.Name
+						},
+						yAxis: {
+							title: {
+								text: 'Data'
+							}
+						},
+						tooltip: {
+							formatter: function() {
+								return '<strong>' + this.series.name + '<strong><br />' +
+								this.point.y + ' ' + this.point.name.toLowerCase();
+							}
+						}
+					});
+
+					gameEnded(true);
 				}
 				Object.defineProperty(self, 'ShowScores', {
 					enumerable: false,
@@ -330,6 +398,20 @@
 					writable: false,
 					value: ShowScores
 				});
+
+				function LogToConsole(str, category)
+				{
+					if(category == "Warn")
+					{
+						console.warn(str);
+						answerWindow.viewModel.Console.Warn(str);
+					}
+					else
+					{
+						console.log(str);
+						answerWindow.viewModel.Console.Log(str);
+					}
+				}
 
 				var eventListener = window.addEventListener || window.attachEvent;
 				eventListener('unload', function()

@@ -20,6 +20,8 @@ require(['ViewModels/JeopardyViewModelNew', 'knockout', 'libs/purl', 'domReady']
 		, TimerDuration: timer
 		, IsOnlineGame: onlineGame === 'on'
 		, Name: gameName
+		, Chart: 'chart'
+		, Table: 'chartData'
 	});
 
 	/* #DEBUG */ if(typeof debug != typeof undefined) window['viewmodel'] = jeopardy;

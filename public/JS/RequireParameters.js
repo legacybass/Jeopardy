@@ -8,12 +8,20 @@ var require = {
 		domReady: 'libs/domReady',
 		less: 'libs/less-1.3.0.min',
 		shim: 'libs/es5-shim.min',
-		sham: 'libs/es5-sham.min'
+		sham: 'libs/es5-sham.min',
+		highcharts: 'libs/highcharts-custom',
+		linq: 'libs/linq'
 	},
 	deps: ['less'],
 	shim: {
 		'/socket.io/socket.io': {
 			exports: 'io'
+		},
+		linq: {
+			exports: 'Enumerable'
+		},
+		highcharts: {
+			exports: 'highcharts'
 		}
 	},
 	map: {
@@ -21,7 +29,6 @@ var require = {
 			'ViewModels/JeopardyViewModel': 'ViewModels/JeopardyViewModelNew'
 		},
 		'ViewModels/JeopardyViewModel': {
-			//'DataContext': 'DataContexts/JeopardyDataContext'
 			'DataContext': 'DataContexts/JeopardyWebDataContext',
 			'Modules/JeopardyGameModule': 'Modules/JeopardyGameModuleNew'
 		},
@@ -30,14 +37,12 @@ var require = {
 			'Modules/JeopardyGameModule': 'Modules/JeopardyGameModuleNew'
 		},
 		'ViewModels/DataManagementViewModel': {
-			//'DataContext': 'DataContexts/DataManagementDataContext'
 			'DataContext': 'DataContexts/DataManagementWebDataContext'
 		},
 		'Modules/JeopardyGameModule': {
 			'DataContext': 'DataContexts/JeopardyDataContext'
 		},
 		'Modules/JeopardyGameModuleNew': {
-			//'DataContext': 'DataContexts/JeopardyDataContext'
 			'DataContext': 'DataContexts/JeopardyWebDataContext'
 		}
 	}

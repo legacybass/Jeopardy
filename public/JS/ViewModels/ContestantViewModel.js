@@ -284,9 +284,24 @@
 						errorMessage("Error occured during " + data.Response + ".  " + data.ErrorMessage);
 					});
 
+					function Reset()
+					{
+						canAnswer(false);
+						isLoggedIn(false);
+						hasAnsweredQuestion('false');
+					}
+
 					socket.on('EndGame', function(data)
 					{
 						// Perform reset
+						Reset();
+					});
+
+					socket.on('disconnect', function()
+					{
+						Reset();
+						error(true);
+						errorMessage("You have disconnected from the game. Please try to connect again.");
 					});
 				}
 

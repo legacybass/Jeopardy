@@ -184,6 +184,23 @@
 					value: false
 				});
 
+				/**
+				 *	@define {number}
+				 */
+				var numberOfConnections = 1;
+				Object.defineProperty(self, 'NumberOfConnections', {
+					get: function()
+					{
+						return numberOfConnections;
+					},
+					set: function(value)
+					{
+						numberOfConnections = value;
+					},
+					enumerable: true,
+					configurable: false
+				});
+
 				function LockOut()
 				{
 					isLockedOut = true;
@@ -242,6 +259,23 @@
 					},
 					enumerable: true,
 					configurable: true
+				});
+
+				/**
+				 *	@define {string}
+				 */
+				var name = data.Name;
+				Object.defineProperty(self, 'Name',{
+					get: function()
+					{
+						return name;
+					},
+					set: function(value)
+					{
+						name = value;
+					},
+					enumerable: true,
+					configurable: false
 				});
 
 				/**
@@ -331,14 +365,14 @@
 					if(!username)
 						return undefined;
 
-					var user = linq.From(users)
-								.Where(function(x) { 
+					var user = linq.from(users)
+								.where(function(x) { 
 									if(!x.Username)
 										return false;
 
 									return x.Username.toLowerCase() === username.toLowerCase();
 								})
-								.SingleOrDefault(undefined);
+								.singleOrDefault(undefined);
 					return user;
 				}
 				Object.defineProperty(self, 'FindUserByUsername', {
@@ -357,6 +391,19 @@
 					configurable: false,
 					writable: false,
 					value: FindUserByID
+				});
+
+				/*	Find a given user's id
+				 */
+				function GetUserId(user)
+				{
+					return users.indexOf(user);
+				}
+				Object.defineProperty(self, 'GetUserId', {
+					enumerable: false,
+					configurable: false,
+					writable: false,
+					value: GetUserId
 				});
 			}
 		

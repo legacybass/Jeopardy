@@ -349,7 +349,12 @@
 					{
 						if(getScoresCallback)
 							getScoresCallback(data);
-					})
+					});
+
+					socket.on('disconnect', function()
+					{
+						alert('The game has disconnected!');
+					});
 				}
 
 				function CheckRoundEnded()

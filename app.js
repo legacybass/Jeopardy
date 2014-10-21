@@ -8,10 +8,8 @@ var express = require('express')
 	, mongoose = require('mongoose')
 	, fs = require('fs');
 
-
-//var app = express();
-process.env.NODE_ENV = 'production';
-// var debugmode = true;
+//process.env.NODE_ENV = 'production';
+var debugmode = true;
 
 exports.boot = function(params)
 {
@@ -98,6 +96,22 @@ function BootApplication(app)
 	});
 
 	app.use(app.router);
+	global.locals = { };
+
+	if(debugmode || 'production' != app.get('env'))
+	{
+		global.locals.DebugLog = function (str)
+		{
+			if(arguments.caller)
+				str = arguments.caller + " says: " + str;
+
+			console.log(str);
+		}
+	}
+	else
+	{
+		global.locals.DebugLog = function() { };
+	}
 }
 
 // Load the controllers into the routing domain
