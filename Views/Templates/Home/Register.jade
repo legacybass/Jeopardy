@@ -1,0 +1,25 @@
+div#Register
+	div.text-center.lead Please enter your information
+	ol.breadcrumb
+		li
+			a(href="#/") Home
+		li.active Register
+	form.form(role="form", action="#/Home/Register", method="post", data-bind!="submit: Submit")
+		input#valid(type="hidden", name="valid", data-bind!="value: Valid")
+		div.form-group
+			label(for="username") Username
+			input#username.form-control(type="text", name="username", required="required", placeholder="At least 4 alpha-numeric characters, starting with a letter",
+					pattern="^[a-zA-Z][\\w ]{3,}$", data-bind!="textInput: Username")
+		div.form-group
+			label(for="password") Password
+			input#password.form-control(type="password", name="password", required="required", placeholder="At least 4 alpha-numeric characters",
+					pattern="^\\w{4,}$", data-bind!="textInput: Password")
+		div.form-group
+			label(for="confirm") Confirm Password
+			input#confirm.form-control(type="password", name="confirm", required="required", placeholder="At least 4 alpha-numeric characters",
+					pattern="^\\w{4,}$", data-bind!="textInput: Confirm")
+		div.row
+			span.col-sm-1
+			button.btn.btn-primary.col-sm-4(type="submit") Submit
+			span.col-sm-2
+			a.btn.btn-info.col-sm-4(href="#/") Cancel

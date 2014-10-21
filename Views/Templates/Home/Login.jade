@@ -1,0 +1,23 @@
+div#Login
+	h1.title.text-center
+		span.title-text Jeopardy!
+		span.gradient &nbsp;
+	ol.breadcrumb
+		li
+			a(href="#/") Home
+		li.active Login
+	div.well
+		div.text-center.lead Please login to continue
+		form.form.form-horizontal(role="form", action="#/Home/Login", method="post")
+			div.form-group
+				label.control-label.col-sm-2(for="username") Username:
+				div.col-sm-10
+					input#username.form-control(type="text", name="username", required="required", placeholder="Username", pattern="[a-zA-Z][\\w ]{3,}")
+			div.form-group
+				label.control-label.col-sm-2(for="password") Password:
+				div.col-sm-10
+					input#password.form-control(type="password", name="password", required="required", placeholder="Password")
+			div.form-group
+				div.col-sm-offset-2.col-sm-10
+					button.btn.btn-primary.col-sm-6(type="submit") Login
+					a.btn.btn-info.col-sm-6(href="#/") Cancel

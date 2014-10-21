@@ -1,0 +1,21 @@
+div#Game
+	h1.title.text-center
+		span.title-text Jeopardy!
+		span.gradient &nbsp;
+	ol.breadcrumb
+		li
+			a(href="#/") Home
+		li
+			a(href="#/Game/Setup") Setup
+		li.active Play
+	div(data-bind!="if: Categories().length <= 0")
+		h2.text-center No questions are available for this game.
+
+	div.gameboard(data-bind!="ifnot: Categories().length <= 0")
+		div.categories.row(data-bind!="foreach: Categories")
+			div.screen.categoryHeader.col-xs-2
+				p.text-uppercase(data-bind!="text: Name")
+		div.questions.row(data-bind!="foreach: Categories")
+			div.col-xs-2.column(data-bind!="foreach: Questions")
+				div.screen.question(data-bind!="click: $root.SelectQuestion")
+					p.money(data-bind!="text: '$' + Value, attr: { title: '$' + Value }")

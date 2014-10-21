@@ -1,0 +1,36 @@
+div#Setup
+	h1.title.text-center
+		span.title-text Jeopardy!
+		span.gradient &nbsp;
+	ol.breadcrumb
+		li
+			a(href="#/") Home
+		li.active Setup
+	div#options
+		form.form.form-horizontal.well(data-bind!="submit: SetupGame", action="#/Game/Setup", method="POST", role="form")
+			div.form-group
+				div.col-sm-offset-2.col-sm-10
+					div.checkbox
+						label
+							input(type="checkbox", name="OnlineGame", data-bind!="checked: OnlineGame")
+							| Online Game
+			div.form-group(data-bind!="css: { 'has-error has-feedback': !GameNameValid() }")
+				label.control-label.col-sm-2(for="gamename") Game Name:
+				div.col-sm-10
+					input#gamename.form-control(type="text", name="GameName", required="required", pattern="^[a-zA-Z][a-zA-Z0-9]{2,}$", placeholder="Jeopardy Game", data-bind!="textInput: GameName")
+					span(data-bind!="css: { 'glyphicon glyphicon-remove form-control-feedback': !GameNameValid() }")
+			div.form-group
+				div.col-sm-offset-2.col-sm-10
+					div.checkbox
+						label
+							input(type="checkbox", name="HasRequired", data-bind!="checked: HasRequired")
+							| Has Required Categories
+			div.form-group(data-bind!="if: HasRequired")
+				label.control-label.col-sm-2(for="requiredcategories") Select Required Categories:
+				div.col-sm-10
+					select.form-control#requiredcategories(name="ChosenCategories", data-bind!="options: Categories, selectedOptions: ChosenCategories", size="5", multiple="true")
+			div.form-group
+				div.col-sm-offset-2.col-sm-10
+					button.btn.btn-primary.btn-block(type="submit", data-bind!="enable: GameNameValid") Start Game
+
+		

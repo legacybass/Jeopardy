@@ -1,0 +1,88 @@
+div#Manage
+	h2.title.text-center Data Management
+	ol.breadcrumb
+		li
+			a(href="#/") Home
+		li.active Data Management
+	div.row.manageView
+		div.panel.panel-default.col-xs-4
+			div.panel-heading
+				div.panel-title Your Categories
+			div.panel-body(data-bind!="foreach: Categories")
+				div.dropdown.panel
+					div
+						a.clickable.col-xs-11(data-bind!="text: Name, click: function(category) { $root.SelectCategory(category); }")
+						span.category.dropdown-toggle(data-toggle="dropdown")
+							span.caret.clickable
+						ul.dropdown-menu(role="menu", data-bind!="attr: { 'aria-labelledby': 'dropdownMenu' + $index() }")
+							li(role="presentation")
+								a.clickable(role="menuitem", tabindex="-1", title="Edit", data-bind!="click: function(c) { $root.EditCategory(c); }")
+									span.glyphicon.glyphicon-pencil
+									|  Edit
+								a.clickable(role="menuitem", tabindex="-1", title="Delete", data-bind!="click: function(c) { $root.DeleteCategory(c); }",
+										data-toggle!="popover", data-content="Are you sure you want to delete this category?<br /><button type=\"button\", class=\"btn btn-default\">Delete</button>")
+									span.glyphicon.glyphicon-remove
+									|  Delete
+		div.panel.panel-default.col-xs-8
+			div.panel-heading(
+					data-bind!="text: !!SelectedCategory() ? 'Questions for ' + SelectedCategory().Name() : 'No Category Selected'"
+				)
+			div.panel-body.table-responsive
+				table.table.table-striped.table-hover.table-condensed
+					thead
+						tr
+							td #
+							td Value
+							td Question
+							td Answer
+							td
+							td
+					tbody(data-bind!="foreach: !!SelectedCategory() ? SelectedCategory().Questions : []")
+						tr
+							td(data-bind!="text: $index() + 1")
+							td(data-bind!="text: Value")
+							td(data-bind!="text: Question")
+							td(data-bind!="text: Answer")
+							td
+								a.clickable(data-bind!="click: function(q) { $root.EditQuestion(q); }", title="Edit")
+									span.glyphicon.glyphicon-pencil
+							td
+								a.clickable(data-bind!="click: function(q) { $root.DeleteQuestion(q); }", title="Delete")
+									span.glyphicon.glyphicon-remove
+	div.row
+		div.panel.panel-default.col-xs-4
+			div.panel-heading(
+					data-bind!="text: CategoryEditting() ? 'Edit Category' : 'Add Category', css: { 'edit': $root.CategoryEditting }") Add Category
+			div.panel-body
+					form.form(data-bind="submit: $root.AddCategory, with: NewCategory", action="#", method="post")
+						div.form-group
+							label(for="categoryname") New Category Name
+							input#categoryname.form-control(type="text", placeholder="New Category Name", data-bind!="textInput: Name")
+						button.btn.btn-default(type="submit",
+								data-bind!="text: $root.CategoryEditting() ? 'Save' : 'Add', css: { 'btn-danger': $root.CategoryEditting }") Add
+						button.btn.btn-info(type="button", data-bind!="click: function() { $root.ClearEditCategory(); }, visible: $root.CategoryEditting") Cancel
+		div.panel.panel-default.col-xs-8
+				div.panel-heading(
+						data-bind="text: $root.QuestionEditting() ? 'Edit Question' : 'Add Question', css: { 'edit': $root.QuestionEditting }") Add Question
+				div.panel-body
+					form.form.form-horizontal(data-bind="submit: $root.AddQuestion, with: NewQuestion", action="#", method="post")
+						div.form-group
+							label.form-label.col-sm-4(for="questionvalue") New Question Value
+							div.col-xs-8
+								input#questionvalue.form-control(type="number", placeholder="New Value",
+										data-bind!="textInput: Value, enable: !!$root.SelectedCategory()")
+						div.form-group
+							label.form-label.col-sm-4(for="questionquestion") New Question Question
+							div.col-xs-8
+								input#questionquestion.form-control(type="text", placeholder="New Question",
+										data-bind!="textInput: Question, enable: !!$root.SelectedCategory()")
+						div.form-group
+							label.form-label.col-sm-4(for="questionanswer") New Question Answer
+							div.col-xs-8
+								input#questionanswer.form-control(type="text", placeholder="New Answer",
+										data-bind!="textInput: Answer, enable: !!$root.SelectedCategory()")
+						div.form-group
+							div.col-sm-offset-4.col-sm-8.col-xs-12
+								button.btn.btn-default(type="submit",
+										data-bind!="enable: !!$root.SelectedCategory(), css: { 'btn-danger': $root.QuestionEditting }, text: $root.QuestionEditting() ? 'Save' : 'Add' ") Add
+								button.btn.btn-info(type="button", data-bind!="click: function() { $root.ClearEditQuestion(); }, visible: $root.QuestionEditting") Cancel

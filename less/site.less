@@ -1,0 +1,35 @@
+@import 'toastr';
+@import 'bootstrap/variables';
+
+@import 'fonts';
+@import 'Jeopardy/screen';
+
+.title {
+	font-family: Jeopardy;
+	font-size: 100px;
+}
+
+.clickable {
+	cursor: pointer;
+}
+
+.manageView {
+	height: 600px;
+
+	 > .panel {
+	 	height: 100%;
+	 	margin-bottom: 0px;
+	 }
+
+	 & + .row {
+	 	height: 270px;
+
+	 	& > .panel {
+	 		height: 100%;
+	 	}
+	 }
+}
+
+.edit {
+	background-color: @brand-danger !important;
+}

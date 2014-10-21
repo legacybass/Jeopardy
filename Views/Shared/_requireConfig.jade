@@ -1,0 +1,29 @@
+script(type="text/javascript").
+	var require = {
+		baseUrl: '/public/js',
+		paths: {
+			Views: '/Views',
+
+			knockout: 'libs/knockout-3.2.0',
+			'knockout.mapping': 'libs/knockout.mapping-latest',
+			text: 'libs/text',
+			jquery: 'libs/jquery-2.1.1.min',
+			sammy: 'libs/sammy'
+		},
+		deps: [ 'libs/traceur-runtime' ],
+		shim: {
+			'libs/porter': {
+				exports: 'Porter'
+			},
+			'libs/toastr.min': {
+				exports: 'toastr',
+				deps: [ 'jquery' ]
+			},
+			'libs/promise': {
+				exports: 'Promise'
+			}
+		},
+		bundles: {
+			'controllers.min': ['HomeController', 'GameController', 'DataController', 'ContestantController']
+		}
+	};

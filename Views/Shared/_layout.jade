@@ -1,0 +1,17 @@
+doctype html
+html
+	head
+		title(data-bind="text: Title") Jeopardy
+		link(type="text/css", rel="stylesheet", href="/public/css/bootstrap.css")
+		link(type="text/css", rel="stylesheet", href="/public/css/site.css")
+		block styles
+		block head
+	body
+		header
+			block header
+		div.container
+			block content
+		footer
+			include _footer
+			block footer
+		block scripts

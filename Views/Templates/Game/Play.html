@@ -1,0 +1,26 @@
+
+<div id="Game">
+  <h1 class="title text-center"><span class="title-text">Jeopardy!</span><span class="gradient">&nbsp;</span></h1>
+  <ol class="breadcrumb">
+    <li><a href="#/">Home</a></li>
+    <li><a href="#/Game/Setup">Setup</a></li>
+    <li class="active">Play</li>
+  </ol>
+  <div data-bind="if: Categories().length <= 0">
+    <h2 class="text-center">No questions are available for this game.</h2>
+  </div>
+  <div data-bind="ifnot: Categories().length <= 0" class="gameboard">
+    <div data-bind="foreach: Categories" class="categories row">
+      <div class="screen categoryHeader col-xs-2">
+        <p data-bind="text: Name" class="text-uppercase"></p>
+      </div>
+    </div>
+    <div data-bind="foreach: Categories" class="questions row">
+      <div data-bind="foreach: Questions" class="col-xs-2 column">
+        <div data-bind="click: $root.SelectQuestion" class="screen question">
+          <p data-bind="text: '$' + Value, attr: { title: '$' + Value }" class="money"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

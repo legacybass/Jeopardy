@@ -1,0 +1,47 @@
+
+<div id="Setup">
+  <h1 class="title text-center"><span class="title-text">Jeopardy!</span><span class="gradient">&nbsp;</span></h1>
+  <ol class="breadcrumb">
+    <li><a href="#/">Home</a></li>
+    <li class="active">Setup</li>
+  </ol>
+  <div id="options">
+    <form data-bind="submit: SetupGame" action="#/Game/Setup" method="POST" role="form" class="form form-horizontal well">
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="OnlineGame" data-bind="checked: OnlineGame"/>Online Game
+            </label>
+          </div>
+        </div>
+      </div>
+      <div data-bind="css: { 'has-error has-feedback': !GameNameValid() }" class="form-group">
+        <label for="gamename" class="control-label col-sm-2">Game Name:</label>
+        <div class="col-sm-10">
+          <input id="gamename" type="text" name="GameName" required="required" pattern="^[a-zA-Z][a-zA-Z0-9]{2,}$" placeholder="Jeopardy Game" data-bind="textInput: GameName" class="form-control"/><span data-bind="css: { 'glyphicon glyphicon-remove form-control-feedback': !GameNameValid() }"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="HasRequired" data-bind="checked: HasRequired"/>Has Required Categories
+            </label>
+          </div>
+        </div>
+      </div>
+      <div data-bind="if: HasRequired" class="form-group">
+        <label for="requiredcategories" class="control-label col-sm-2">Select Required Categories:</label>
+        <div class="col-sm-10">
+          <select id="requiredcategories" name="ChosenCategories" data-bind="options: Categories, selectedOptions: ChosenCategories" size="5" multiple="true" class="form-control"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" data-bind="enable: GameNameValid" class="btn btn-primary btn-block">Start Game</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
