@@ -3,6 +3,7 @@ extends ../Shared/_layout
 block scripts
 	include ../Shared/_requireConfig
 	script(type="text/javascript", src="/public/js/libs/require.js", data-main="main")
+	script(type="text/javascript", src="/public/js/libs/tis.min.js")
 
 block content
 	h2#nojavascript(style="text-align: center;", data-bind="visible: false") You must have JavaScript enabled for this application to run.

@@ -1,0 +1,2 @@
+# ignore all node modules since these can be installed by the developer
+node_modules/**/*

@@ -11,8 +11,7 @@ exports.boot = function(params)
 	var startup = [
 		BootApplication,
 		BootModels,
-		BootControllers,
-		BootSockets
+		BootControllers
 	];
 
 	function next() {
@@ -102,7 +101,12 @@ function BootModels(app, next)
 
 	mongoose.connect(app.get('db-uri'));
 	var db = mongoose.connection;
-	db.on('error', console.error.bind(console, 'connection error:'));
+	db.on('error', function() {
+		var message = ['connection error:'];
+		Array.prototype.map.call(arguments, function(item) { message.push(item); });
+		console.error.apply(console, message);
+		next();
+	});
 	db.once('open', function()
 	{
 		next();
