@@ -1,10 +1,9 @@
-/*		Styles for making a div look like a screen
- *		
- */
+//		Styles for making a div look like a screen
 
 // Imports
-@import "../CrossBrowser";
+@import "CrossBrowser";
 @import "Colors";
+@import "Variables";
 
 
 // Variables
@@ -12,29 +11,92 @@
 
 
 // Mixins
-.screen(@height: 15%, @width: 16.5%, @fontSize: 3em, @minHeight: 80px, @minWidth: 80px, @maxHeight: 100px, @maxWidth: 100px)
+.screen(@width: 267px, @fontSize: 2em)
 {
+	@height: ((@width * 9) / 16);
 	.background(top, @backgroundColor, darken(@backgroundColor, 10%));
-	border: 5px solid black;
 	border-collapse: separate;
-	height: @height;
-	width: @width;
-	min-height: @minHeight;
-	min-width: @minWidth;
-	max-height: @maxHeight;
-	max-width: @maxWidth;
-	font-size: @fontSize;
+	border: solid @black;
 	cursor: pointer;
+
+	border-width: 5px 2px;
+	height: 150px;
+	width: 267px;
+	font-size: 2em;
+	line-height: 1em;
+
+	@xlgWidth: (@width * .75);
+	@xlgHeight: ((@xlgWidth * 9) / 16);
+	@xlgFont: @fontSize * .85;
+
+	@lgWidth: (@xlgWidth * 1);
+	@lgHeight: ((@lgWidth * 9) / 16);
+	@lgFont: @xlgFont * .85;
+
+	@mdWidth: (@lgWidth * .75);
+	@mdHeight: ((@mdWidth * 9) / 16);
+	@mdFont: @lgFont * .85;
+
+	@smWidth: (@mdWidth * .75);
+	@smHeight: ((@smWidth * 9) / 16);
+	@smFont: @lgFont * .75;
+
+	@xsmWidth: (@smWidth * .75);
+	@xsmHeight: ((@xsmWidth * 9) / 16);
+	@xsmFont: @smFont * .7;
+
+	 /* 1625 */
+	@media (max-width: @screen-xlg-min)
+	{
+		height: @xlgHeight;
+		width: @xlgWidth;
+		font-size: @xlgFont;
+	}
+
+	 /* 1226 */
+	@media (max-width: @screen-lg-min)
+	{
+		height: @lgHeight;
+		width: @lgWidth;
+		font-size: @lgFont;
+	}
+
+	 /* 926 */
+	@media (max-width: @screen-md-min)
+	{
+		height: @mdHeight;
+		width: @mdWidth;
+		font-size: @mdFont;
+	}
+
+	 /* 480 */
+	@media (max-width: @screen-sm-min)
+	{
+		height: @smHeight;
+		width: @smWidth;
+		font-size: @smFont;
+	}
+
+	@media (max-width: @screen-xs-min)
+	{
+		height: @xsmHeight;
+		width: @xsmWidth;
+		font-size: @xsmFont;
+	}
 
 	p
 	{
 		color: @textColor;
 		font-family: Helvetica, Arial, sans-serif;
 		font-weight: bold;
-		text-shadow: 4px 5px 0px black;
+		.text-shadow(4px, 5px, 0px, @black);
 		text-align: center;
 	}
 }
 
+.largeScreen(@height: 100%, @width: 100%, @fontSize: 5em)
+{
+	.screen(@height, @width, @fontSize);
 
-// Styles
+	cursor: default;
+}

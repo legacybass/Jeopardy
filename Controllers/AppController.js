@@ -28,7 +28,7 @@ function router(req, res, next)
 	var id = req.params.id ? req.params.id : '';
 	var method = req.method.toLowerCase();
 
-	locals.DebugLog('Controller: ' + (controller || '"NO CONTROLLER"') + '\n' +
+	console.log('Controller: ' + (controller || '"NO CONTROLLER"') + '\n' +
 		'Action: ' + (action || '"NO ACTION"') + '\n' +
 		'Id: ' + (id || '"NO ID"') + '\n' +
 		'Method: ' + (method || '"NO METHOD"'));
@@ -86,7 +86,7 @@ function router(req, res, next)
 
 	fn = fn.Capitalize();
 	var controllerPath = './' + controller.Capitalize() + 'Controller';
-	locals.DebugLog('Looking up ' + controllerPath + ' for ' + fn);
+	console.log('Looking up ' + controllerPath + ' for ' + fn);
 	try
 	{
 		var controllerLibrary = require(controllerPath);

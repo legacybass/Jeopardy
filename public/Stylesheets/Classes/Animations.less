@@ -1,68 +1,57 @@
-/*		Hold a collection of useful animations
- *		Author: Daniel Beus
- *		Date: 1/24/2013
- */
+//		Hold a collection of useful animations
+//		Author: Daniel Beus
+//		Date: 1/24/2013
+
 // Imports
-@import "../CrossBrowser";
+@import "CrossBrowser";
 @import "Colors";
 
-
-// Variables
-
-
-
 // Mixins
-.questionAnimation()
-{
-	from
-		{
-			z-index: 10;
-			position: fixed;
-			top: 45%;
-			left: 45%;
-			height: 5%;
-			width: 5%;
-			background: @backgroundColor;
-			text-align: center;
-			content: "";
-		}
-		50%
-		{
-			-webkit-transform: rotateY(180deg);
-		}
-		to
-		{
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 95%;
-			height: 95%;
-			margin: 3%;
-			background: @backgroundColor;
-			z-index: 10;
-			text-align: center;
-			display: block;
-		}
+.questionAnimation() {
+	from {
+		z-index: 10;
+		position: fixed;
+		top: 45%;
+		left: 45%;
+		height: 5%;
+		width: 5%;
+		background: @backgroundColor;
+		text-align: center;
+		content: "";
+	}
+
+	50% {
+		.transform(rotateY(180deg));
+	}
+
+	to {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 95%;
+		height: 95%;
+		margin: 3%;
+		background: @backgroundColor;
+		z-index: 10;
+		text-align: center;
+		display: block;
+	}
 }
 
+.showQuestionAnimation() {
+	@-webkit-keyframes showQuestionAnimation {
+		.questionAnimation();
+	}
 
-// Styles
-.showQuestionAnimation()
-{
-	@-webkit-keyframes showQuestionAnimation
-	{
-		.questionAnimation();	
-	}
-	@-o-keyframes showQuestionAnimation
-	{
+	@-o-keyframes showQuestionAnimation {
 		.questionAnimation();
 	}
-	@-moz-keyframes showQuestionAnimation
-	{
+
+	@-moz-keyframes showQuestionAnimation {
 		.questionAnimation();
 	}
-	keyframes showQuestionAnimation
-	{
+
+	@keyframes showQuestionAnimation {
 		.questionAnimation();
 	}
 }

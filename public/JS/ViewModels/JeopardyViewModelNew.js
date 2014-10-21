@@ -226,7 +226,7 @@
 							GameObj.GetScores(ShowScores);
 						});
 
-					if(!answerWindow)
+					if(!answerWindow && false)
 						answerWindow = window.open('AnswerWindow.html', null, 'height=400,width=400,toolbar=no,titlebar=no,menubar=no,location=no,directories=no');
 				}
 				Object.defineProperty(self, 'StartGame', {

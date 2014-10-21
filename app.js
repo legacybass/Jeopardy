@@ -11,7 +11,7 @@ var express = require('express')
 
 //var app = express();
 process.env.NODE_ENV = 'production';
-var debugmode = true;
+// var debugmode = true;
 
 exports.boot = function(params)
 {
@@ -24,28 +24,40 @@ exports.boot = function(params)
 	return app;
 }
 
+exports.cache = {};
+
 function RenderPage(path, options, fn)
 {
-	locals.DebugLog(path);
-	var key = path + ':string';
+	console.log("Path:", path, "\nOptions:", options);
 	if(typeof options == 'function')
 	{
 		fn = options;
-		options = {};
+		options = undefined;
 	}
 
-	try
+	if(typeof fn === 'function')
 	{
-		var str = options.cache
-					? exports.cache[key] || (exports.cache[key] = fs.readFileSync(path, 'utf8'))
-					: fs.readFileSync(path, 'utf8');
-		fn(null, str);
+		var res;
+		try
+		{
+			res = RenderPage(path, options);
+		}
+		catch(ex)
+		{
+			return fn(ex);
+		}
+
+		return fn(null, res);
 	}
-	catch (err)
-	{
-		console.log("couldn't render page " + path);
-		fn(err);
-	}
+
+	options = options || {};
+	var key = path + ':string';
+
+	options.filename = path;
+	var str = options.cache
+				? exports.cache[key] || (exports.cache[key] = fs.readFileSync(path, 'utf8'))
+				: fs.readFileSync(path, 'utf8');
+	return str;
 }
 
 // Setup any server configurations
@@ -76,7 +88,7 @@ function BootApplication(app)
 	app.configure('production', function()
 	{
 		app.set('db-uri', 'mongodb://jeopardy:T!k^BGFss5kD@ds053178.mongolab.com:53178/heroku_app19032439');
-		app.use(express.errorHandler({ dumpExceptions: false, showStack: false }));
+		app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 	});
 
 	app.configure('test', function()
@@ -86,14 +98,6 @@ function BootApplication(app)
 	});
 
 	app.use(app.router);
-
-	app.locals.DebugLog = function (str)
-	{
-		if('development' == app.get('env') || debugmode)
-		{
-			console.log(str);
-		}
-	}
 }
 
 // Load the controllers into the routing domain

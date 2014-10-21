@@ -4,22 +4,42 @@
 	<link rel="stylesheet/less" href="/public/Stylesheets/Views/Index.less" />
 	<script type="text/javascript" src="/public/JS/RequireParameters.js"></script>
 	<script type="text/javascript" data-main="Scripts/Index" src="/public/JS/libs/require.min.js"></script>
-	
 </head>
 <body>
-
 	<header id="header" class="title">
 		Jeopardy
 	</header><!-- /header -->
-	<div class="menu">
-		<div class="screen" data-bind="click: DataPage">
-			<p>Data Management Page</p>
+	<div class="gameBoard">
+		<div class="gameColumn">
+			<div class="gameScreen" data-bind="click: DataPage">
+				<p>Data Management Page</p>
+			</div>
 		</div>
-		<div class="screen" data-bind="click: Setup">
-			<p>Setup Game</p>
+		<div class="gameColumn">
+			<div class="gameScreen" data-bind="click: Setup">
+				<p>Setup Game</p>
+			</div>
 		</div>
-		<!-- <a href="Views/DataManagement.html">Data Management Page</a><br />
-		<a data-bind="click: Setup">Setup Game</a> -->
+		<div class="gameColumn">
+			<div class="gameScreen">
+				<p>Useless</p>
+			</div>
+		</div>
+		<div class="gameColumn">
+			<div class="gameScreen">
+				<p>Useless</p>
+			</div>
+		</div>
+		<div class="gameColumn">
+			<div class="gameScreen">
+				<p>Useless</p>
+			</div>
+		</div>
+		<div class="gameColumn">
+			<div class="gameScreen">
+				<p>Useless</p>
+			</div>
+		</div>
 	</div>
 	<div class="main" id="main">
 		<div class="setup" data-bind="if: SetupGame, visible: SetupGame" style="display: none;">
