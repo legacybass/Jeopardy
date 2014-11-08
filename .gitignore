@@ -4,5 +4,5 @@ Controllers/*.js
 public/js/*.js
 public/js/sockets/**/*.js
 public/js/viewmodels/**/*.js
+public/css/*.js
 Views/Templates/**/*.html
-Controllers/ApiController.js
