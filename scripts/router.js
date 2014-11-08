@@ -16,7 +16,7 @@ export function SetupRoutes(main = '#main') {
 
 		// Plugins
 		this.use('Session');
-
+		this.CheckValidUser = CheckValidUser;
 		
 		// Get calls
 		// Binds to the address http://{host}/#/
@@ -72,3 +72,15 @@ export function Delete(url = '', data = { }) {
 	app.runRoute('del', '#/' + url, data);
 }
 
+export function Host() {
+	return window.location.origin || (window.location.protocol + "//" + window.location.host);
+}
+
+export function CheckValidUser() {
+	var token = app.session('timeout'),
+		date = new Date(token),
+		now = new Date(Date.now()),
+		user = app.session('user');
+
+	return user && token && now < date;
+}
