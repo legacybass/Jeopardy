@@ -23,14 +23,18 @@ default;
 default;
     var router = $__5;
     var SetupViewModel = function SetupViewModel($__8) {
-        var $__10, $__11, $__12, $__13;
+        var $__10, $__11, $__12, $__13, $__14, $__15, $__16, $__17;
         var $__9 = $__8,
             onlineGame = ($__10 = $__9.onlineGame) === void 0 ? true : $__10,
             gameName = $__9.gameName,
             hasRequired = ($__11 = $__9.hasRequired) === void 0 ? false : $__11,
             categories = ($__12 = $__9.categories) === void 0 ? [] : $__12,
             chosenCategories = ($__13 = $__9.chosenCategories) === void 0 ? [] : $__13,
-            userId = $__9.userId;
+            userId = $__9.userId,
+            questionCounter = ($__14 = $__9.questionCounter) === void 0 ? 10 : $__14,
+            contestantCounter = ($__15 = $__9.contestantCounter) === void 0 ? 10 : $__15,
+            maxQuestion = ($__16 = $__9.maxQuestion) === void 0 ? 120 : $__16,
+            maxContestant = ($__17 = $__9.maxContestant) === void 0 ? 120 : $__17;
         var $__6 = this;
         if (!(this instanceof $SetupViewModel)) return new $SetupViewModel();
         var categoriesLoaded = false;
@@ -41,9 +45,17 @@ default;
         this.HasRequired = ko.observable(hasRequired);
         this.Categories = ko.observableArray(categories);
         this.ChosenCategories = ko.observableArray(chosenCategories);
+        this.QuestionCounter = ko.observable(questionCounter);
+        this.ContestantCounter = ko.observable(contestantCounter);
         this.Loading = ko.observable(false);
         this.GameNameValid = ko.computed((function () {
             return !!$__6.GameName() && /^[a-zA-Z][a-zA-Z0-9]{2,}$/.test($__6.GameName());
+        }));
+        this.QuestionCounterValid = ko.computed((function () {
+            return $__6.QuestionCounter() > 0 && $__6.QuestionCounter() < maxQuestion;
+        }));
+        this.ContestantCounterValid = ko.computed((function () {
+            return $__6.ContestantCounter() > 0 && $__6.ContestantCounter() < maxContestant;
         }));
         this.HasRequired.subscribe((function (val) {
             if ( !! val && !categoriesLoaded) {

@@ -210,3 +210,132 @@ export var Questions = (() => {
 		}
 	};
 })();
+
+
+export var Games = (() => {
+	var gameModel = mongoose.model('Game'),
+		playerModel = mongoose.model('Player');
+
+	return {
+		CreateGame: ({ name }) => {
+			return new Promise((resolve, reject) => {
+				var game = new gameModel({
+					Name: name
+				});
+
+				game.save(err => {
+					if(err)
+						reject({ message: err.message, exception: err });
+					else
+						resolve(game);
+				})
+			});
+		},
+		JoinGame: ({ game, name, identifier }) => {
+			return new Promise((resolve, reject) => {
+				gameModel.findOne({ _id: game })
+				.exec((err, game) => {
+					if(err)
+						return reject({ message: 'Could not find game.', exception: err });
+
+					if(game.players.some((player) => player.Name == name || player.Id == identifier ))
+						return reject({ message: 'Player already exists.' });
+
+					var player = game.Players.create({
+						Name: player,
+						Id: identifier
+					});
+
+					game.Players.push(player);
+
+					game.save((err) => {
+						if(err)
+							reject({ message: 'Could not join game.', exception: err });
+						else
+							resolve(player);
+					});
+				});
+			});
+		},
+		RetrieveGame: ({ gameId }) => {
+			return new Pormise((resolve, reject) => {
+				gameModel.findOne({ _id: gameId })
+				.exec((err, game) => {
+					if(err)
+						reject({ message: 'Could not find game.', exception: err });
+					else
+						resolve(game);
+				});
+			});
+		},
+		IncrementScore: ({ gameId, name, identifier, points }) => {
+			return new Promise((resolve, reject) => {
+				gameModel.findOne({ '_id': gameId })
+				.exec((err, game) => {
+					if(err)
+						return reject({ message: err.message, exception: err });
+
+					var found = game.Players.some((player) => {
+						if(player.Name == name && player.Id == identifier) {
+							player.Score += points;
+							return true;
+						}
+
+						return false;
+					});
+
+					if(found) {
+						game.save((err) => {
+							if(err)
+								reject({ message: err.message, exception: err });
+							else
+								resolve();
+						});
+					}
+					else
+						reject({ message: 'Could not find player in game.' });
+				});
+			});
+		},
+		IncrementBuzzIns: ({ gameId, name, identifier }) => {
+			return new Promise((resolve, reject) => {
+				gameModel.findOne({ '_id': gameId })
+				.exec((err, game) => {
+					if(err)
+						return reject({ message: err.message, exception: err });
+
+					var found = game.Players.some((player) => {
+						if(player.Name == name, player.Id == identifier) {
+							player.BuzzCount++;
+							return true;
+						}
+
+						return false;
+					});
+
+					if(found) {
+						game.save((err) => {
+							if(err)
+								reject({ message: err.message, exception: err });
+							else
+								resolve();
+						});
+					}
+					else
+						reject({ message: 'Could not find player in game.' });
+				});
+			});
+		},
+		GetStats: ({ gameId }) => {
+			return new Promise((resolve, reject) => {
+				gameModel.findOne({ _id: gameId })
+				.exec((err, game) => {
+					if(err)
+						return reject({ message: 'Could not find game.', exception: err });
+
+					resolve(game.Players);
+				});
+			});
+		}
+	};
+})();

@@ -178,7 +178,12 @@ default;
                             level: 'success'
                         });
                     }
-                }), (function (err) {}));
+                }), (function (err) {
+                    error.Show({
+                        message: err.message,
+                        title: 'Could not delete category'
+                    });
+                }));
             }), (function () {}));
         },
         AddQuestion: function () {

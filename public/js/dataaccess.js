@@ -39,6 +39,10 @@ default;
         },
         contestant: {
             login: ['post', '/api/Contestant/Login']
+        },
+        game: {
+            new: ['post', '/api/Data/Game'],
+            stats: ['get', '/api/Data/Game']
         }
     }).on({
         '500': (function (err, response) {
@@ -213,6 +217,43 @@ default;
             }));
         }));
     }
+
+    function ContestantLogin($__6) {
+        var $__8 = $__6;
+        return new Promise((function (resolve, reject) {
+            reject({
+                message: 'Not implemented'
+            });
+        }));
+    }
+
+    function CreateGame($__6) {
+        var $__10 = $__6,
+            userid = $__10.userid,
+            name = $__10.name,
+            identifier = $__10.identifier;
+        return new Promise((function (resolve, reject) {
+            porter.game.new({
+                name: name,
+                identifier: identifier,
+                userid: userid
+            }, (function (err, res) {
+                if (err) reject(err);
+                else resolve(res);
+            }));
+        }));
+    }
+
+    function GetGameStats($__6) {
+        var $__10 = $__6,
+            game = $__10.game,
+            identifier = $__10.identifier;
+        return new Promise((function (resolve, reject) {
+            reject({
+                message: 'Not implemented'
+            });
+        }));
+    }
     return {
         get UserLogin() {
             return UserLogin;
@@ -232,6 +273,12 @@ default;
             return DeleteQuestion;
         }, get NewQuestion() {
             return NewQuestion;
+        }, get ContestantLogin() {
+            return ContestantLogin;
+        }, get CreateGame() {
+            return CreateGame;
+        }, get GetGameStats() {
+            return GetGameStats;
         }, __esModule: true
     };
 });

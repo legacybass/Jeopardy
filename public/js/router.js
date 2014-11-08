@@ -45,6 +45,7 @@ default;
         app = sammy(main, function () {
             this.debug = true;
             this.use('Session');
+            this.CheckValidUser = CheckValidUser;
             this.get(/^\/?#\/?$/, (function (ctx) {
                 return Home.Page(ctx, 'Index');
             }));
@@ -104,6 +105,18 @@ default;
         var data = arguments[1] !== (void 0) ? arguments[1] : {};
         app.runRoute('del', '#/' + url, data);
     }
+
+    function Host() {
+        return window.location.origin || (window.location.protocol + "//" + window.location.host);
+    }
+
+    function CheckValidUser() {
+        var token = app.session('timeout'),
+            date = new Date(token),
+            now = new Date(Date.now()),
+            user = app.session('user');
+        return user && token && now < date;
+    }
     return {
         get SetupRoutes() {
             return SetupRoutes;
@@ -119,6 +132,10 @@ default;
             return Put;
         }, get Delete() {
             return Delete;
+        }, get Host() {
+            return Host;
+        }, get CheckValidUser() {
+            return CheckValidUser;
         }, __esModule: true
     };
 });

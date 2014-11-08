@@ -1,4 +1,4 @@
-import { Categories, Users, Questions } from '../Modules/DataInteraction';
+import { Categories, Users, Questions, Games } from '../Modules/DataInteraction';
 
 export default function Bootstrap (router) {
 	// Login a user
@@ -6,9 +6,7 @@ export default function Bootstrap (router) {
 		var username = req.body['username'] || req.params['username'];
 		var password = req.body['password'] || req.params['password'];
 
-		if(req.session.user) {
-			return res.json({ user: req.session.user });
-		}
+		req.session.user = undefined;
 
 		Users.GetUser({ username: username, password: password })
 			.then(user => {
@@ -169,6 +167,37 @@ export default function Bootstrap (router) {
 		err => {
 			console.log(err.exception);
 			res.json({ error: true, message: err.message });
+		});
+	});
+
+
+	// Create a new game
+	router.post('/api/Data/Game', (req, res, next) => {
+		// Create a new game in the database with the required information
+		var name = req.body.name,
+			identifier = req.body.identifier;
+
+		Games.CreateGame({ name: name, identifier: identifier })
+		.then(game => {
+			res.json({ game: game._id });
+		},
+		err => {
+			console.log(err.exception);
+			res.json({ error: true, message: err.message });
+		});
+	});
+
+	// Get the stats for a game
+	router.get('/api/Data/Game', (req, res, next) => {
+		var gameId = req.body.gameId;
+
+		Games.GetStats({ gameId })
+		.then((stats) => {
+			res.json(stats);
+		},
+		(err) => {
+			console.log(err);
+			res.json({ message: 'Could not get game stats.', error: true });
 		});
 	});
 }

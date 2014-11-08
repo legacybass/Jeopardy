@@ -37,13 +37,13 @@ default;
         'showMethod': 'fadeIn',
         'hideMethod': 'fadeOut'
     };
-    var ErrorHandler = function ErrorHandler() {
+    var MessageHandler = function MessageHandler() {
         this._Message = ko.observable();
         this._Title = ko.observable();
         this._TimerToken = undefined;
         this._IsShowing = ko.observable(false);
     };
-    ($traceurRuntime.createClass)(ErrorHandler, {
+    ($traceurRuntime.createClass)(MessageHandler, {
         Show: function ($__9) {
             var $__11, $__12, $__13;
             var $__10 = $__9,
@@ -55,11 +55,12 @@ default;
             else toastr.info(message, title);
         },
         Confirm: function ($__9) {
-            var $__12, $__13;
+            var $__12, $__13, $__10;
             var $__11 = $__9,
                 element = $__11.element,
                 message = ($__12 = $__11.message) === void 0 ? "Click here to confirm, or click the 'x' to this close toast and cancel" : $__12,
-                title = ($__13 = $__11.title) === void 0 ? "Confirm Action" : $__13;
+                title = ($__13 = $__11.title) === void 0 ? "Confirm Action" : $__13,
+                timeout = ($__10 = $__11.timeout) === void 0 ? 10000 : $__10;
             return new Promise((function (resolve, reject) {
                 var isDismissed = false;
                 if (element) {
@@ -78,8 +79,8 @@ default;
                         }),
                         'showDuration': 300,
                         'hideDuration': 1000,
-                        'timeOut': 10000,
-                        'extendedTimeOut': 3000,
+                        'timeOut': timeout,
+                        'extendedTimeOut': 0,
                         'showEasing': 'swing',
                         'hideEasing': 'linear',
                         'showMethod': 'fadeIn',
@@ -89,9 +90,18 @@ default;
                     toastr.warning(message, title);
                 }
             }));
+        },
+        Log: function ($__9) {
+            var $__13, $__10;
+            var $__12 = $__9,
+                message = $__12.message,
+                title = ($__13 = $__12.title) === void 0 ? "Log Message" : $__13,
+                level = ($__10 = $__12.level) === void 0 ? 'info' : $__10;
+            if (level === 'warning') console.warn('%s: %s', title, message);
+            else console.info("%s: %s", title, message);
         }
     }, {});
-    var $__default = ErrorHandler;
+    var $__default = MessageHandler;
     return {
         get
     default () {
