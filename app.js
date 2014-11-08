@@ -4,7 +4,7 @@ var express = require('express')
 	, mongoose = require('mongoose')
 	, fs = require('fs');
 
-exports.boot = function(params)
+exports.boot = function(callback)
 {
 	var app = express();
 
@@ -19,11 +19,11 @@ exports.boot = function(params)
 
 		if(step)
 			step(app, next);
+		else
+			callback(app);
 	}
 
 	next();
-
-	return app;
 }
 
 // Setup any server configurations
@@ -71,7 +71,6 @@ function BootApplication(app, next)
 function BootControllers(app, next)
 {
 	// routing
-	//require(__dirname + '/Controllers/AppController')(app);
 	var homeController = require('./Controllers/HomeController').default;
 	var apiController = require('./Controllers/ApiController').default;
 
@@ -86,7 +85,7 @@ function BootControllers(app, next)
 // Load the models into the mongoose framework
 function BootModels(app, next)
 {
-	fs.readdir(__dirname + '/Schemas', function(err, files)
+	fs.readdir('./Schemas', function(err, files)
 	{
 		if(err)
 			throw err;
@@ -94,34 +93,35 @@ function BootModels(app, next)
 		files.forEach(function(file)
 		{
 			var name = file.replace(".js", ""),
-				schema = require(__dirname + "/Schemas/" + name);
+				schema = require("./Schemas/" + name);
 			mongoose.model(name, schema);
 		});
-	});
 
-	mongoose.connect(app.get('db-uri'));
-	var db = mongoose.connection;
-	db.on('error', function() {
-		var message = ['connection error:'];
-		Array.prototype.map.call(arguments, function(item) { message.push(item); });
-		console.error.apply(console, message);
-		next();
-	});
-	db.once('open', function()
-	{
-		next();
+		mongoose.connect(app.get('db-uri'));
+		var db = mongoose.connection;
+		db.on('error', function() {
+			var message = ['connection error:'];
+			Array.prototype.map.call(arguments, function(item) { message.push(item); });
+			console.error.apply(console, message);
+			next();
+		});
+		db.once('open', function()
+		{
+			next();
+		});
 	});
 }
 
 // Load the socket configurations and handlers
 function BootSockets(server)
 {
-	// require(__dirname + '/Controllers/SocketController')(server);
+	require('./Controllers/SocketController').default(server);
 }
 
-var app = exports.boot();
-var server = http.createServer(app);
-server.listen(app.get('port'), function(){
-	console.log('Express server listening on port %d.', app.get('port'));
+var app = exports.boot(function(app) {
+	var server = http.createServer(app);
+	server.listen(app.get('port'), function(){
+		console.log('Express server listening on port %d.', app.get('port'));
+	});
+	BootSockets(server);
 });
-BootSockets(server);

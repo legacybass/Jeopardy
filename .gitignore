@@ -1,2 +1,8 @@
 # ignore all node modules since these can be installed by the developer
 node_modules/**/*
+Controllers/SocketController.js
+Controllers/ApiController.js
+public/js/*.js
+public/js/sockets/**/*.js
+public/js/viewmodels/**/*.js
+Views/Templates/**/*.html
