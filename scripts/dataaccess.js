@@ -24,6 +24,10 @@ var porter = p({
 	},
 	contestant: {
 		login: ['post', '/api/Contestant/Login']
+	},
+	game: {
+		new: ['post', '/api/Data/Game'],
+		stats: ['get', '/api/Data/Game']
 	}
 }).on({
 	'500': (err, response) => {
@@ -55,6 +59,8 @@ export function UserRegister(username, password) {
 		});
 	});
 }
+
+
 
 export function GetCategories({ required = [], userid = '-1' }) {
 	return new Promise((resolve, reject) => {
@@ -137,5 +143,32 @@ export function NewQuestion({ userid = '0', categoryid = '0', value, question, a
 			else
 				resolve(res);
 		});
+	});
+}
+
+
+
+export function ContestantLogin({ }) {
+	return new Promise((resolve, reject) => {
+		reject({ message: 'Not implemented' });
+	});
+}
+
+
+
+export function CreateGame({ userid, name, identifier }) {
+	return new Promise((resolve, reject) => {
+		porter.game.new({ name: name, identifier: identifier, userid: userid }, (err, res) => {
+			if(err)
+				reject(err);
+			else
+				resolve(res);
+		});
+	});
+}
+
+export function GetGameStats({ game, identifier }) {
+	return new Promise((resolve, reject) => {
+		reject({ message: 'Not implemented' });
 	});
 }

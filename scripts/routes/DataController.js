@@ -1,7 +1,7 @@
 import ko from 'knockout';
 
 export function Manage(context) {
-	if(!context.session('user'))
+	if(!context.app.CheckValidUser())
 	{
 		context.session('redirect', '#/Data/Manage');
 		context.redirect('#/Home/Login');

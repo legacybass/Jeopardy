@@ -2,7 +2,7 @@ import ko from 'knockout';
 
 // Get handler for Game/Setup
 export function Setup(context) {
-	if(!context.session('user'))
+	if(!context.app.CheckValidUser())
 	{
 		context.session('redirect', '#/Game/Setup');
 		context.redirect('#/Home/Login');
@@ -29,7 +29,7 @@ export function Setup(context) {
 
 // Get handler for Game/Play
 export function Play(context) {
-	if(!context.session('user'))
+	if(!context.app.CheckValidUser())
 	{
 		context.session('redirect', '#/Game/Setup');
 		context.redirect('#/Home/Login');
@@ -57,6 +57,8 @@ export function Play(context) {
 		var viewModel = new viewModel({
 			Name: context.params['GameName'],
 			Required: context.params['ChosenCategories'],
+			questionCount: context.params['QuestionCounter'],
+			contestantCount: context.params['ContestantCounter'],
 			Online: onlineGame,
 			Userid: context.session('user', () => '-1')
 		});

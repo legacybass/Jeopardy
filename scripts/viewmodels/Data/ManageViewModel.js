@@ -126,7 +126,7 @@ export default class ManageViewModel {
 				}
 			},
 			err => {
-
+				error.Show({ message: err.message, title: 'Could not delete category' });
 			});
 		},
 		() => {

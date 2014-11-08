@@ -17,7 +17,7 @@ var defaultToastOptions = {
 	'hideMethod': 'fadeOut'
 };
 
-export default class ErrorHandler {
+export default class MessageHandler {
 	constructor () {
 		this._Message = ko.observable();
 		this._Title = ko.observable();
@@ -34,7 +34,8 @@ export default class ErrorHandler {
 			toastr.info(message, title);
 	}
 
-	Confirm({ element, message = "Click here to confirm, or click the 'x' to this close toast and cancel", title = "Confirm Action" }) {
+	Confirm({ element, message = "Click here to confirm, or click the 'x' to this close toast and cancel", title = "Confirm Action",
+				timeout = 10000 }) {
 		return new Promise((resolve, reject) => {
 			var isDismissed = false;
 
@@ -55,8 +56,8 @@ export default class ErrorHandler {
 					},
 					'showDuration': 300,
 					'hideDuration': 1000,
-					'timeOut': 10000,
-					'extendedTimeOut': 3000,
+					'timeOut': timeout,
+					'extendedTimeOut': 0,
 					'showEasing': 'swing',
 					'hideEasing': 'linear',
 					'showMethod': 'fadeIn',
@@ -67,5 +68,12 @@ export default class ErrorHandler {
 				toastr.warning(message, title);
 			}
 		});
+	}
+
+	Log({ message, title = "Log Message", level = 'info' }) {
+		if(level === 'warning')
+			console.warn('%s: %s', title, message);
+		else
+			console.info("%s: %s", title, message);
 	}
 }

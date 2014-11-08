@@ -6,25 +6,27 @@
 @screen-color-light: lighten(@screen-color, 10%);
 @screen-color-dark: darken(@screen-color, 10%);
 
-@text-color: hsl(46, 80%, 52.5%);
-@text-color-light: lighten(@text-color, 5%);
-@text-color-dark: darken(@text-color, 5%);
+@money-color: hsl(46, 80%, 52.5%);
+@money-color-light: lighten(@money-color, 5%);
+@money-color-dark: darken(@money-color, 5%);
+
+@text-color: white;
 
 @game-board-background: black;
 
 .categories, .questions {
-	background-color: @game-board-background;
+	margin-left: 2px;
+	margin-right: 2px;
+}
 
-	.column {
-		padding-top: 5px;
-	}
+.column {
+	padding-top: 5px;
 }
 
 .screen {
 	// background-color: black;
 	text-align: center;
 	height: 120px;
-	cursor: pointer;
 	word-wrap: normal;
 	text-overflow: ellipsis;
 
@@ -35,7 +37,7 @@
 	}
 
 	&.categoryHeader > p {
-		color: white;
+		color: @text-color;
 		font-weight: bold;
 		font-size: 21px;
 		margin: 5px -13px;
@@ -47,9 +49,10 @@
 	&.question > p {
 		font-size: 90px;
 		font-family: Copper;
-		color: @text-color;
+		color: @money-color;
 		text-shadow: 5px 5px 0px black;
 		margin: 0px -13px;
+		cursor: pointer;
 	}
 
 	// Media Queries
@@ -104,5 +107,18 @@
 
 .gameboard {
 	min-width: 550px;
+	background-color: @game-board-background;
+}
+
+.selected-question {
+	position: absolute;
+	top: 15%;
+	#gradient > .vertical(@screen-color-light, @screen-color-dark, 0%, 100%);
+	color: @text-color;
+	text-shadow: 3px 3px 0px black;
+	font-family: Korina;
+	height: 800px;
+	width: 1110px;
+	font-size: 90px;
 }
 

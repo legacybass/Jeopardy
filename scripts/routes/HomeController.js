@@ -37,6 +37,10 @@ export function Login (context) {
 		else
 		{
 			context.session('user', info.user);
+			var now = new Date(Date.now());
+			now.setDate(now.getDate() + 2);
+			this.session('timeout', now);
+
 			context.redirect(redirect);
 		}
 	},

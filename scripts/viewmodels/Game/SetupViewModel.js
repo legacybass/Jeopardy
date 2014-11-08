@@ -4,14 +4,12 @@ import ErrorHandler from 'errorhandler';
 import * as router from 'router';
 
 export default class SetupViewModel {
-	constructor({ onlineGame=true, gameName, hasRequired=false, categories=[], chosenCategories=[], userId }) {
+	constructor({ onlineGame=true, gameName, hasRequired=false, categories=[], chosenCategories=[], userId,
+						questionCounter = 10, contestantCounter = 10, maxQuestion = 120, maxContestant = 120 }) {
 		if(!(this instanceof SetupViewModel))
 			return new SetupViewModel();
 		
 		var categoriesLoaded = false;
-		// Do this because of weird module loading.
-		// TODO: Fix this
-		// errorHandler = errorHandler.default();
 		this._ErrorHandler = new ErrorHandler();
 
 		this.Title = ko.observable('Jeopardy Setup');
@@ -20,10 +18,19 @@ export default class SetupViewModel {
 		this.HasRequired = ko.observable(hasRequired);
 		this.Categories = ko.observableArray(categories);
 		this.ChosenCategories = ko.observableArray(chosenCategories);
+		this.QuestionCounter = ko.observable(questionCounter);
+		this.ContestantCounter = ko.observable(contestantCounter);
 
 		this.Loading = ko.observable(false);
 
 		this.GameNameValid = ko.computed(() => { return !!this.GameName() && /^[a-zA-Z][a-zA-Z0-9]{2,}$/.test(this.GameName()); });
+		this.QuestionCounterValid = ko.computed(() => {
+			return this.QuestionCounter() > 0 && this.QuestionCounter() < maxQuestion;
+		});
+		this.ContestantCounterValid = ko.computed(() => {
+			return this.ContestantCounter() > 0 && this.ContestantCounter() < maxContestant;
+		});
+
 		this.HasRequired.subscribe(val => {
 			if(!!val && !categoriesLoaded)
 			{

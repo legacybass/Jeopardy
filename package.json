@@ -11,6 +11,7 @@
     "express": "3.2.5",
     "jade": "^1.7.0",
     "mongoose": "^3.8.16",
+    "monitor.io": "0.0.5",
     "socket.io": "^1.1.0",
     "toastr": "^2.0.4"
   },
