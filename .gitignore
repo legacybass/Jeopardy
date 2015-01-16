@@ -4,5 +4,6 @@ Controllers/*.js
 public/js/*.js
 public/js/sockets/**/*.js
 public/js/viewmodels/**/*.js
-public/css/*.js
+public/css/*.css
 Views/Templates/**/*.html
+Modules/*.js

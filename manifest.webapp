@@ -1,0 +1,9 @@
+{
+	"name": "Jeopardy",
+	"description": "Website that allows users to play the iconic game, Jeopardy",
+	"launch_path": "/Views/Home/Index.jade",
+	"icons:": {
+
+	},
+	"permissions": { }
+}

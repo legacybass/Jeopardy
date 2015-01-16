@@ -48,12 +48,10 @@ export default class PlayViewModel {
 			{
 				this.Id(data.id);
 
-				data.categories.forEach(n => {
+				this.Categories.push.apply(this.Categories, data.categories.map(n => {
 					if(Array.isArray(n.Questions))
 						n.Questions.forEach(m => { m.isAnswered = ko.observable(false); });
-
-					this.Categories.push(mapping.fromJS(n));
-				});
+				}));
 			}
 			else {
 				errorHandler.Show({ message: 'An internal error occurred on the server.', title: 'Error Loading Categories' });
