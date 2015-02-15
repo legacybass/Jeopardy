@@ -13,7 +13,7 @@ export default class ManageViewModel {
 			return new ManageViewModel();
 
 		this.__userid = userid;
-		this.__nameRegex = /^[a-zA-Z]( ?[\w]+){3,}$/;
+		this.__nameRegex = /^[a-zA-Z]( ?[\w]+){2,}$/;
 		this.__textRegex = /^.+$/;
 		this.__numberRegex = /\d+/;
 

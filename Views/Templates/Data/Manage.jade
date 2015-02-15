@@ -63,14 +63,9 @@ div#Manage
 						button.btn.btn-info(type="button", data-bind!="click: function() { $root.ClearEditCategory(); }, visible: $root.CategoryEditting") Cancel
 		div.panel.panel-default.col-xs-8
 				div.panel-heading(
-						data-bind="text: $root.QuestionEditting() ? 'Edit Question' : 'Add Question', css: { 'edit': $root.QuestionEditting }") Add Question
+						data-bind="text: $root.QuestionEditting() ? 'Edit Question' : ('Add Question' + (!!SelectedCategory() ? ' to ' + SelectedCategory().Name() : '')), css: { 'edit': $root.QuestionEditting }") Add Question
 				div.panel-body
 					form.form.form-horizontal(data-bind="submit: $root.AddQuestion, with: NewQuestion", action="#", method="post")
-						div.form-group
-							label.form-label.col-sm-4(for="questionvalue") New Question Value
-							div.col-xs-8
-								input#questionvalue.form-control(type="number", placeholder="New Value",
-										data-bind!="textInput: Value, enable: !!$root.SelectedCategory()")
 						div.form-group
 							label.form-label.col-sm-4(for="questionquestion") New Question Question
 							div.col-xs-8
@@ -81,6 +76,11 @@ div#Manage
 							div.col-xs-8
 								input#questionanswer.form-control(type="text", placeholder="New Answer",
 										data-bind!="textInput: Answer, enable: !!$root.SelectedCategory()")
+						div.form-group
+							label.form-label.col-sm-4(for="questionvalue") New Question Value
+							div.col-xs-8
+								input#questionvalue.form-control(type="number", placeholder="New Value",
+										data-bind!="textInput: Value, enable: !!$root.SelectedCategory()")
 						div.form-group
 							div.col-sm-offset-4.col-sm-8.col-xs-12
 								button.btn.btn-default(type="submit",

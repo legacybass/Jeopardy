@@ -7,3 +7,4 @@ public/js/viewmodels/**/*.js
 public/css/*.css
 Views/Templates/**/*.html
 Modules/*.js
+npm-debug.log
