@@ -32,7 +32,15 @@ export function SetupRoutes(main = '#main') {
 		// Post calls
 		this.post('#/Home/Login', Home.Login);
 		this.post('#/Home/Register', Home.Register);
-		this.post('#/Game/Setup', context => context.redirect("#/Game/Play"));
+		this.post('#/Game/Setup', context => {
+			var query = "";
+			for(var key in context.params) {
+				if(context.params.hasOwnProperty(key)) {
+					query += key + "=" + context.params[key] + "&";
+				}
+			}
+			context.redirect("#/Game/Play?" + query);
+		});
 		this.post('#/Game/Play', Game.Play);
 
 

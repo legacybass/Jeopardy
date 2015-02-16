@@ -103,7 +103,6 @@ function BootModels(app, next)
 			var message = ['connection error:'];
 			Array.prototype.map.call(arguments, function(item) { message.push(item); });
 			console.error.apply(console, message);
-			next();
 		});
 		db.once('open', function()
 		{
