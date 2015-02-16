@@ -39,10 +39,10 @@ var games = { };
 export default function Bootstrap(server) {
 	var io = socket(server);
 
-	io.use(monitor({
-		port: 8000,
-		localOnly: true
-	}));
+	// io.use(monitor({
+	// 	port: 8000,
+	// 	localOnly: true
+	// }));
 
 	var game = io.of('/Game')
 	.on('connection', socket => {
