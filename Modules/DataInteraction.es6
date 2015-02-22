@@ -214,7 +214,8 @@ export var Questions = (() => {
 
 export var Games = (() => {
 	var gameModel = mongoose.model('Game'),
-		playerModel = mongoose.model('Player');
+		playerModel = mongoose.model('Player'),
+		categoryModel = mongoose.model('Category');
 
 	return {
 		CreateGame: ({ name }) => {

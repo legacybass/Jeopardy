@@ -23,7 +23,7 @@ export default class SetupViewModel {
 
 		this.Loading = ko.observable(false);
 
-		this.GameNameValid = ko.computed(() => { return !!this.GameName() && /^[a-zA-Z][a-zA-Z0-9]{2,}$/.test(this.GameName()); });
+		this.GameNameValid = ko.computed(() => { return !!this.GameName() && /^[a-zA-Z]+[\sa-zA-Z0-9]*$/.test(this.GameName()) && this.GameName().length > 2; });
 		this.QuestionCounterValid = ko.computed(() => {
 			return this.QuestionCounter() > 0 && this.QuestionCounter() < maxQuestion;
 		});

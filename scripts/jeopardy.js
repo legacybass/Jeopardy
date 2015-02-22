@@ -65,11 +65,11 @@ export default class Jeopardy {
 				else {
 					this.__game.Start({ name: name, gameId: identifier });
 
-					data.GetCategories({ required: required, userid: userId })
+					data.GetGameCategories({ required: required, userid: userId })
 					.then(data => {
-						// Process categories to get just the ones we want
-						if(Array.isArray(data))
+						if(Array.isArray(data)) {
 							resolve({ id: identifier, categories: data });
+						}
 						else
 							reject({ message: 'Server returned invalid data.' });
 					},
