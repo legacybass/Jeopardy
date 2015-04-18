@@ -72,27 +72,44 @@ export default class Game {
 
 	Join ({ name, gameId, gameName, identifier }) {
 		this._Init({ name: name });
-		this.socket.emit('Join', { username: name, identifier: identifier, game: gameId, gameName: gameName });
+		this.socket.emit('Join', {
+			username: name,
+			identifier: identifier,
+			game: gameId,
+			gameName: gameName
+		});
 	}
 
 	Start({ name, gameId }) {
 		this._Init({ name: name });
-		this.socket.emit('Start', { name: name, gameId: gameId });
+		this.socket.emit('Start', {
+			name: name,
+			gameId: gameId
+		});
 	}
 
-	SelectQuestion () {
-		this.socket.emit('SelectQuestion', { });
+	SelectQuestion ({ gameId }) {
+		this.socket.emit('SelectQuestion', { gameId: gameId });
 	}
 
-	AnswerQuestion ({ response }) {
-		this.socket.emit('AnswerQuestion', { response: response });
+	AnswerQuestion ({ gameId, response, points, gameOver = false }) {
+		this.socket.emit('AnswerQuestion', {
+			gameId: gameId,
+			response: response,
+			points: points,
+			gameOver: gameOver
+		});
 	}
 
 	Close () {
 		this.socket.close();
 	}
 
-	BuzzIn ({ player, game }) {
-		this.socket.emit('BuzzIn', { player: player, gameId: game });
+	BuzzIn ({ gameId, player, game }) {
+		this.socket.emit('BuzzIn', {
+			gameId: gameId,
+			player: player,
+			gameId: game
+		});
 	}
 }

@@ -127,8 +127,8 @@ function BuzzIn({ gameId, name, identifier }) {
 			if(this.lockout)
 				return this.emit('Information', { message: 'You are locked out.' });
 
-			if(!game.currentPlayer) {
-				game.currentPlayer = { name: name, identifier: identifier, socket: this };
+			if(!game.lastBuzzedIn) {
+				game.lastBuzzedIn = { name: name, identifier: identifier, socket: this };
 				this.to(room).emit('Information', { message: name + ' buzzed in.' });
 				game.host.emit('BuzzIn', { player: name });
 			}
@@ -193,7 +193,7 @@ function AnswerQuestion({ gameId, response, points, gameOver = false }) {
 		var room = game.name;
 		game.finished = !!gameOver;
 		
-		var player = game.currentPlayer;
+		var player = game.lastBuzzedIn;
 
 		// Last user got the question right.
 		if(response) {
@@ -205,12 +205,15 @@ function AnswerQuestion({ gameId, response, points, gameOver = false }) {
 				// Store the player to notify they are next to choose
 				game.lastCorrect = player;
 
-				Game.IncrementScore({ gameId: gameId, name: player.name, identifier: player.identifier })
+				Game.IncrementScore({ gameId: gameId, name: player.name, identifier: player.identifier, points: points })
 				.then(() => {
 
 				},
 				err => {
-					game.host.emit('Information', { message: 'Could not update score for ' + player.name });
+					game.host.emit('Information', {
+						message: 'Could not update score for ' + player.name + '. Should have received '
+								+ points + ' points.'
+					 });
 				});
 			}
 			game.ready = false;
@@ -231,6 +234,6 @@ function AnswerQuestion({ gameId, response, points, gameOver = false }) {
 		if(!game.finished && player)
 			player.socket.emit('Information', { message: 'You select the next question.' });
 
-		game.currentPlayer = undefined;
+		game.lastBuzzedIn = undefined;
 	}
 }

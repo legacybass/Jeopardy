@@ -16,7 +16,7 @@ export default class PlayViewModel {
 		this.Status = ko.observable('Disconnected');
 		this.Loading = ko.observable(true);
 		this.GameName = ko.observable(name);
-		this.Id = ko.observable();
+		this.Id = ko.observable();	// Only used for showing the game id on the screen (for people joining)
 		this.SelectedQuestion = ko.observable();
 
 		this._contestantCount = contestantCount;

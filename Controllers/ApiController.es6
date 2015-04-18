@@ -245,6 +245,11 @@ export default function Bootstrap (router) {
 					var eightHundreds = category.Questions.filter((question) => question.Value == 800);
 					var thousands = category.Questions.filter((question) => question.Value == 1000);
 
+					[twoHunders, fourHundreds, sixHundreds, eightHundreds, thousands].forEach(n => {
+						if(n.length == 0)
+							n.push({});
+					});
+
 					category.Questions = [];
 					category.Questions.push(twoHundreds[Math.floor(Math.random() * twoHundreds.length)]);
 					category.Questions.push(fourHundreds[Math.floor(Math.random() * fourHundreds.length)]);
