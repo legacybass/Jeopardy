@@ -235,28 +235,24 @@ export default function Bootstrap (router) {
 			}
 
 			matching = matching.map((category) => {
-				if(category.Questions.length > 5) {
-					// Make sure we have one of each number in the question list
-					var twoHundreds = category.Questions.filter((question) => {
-						return question.Value == 200;
-					});
-					var fourHundreds = category.Questions.filter((question) => question.Value == 400);
-					var sixHundreds = category.Questions.filter((question) => question.Value == 600);
-					var eightHundreds = category.Questions.filter((question) => question.Value == 800);
-					var thousands = category.Questions.filter((question) => question.Value == 1000);
+				// Make sure we have one of each number in the question list
+				var twoHundreds = category.Questions.filter((question) => question.Value == 200);
+				var fourHundreds = category.Questions.filter((question) => question.Value == 400);
+				var sixHundreds = category.Questions.filter((question) => question.Value == 600);
+				var eightHundreds = category.Questions.filter((question) => question.Value == 800);
+				var thousands = category.Questions.filter((question) => question.Value == 1000);
 
-					[twoHundreds, fourHundreds, sixHundreds, eightHundreds, thousands].forEach((arr, index) => {
-						if(arr.length == 0)
-							arr.push({ Value: ((index + 1) * 200) });
-					});
+				[twoHundreds, fourHundreds, sixHundreds, eightHundreds, thousands].forEach((arr, index) => {
+					if(arr.length == 0)
+						arr.push({ Value: ((index + 1) * 200), Question: '', Answer: '' });
+				});
 
-					category.Questions = [];
-					category.Questions.push(twoHundreds[Math.floor(Math.random() * twoHundreds.length)]);
-					category.Questions.push(fourHundreds[Math.floor(Math.random() * fourHundreds.length)]);
-					category.Questions.push(sixHundreds[Math.floor(Math.random() * sixHundreds.length)]);
-					category.Questions.push(eightHundreds[Math.floor(Math.random() * eightHundreds.length)]);
-					category.Questions.push(thousands[Math.floor(Math.random() * thousands.length)]);
-				}
+				category.Questions = [];
+				category.Questions.push(twoHundreds[Math.floor(Math.random() * twoHundreds.length)]);
+				category.Questions.push(fourHundreds[Math.floor(Math.random() * fourHundreds.length)]);
+				category.Questions.push(sixHundreds[Math.floor(Math.random() * sixHundreds.length)]);
+				category.Questions.push(eightHundreds[Math.floor(Math.random() * eightHundreds.length)]);
+				category.Questions.push(thousands[Math.floor(Math.random() * thousands.length)]);
 
 				return category;
 			});
