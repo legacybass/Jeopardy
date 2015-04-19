@@ -27,12 +27,12 @@ div#Game
 	//- 			div.question(data-bind!="with: SelectedQuestion")
 	//- 					p.text-center(data-bind!="text: Question")
 
-	div(data-bind!="if: SelectedQuestion")
-		div.modal.fade
-			div.modal-dialog
+	div
+		div.modal.fade(role="dialog")
+			div.modal-dialog.modal-lg
 				div.modal-content
 					div.modal-body
-						div.question(data-bind!="with: SelectedQuestion")
+						div.screen.categoryHeader(data-bind!="with: SelectedQuestion")
 							p.text-center(data-bind!="text: Question")
 
 

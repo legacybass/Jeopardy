@@ -245,9 +245,9 @@ export default function Bootstrap (router) {
 					var eightHundreds = category.Questions.filter((question) => question.Value == 800);
 					var thousands = category.Questions.filter((question) => question.Value == 1000);
 
-					[twoHundreds, fourHundreds, sixHundreds, eightHundreds, thousands].forEach(n => {
-						if(n.length == 0)
-							n.push({});
+					[twoHundreds, fourHundreds, sixHundreds, eightHundreds, thousands].forEach((arr, index) => {
+						if(arr.length == 0)
+							arr.push({ Value: ((index + 1) * 200) });
 					});
 
 					category.Questions = [];

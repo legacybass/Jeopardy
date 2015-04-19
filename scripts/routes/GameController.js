@@ -63,5 +63,7 @@ export function Play(context) {
 			Userid: context.session('user', () => '-1')
 		});
 		ko.applyBindings(viewModel, context.$element().children('#Game')[0]);
+
+		window.addEventListener('unload', () => viewModel.NavigateAway());
 	});
 }

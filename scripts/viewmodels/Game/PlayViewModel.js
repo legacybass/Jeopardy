@@ -2,6 +2,8 @@ import ko from 'knockout';
 import mapping from 'knockout.mapping';
 import ErrorHandler from 'errorhandler';
 import jeopardy from 'jeopardy';
+import $ from 'jquery';
+import bootstrap from 'bootstrap.min';
 
 var errorHandler = new ErrorHandler();
 
@@ -78,6 +80,10 @@ export default class PlayViewModel {
 		this.__answerViewModel.ShowAnswer(question.Answer);
 		this.SelectedQuestion(question);
 		question.isAnswered(true);
+
+		this.__modal = $('.modal').modal({
+
+		});
 	}
 
 	AnswerQuestion (isCorrect) {
@@ -85,9 +91,7 @@ export default class PlayViewModel {
 
 		if(isCorrect) {
 			// TODO: Hide counter and question
-			var question = this.SelectedQuestion();
-			this.__answerViewModel.MarkAnswered();
-			this.SelectedQuestion(undefined);
+			this.ClearQuestion();
 		}
 		else {
 			// TODO: Reset question counter
@@ -110,11 +114,16 @@ export default class PlayViewModel {
 				title: "Time Out"
 			})
 
-			var question = this.SelectedQuestion();
-			this.SelectedQuestion(undefined);
-			this.__answerViewModel.MarkAnswered();
+			this.ClearQuestion();
 			// TODO: Hide counter and question, and play timeout sound
 		}
+	}
+
+	ClearQuestion () {
+			this.__modal.modal('hide');
+			var question = this.SelectedQuestion();
+			this.__answerViewModel.MarkAnswered();
+			//this.SelectedQuestion(undefined);
 	}
 
 	UpdateTimer (count) {
@@ -136,7 +145,7 @@ export default class PlayViewModel {
 	}
 
 	NavigateAway () {
-		this.__game.close();
+		this.__game.Close();
 		this.__answerWindow.close();
 	}
 }
