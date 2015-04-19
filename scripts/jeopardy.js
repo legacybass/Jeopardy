@@ -21,14 +21,19 @@ export default class Jeopardy {
 		var gameSocket = io(url + '/Game'),
 			chatSocket = io(url + '/Chat');
 
-		this.__game = new Game({ socket: gameSocket, onBuzzIn: this.PlayerBuzzIn.bind(this), onInformation: this.Information.bind(this),
-					onError: this.Error.bind(this) });
+		this.__game = new Game({
+			socket: gameSocket,
+			onBuzzIn: this.PlayerBuzzIn.bind(this),
+			onInformation: this.Information.bind(this),
+			onError: this.Error.bind(this)
+		});
 		this.__chat = new Chat({ socket: chatSocket });
 		this._selectedQuestion;
 		this._userId = userId;
 		this._status = 'Disconnected';
 
-		this._timer = new Timer({ onFinish: () => {
+		this._timer = new Timer({
+		onFinish: () => {
 			if(this._currentPlayer) {
 				// Contestant timeout
 				this._currentPlayer = undefined;
@@ -36,7 +41,7 @@ export default class Jeopardy {
 			}
 			else {
 				// Question Timeout - question over
-				this.__game.AnswerQuestion({ response: false });
+				this.AnswerQuestion({ response: false, timeout: true });
 			}
 
 			onTimeout();
@@ -53,6 +58,15 @@ export default class Jeopardy {
 		this._errorCallback = onError;
 		this._connectionChangeCallback = onConnectionChange;
 		this._informationCallback = onInformation;
+
+		this._RemoveQuestion = function (question) {
+			var category = this.__categories.filter(n => n.Questions.indexOf(question) > -1);
+			if(category.length == 1) {
+				category = category[0];
+				var index = category.Questions.indexOf(question);
+				category.Questions.splice(index, 1);
+			}
+		}
 	}
 
 	Load ({ required = [ ], userId, name }) {
@@ -63,13 +77,15 @@ export default class Jeopardy {
 					this._errorCallback({ message: identifier.message, status: 'Disconnected' });
 				}
 				else {
-					this.__game.Start({ name: name, gameId: identifier });
+					this.__gameId = identifier.game;
+					this.__game.Start({ name: name, gameId: this.__gameId });
 
-					data.GetCategories({ required: required, userid: userId })
+					data.GetGameCategories({ required: required, userid: userId })
 					.then(data => {
-						// Process categories to get just the ones we want
-						if(Array.isArray(data))
-							resolve({ id: identifier, categories: data });
+						if(Array.isArray(data)) {
+							resolve({ id: this.__gameId, categories: data });
+							this.__categories = data;
+						}
 						else
 							reject({ message: 'Server returned invalid data.' });
 					},
@@ -86,24 +102,28 @@ export default class Jeopardy {
 
 	SelectQuestion ({ question }) {
 		this._selectedQuestion = question;
-		this.__game.SelectQuestion();
-
-		// Display answer on _answer window
+		this.__game.SelectQuestion({ gameId: this.__gameId });
 
 		// Start question timeout
 		this._timer.Start(this._question);
 	}
 
-	AnswerQuestion({ response }) {
+	AnswerQuestion({ response, timeout = false }) {
 		if(!this._selectedQuestion) {
 			return this._errorCallback({ message: 'No question has been selected.', status: 'NoQuestion' });
 		}
 
-		this.__game.AnswerQuestion({ response: response });
+		this.__game.AnswerQuestion({
+			gameId: this.__gameId,
+			response: response,
+			points: this._selectedQuestion.Value,
+			gameOver: this.IsLastQuestion()
+		});
 		this._timer.Stop();
 
-		if(response) {
+		if(response || timeout) {
 			this._selectedQuestion = undefined;
+			this._RemoveQuestion(this._selectedQuestion);
 			// TODO: Update the _answer window to indicate tha question is over
 		}
 		else {
@@ -141,5 +161,9 @@ export default class Jeopardy {
 
 	Close () {
 		this.__game.Close();
+	}
+
+	IsLastQuestion () {
+		return this.__categories.reduce((aggregate, current) => aggregate + current.Questions.length, 0) <= 1;
 	}
 }

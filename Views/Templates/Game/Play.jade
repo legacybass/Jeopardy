@@ -11,7 +11,7 @@ div#Game
 	div(data-bind!="if: Categories().length <= 0")
 		h2.text-center No questions are available for this game.
 
-	div.gameboard(data-bind!="ifnot: Categories().length <= 0, visible: true", style="display: none;")
+	div.gameboard(data-bind!="if: Categories().length > 0, visible: true", style="display: none;")
 		div.categories.row(data-bind!="foreach: Categories")
 			div.screen.categoryHeader.col-xs-2
 				p.text-uppercase(data-bind!="text: Name")
@@ -19,14 +19,21 @@ div#Game
 			div.col-xs-2.column(data-bind!="foreach: Questions")
 				div.screen.question(data-bind!="click: function(question) { $root.SelectQuestion(question) }")
 					p.money(data-bind!="ifnot: isAnswered")
-						span(data-bind!="text: '$' + Value(), attr: { title: '$' + Value() }")
+						span(data-bind!="text: '$' + Value, attr: { title: '$' + Value }")
 
-	div(data-bind!="if: SelectedQuestion")
-		div.selected-question.fade.col-xs-7(data-bind!="css: { 'in': SelectedQuestion }")
-			div.bezel
-				div.question(data-bind!="with: SelectedQuestion")
-						p.text-center(data-bind!="text: Question")
+	//- div(data-bind!="if: SelectedQuestion")
+	//- 	div.selected-question.fade.col-xs-7(data-bind!="css: { 'in': SelectedQuestion }")
+	//- 		div.bezel
+	//- 			div.question(data-bind!="with: SelectedQuestion")
+	//- 					p.text-center(data-bind!="text: Question")
 
+	div
+		div.modal.fade(role="dialog")
+			div.modal-dialog.modal-lg
+				div.modal-content
+					div.modal-body
+						div.screen.categoryHeader(data-bind!="with: SelectedQuestion")
+							p.text-center(data-bind!="text: Question")
 
 
 

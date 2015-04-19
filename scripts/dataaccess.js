@@ -26,8 +26,9 @@ var porter = p({
 		login: ['post', '/api/Contestant/Login']
 	},
 	game: {
-		new: ['post', '/api/Data/Game'],
-		stats: ['get', '/api/Data/Game']
+		new: ['post', '/api/Game/New'],
+		categories: ['get', '/api/Game/Categories'],
+		stats: ['get', '/api/Game/:gameid']
 	}
 }).on({
 	'500': (err, response) => {
@@ -159,6 +160,17 @@ export function ContestantLogin({ }) {
 export function CreateGame({ userid, name, identifier }) {
 	return new Promise((resolve, reject) => {
 		porter.game.new({ name: name, identifier: identifier, userid: userid }, (err, res) => {
+			if(err)
+				reject(err);
+			else
+				resolve(res);
+		});
+	});
+}
+
+export function GetGameCategories({ userid, required }) {
+	return new Promise((resolve, reject) => {
+		porter.game.categories({ userid: userid, required: required }, (err, res) => {
 			if(err)
 				reject(err);
 			else

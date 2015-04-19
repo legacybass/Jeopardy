@@ -24,6 +24,8 @@ exports.boot = function(callback)
 	}
 
 	next();
+
+	return app;
 }
 
 // Setup any server configurations

@@ -8,9 +8,10 @@ public/css/*.css
 Views/Templates/**/*.html
 Modules/*.js
 npm-debug.log
+*.njsproj
 bin
 obj
+*.dat
 *.user
-.ntvs_analysis.dat
-.pubxml
-.njsproj
+*.pubxml
+.orig

@@ -2,6 +2,8 @@ import ko from 'knockout';
 import mapping from 'knockout.mapping';
 import ErrorHandler from 'errorhandler';
 import jeopardy from 'jeopardy';
+import $ from 'jquery';
+import bootstrap from 'bootstrap.min';
 
 var errorHandler = new ErrorHandler();
 
@@ -16,7 +18,7 @@ export default class PlayViewModel {
 		this.Status = ko.observable('Disconnected');
 		this.Loading = ko.observable(true);
 		this.GameName = ko.observable(name);
-		this.Id = ko.observable();
+		this.Id = ko.observable();	// Only used for showing the game id on the screen (for people joining)
 		this.SelectedQuestion = ko.observable();
 
 		this._contestantCount = contestantCount;
@@ -47,11 +49,12 @@ export default class PlayViewModel {
 			else if(Array.isArray(data.categories))
 			{
 				this.Id(data.id);
-
-				this.Categories.push.apply(this.Categories, data.categories.map(n => {
+				
+				data.categories.forEach(n => {
 					if(Array.isArray(n.Questions))
 						n.Questions.forEach(m => { m.isAnswered = ko.observable(false); });
-				}));
+					this.Categories.push(n);
+				});
 			}
 			else {
 				errorHandler.Show({ message: 'An internal error occurred on the server.', title: 'Error Loading Categories' });
@@ -61,6 +64,11 @@ export default class PlayViewModel {
 			errorHandler.Log({ message: err.message, level: 'warning' });
 			errorHandler.Show({ message: 'Could not load categories for this game. ' + err.message, title: 'Error Loading Categories'});
 		});
+
+		this.__answerWindow = window.open("/Views/Templates/Game/Answer.html", undefined, "height=800, width=800, menubar=no, status=no, titlebar=no, toolbar=no");
+		this.__answerWindow.ParentViewModel = { OnReady: (vm) => {
+			this.__answerViewModel = vm;
+		}};
 	}
 
 	SelectQuestion (question) {
@@ -69,7 +77,13 @@ export default class PlayViewModel {
 
 		// TODO: Show question timer
 		// TODO: Show the selected question
+		this.__answerViewModel.ShowAnswer(question.Answer);
 		this.SelectedQuestion(question);
+		question.isAnswered(true);
+
+		this.__modal = $('.modal').modal({
+
+		});
 	}
 
 	AnswerQuestion (isCorrect) {
@@ -77,9 +91,7 @@ export default class PlayViewModel {
 
 		if(isCorrect) {
 			// TODO: Hide counter and question
-			var question = this.SelectedQuestion();
-			question.isAnswered(true);
-			this.SelectedQuestion(undefined);
+			this.ClearQuestion();
 		}
 		else {
 			// TODO: Reset question counter
@@ -89,17 +101,29 @@ export default class PlayViewModel {
 	QuestionTimeout () {
 		if(this._contestant) {
 			// current contestant timed out
-			alert(this._contestant + " timed out.");
+			errorHandler.Show({
+				message: this._contestant + " timed out.",
+				title: "Time Out"
+			});
 			// play timeout sound
 		}
 		else {
 			// question timed out
-			alert("Question timed out!");
-			var question = this.SelectedQuestion();
-			question.isAnswered(true);
-			this.SelectedQuestion(undefined);
+			errorHandler.Show({
+				message: "No one buzzed in in time.",
+				title: "Time Out"
+			})
+
+			this.ClearQuestion();
 			// TODO: Hide counter and question, and play timeout sound
 		}
+	}
+
+	ClearQuestion () {
+			this.__modal.modal('hide');
+			var question = this.SelectedQuestion();
+			this.__answerViewModel.MarkAnswered();
+			//this.SelectedQuestion(undefined);
 	}
 
 	UpdateTimer (count) {
@@ -121,6 +145,7 @@ export default class PlayViewModel {
 	}
 
 	NavigateAway () {
-		this.__game.close();
+		this.__game.Close();
+		this.__answerWindow.close();
 	}
 }

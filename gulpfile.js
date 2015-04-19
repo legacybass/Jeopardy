@@ -110,7 +110,9 @@ gulp.task('client_js', ['clear_js', 'jshint'], function () {
 		.pipe(rename({ extname: '.js' }))
 		.pipe(gulp.dest(dest));
 
-	gulp.src('scripts/bootstrap/**/*.js')
+	gulp.src(['scripts/bootstrap/affix.js','scripts/bootstrap/tooltip.js', 'scripts/bootstrap/alert.js', 'scripts/bootstrap/button.js',
+			'scripts/bootstrap/carousel.js', 'scripts/bootstrap/collapse.js', 'scripts/bootstrap/dropdown.js', 'scripts/bootstrap/modal.js',
+			'scripts/bootstrap/popover.js', 'scripts/bootstrap/scrollspy.js', 'scripts/bootstrap/tab.js', 'scripts/bootstrap/transition.js'])
 		.pipe(concat('bootstrap.min.js'))
 		.pipe(gulpif(options.env === 'production',
 			uglify({

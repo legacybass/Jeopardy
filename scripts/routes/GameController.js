@@ -56,12 +56,14 @@ export function Play(context) {
 
 		var viewModel = new viewModel({
 			Name: context.params['GameName'] ? context.params["GameName"].trim() : '',
-			Required: context.params['ChosenCategories'],
+			ChosenCategories: context.params['ChosenCategories'],
 			questionCount: context.params['QuestionCounter'],
 			contestantCount: context.params['ContestantCounter'],
 			Online: onlineGame,
 			Userid: context.session('user', () => '-1')
 		});
 		ko.applyBindings(viewModel, context.$element().children('#Game')[0]);
+
+		window.addEventListener('unload', () => viewModel.NavigateAway());
 	});
 }

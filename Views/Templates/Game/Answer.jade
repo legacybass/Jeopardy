@@ -1,3 +1,33 @@
-div#Answer
-	h1.title Answer Screen
-	
+doctype html
+html
+	head
+		title(data-bind="text: Title") Answer Screen
+		link(type="text/css", rel="stylesheet", href="/public/css/bootstrap.css")
+		link(type="text/css", rel="stylesheet", href="/public/css/site.css")
+	body
+		div#Answer
+			h1.header.page-header.text-center Answer Screen
+			div.panel.panel-primary
+				div.panel-heading Answer
+				div.panel-body
+					h3(data-bind="text: Answer, css: { 'text-danger': IsAnswered }, style: { textDecoration: IsAnswered() ? 'line-through' : 'none' }")
+			div#console.panel.panel-success
+				div.panel-heading Game Information
+				div.panel-body
+					div.console
+						span#console(data-bind="foreach: Console.Messages")
+							div.entry.text-success(data-bind="html: $data")
+		include ../../Shared/_requireConfig
+		script(src="/public/js/libs/require.js")
+		script.
+			require(['viewmodels/Game/AnswerViewModel', 'knockout'], function ($__1, ko) {
+				if(!$__1 || !$__1.__esModule)
+					$__1 = { default: $__1 };
+				var viewModel = $__1.default;
+
+				var vm = new viewModel();
+
+				ko.applyBindings(vm, document.getElementById('Answer'));
+
+				window.ParentViewModel.OnReady(vm);
+			})
