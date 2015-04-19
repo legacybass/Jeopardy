@@ -62,6 +62,11 @@ export default class PlayViewModel {
 			errorHandler.Log({ message: err.message, level: 'warning' });
 			errorHandler.Show({ message: 'Could not load categories for this game. ' + err.message, title: 'Error Loading Categories'});
 		});
+
+		this.__answerWindow = window.open("/Views/Templates/Game/Answer.html", undefined, "height=800, width=800, menubar=no, status=no, titlebar=no, toolbar=no");
+		this.__answerWindow.ParentViewModel = { OnReady: (vm) => {
+			this.__answerViewModel = vm;
+		}};
 	}
 
 	SelectQuestion (question) {
@@ -70,7 +75,9 @@ export default class PlayViewModel {
 
 		// TODO: Show question timer
 		// TODO: Show the selected question
+		this.__answerViewModel.ShowAnswer(question.Answer);
 		this.SelectedQuestion(question);
+		question.isAnswered(true);
 	}
 
 	AnswerQuestion (isCorrect) {
@@ -79,7 +86,7 @@ export default class PlayViewModel {
 		if(isCorrect) {
 			// TODO: Hide counter and question
 			var question = this.SelectedQuestion();
-			question.isAnswered(true);
+			this.__answerViewModel.MarkAnswered();
 			this.SelectedQuestion(undefined);
 		}
 		else {
@@ -90,15 +97,22 @@ export default class PlayViewModel {
 	QuestionTimeout () {
 		if(this._contestant) {
 			// current contestant timed out
-			alert(this._contestant + " timed out.");
+			errorHandler.Show({
+				message: this._contestant + " timed out.",
+				title: "Time Out"
+			});
 			// play timeout sound
 		}
 		else {
 			// question timed out
-			alert("Question timed out!");
+			errorHandler.Show({
+				message: "No one buzzed in in time.",
+				title: "Time Out"
+			})
+
 			var question = this.SelectedQuestion();
-			question.isAnswered(true);
 			this.SelectedQuestion(undefined);
+			this.__answerViewModel.MarkAnswered();
 			// TODO: Hide counter and question, and play timeout sound
 		}
 	}
@@ -123,5 +137,6 @@ export default class PlayViewModel {
 
 	NavigateAway () {
 		this.__game.close();
+		this.__answerWindow.close();
 	}
 }

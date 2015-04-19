@@ -104,9 +104,6 @@ export default class Jeopardy {
 		this._selectedQuestion = question;
 		this.__game.SelectQuestion({ gameId: this.__gameId });
 
-		// Display answer on _answer window
-		console.info(question.Answer);
-
 		// Start question timeout
 		this._timer.Start(this._question);
 	}

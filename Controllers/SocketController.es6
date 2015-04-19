@@ -197,6 +197,8 @@ function AnswerQuestion({ gameId, response, points, gameOver = false }) {
 
 		// Last user got the question right.
 		if(response) {
+			game.ready = false;
+
 			if(!player)
 				game.host.emit('Error', { message: 'No player was selected for answering this question.' });
 			else {
@@ -205,9 +207,15 @@ function AnswerQuestion({ gameId, response, points, gameOver = false }) {
 				// Store the player to notify they are next to choose
 				game.lastCorrect = player;
 
+				// clear players so they can all answer again
+				game.players.forEach(p => {
+					if(p.socket.lockout)
+						delete p.socket.lockout;
+				});
+
 				Game.IncrementScore({ gameId: gameId, name: player.name, identifier: player.identifier, points: points })
 				.then(() => {
-
+					// TODO: Send update score message?
 				},
 				err => {
 					game.host.emit('Information', {
@@ -216,12 +224,12 @@ function AnswerQuestion({ gameId, response, points, gameOver = false }) {
 					 });
 				});
 			}
-			game.ready = false;
 		}
 		else {
 			if(player) {
 				// Someone buzzed in, but they got it wrong
 				game.ready = true;
+				this.lockout = 1;
 				this.to(room).emit('Information', { message: 'Question ready.', status: 'Ready' });	
 			}
 			else {

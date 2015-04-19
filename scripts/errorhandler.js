@@ -77,3 +77,24 @@ export default class MessageHandler {
 			console.info("%s: %s", title, message);
 	}
 }
+
+export class Console {
+	constructor () {
+		this.Messages = ko.observableArray();
+	}
+
+	Warn (message) {
+		var output = '<span class="glyphicon glyphicon-alert icon text-danger" aria-hidden="true"></span><strong>' + message + "</strong>";
+		this.Messages.push(output);
+	}
+
+	Log (message) {
+		var output = '<span class="glyphicon glyphicon-triangle-right icon" aria-hidden="true"></span>' + message;
+		this.Messages.push(output);
+	}
+
+	Info (message) {
+		var output = '<span class="glyphicon glyphicon-info-sign icon text-info"></span><em>' + message + '</em>';
+		this.Messages.push(output);
+	}
+}
