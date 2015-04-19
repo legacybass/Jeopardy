@@ -14,4 +14,4 @@ obj
 *.dat
 *.user
 *.pubxml
-.orig
+*.orig
