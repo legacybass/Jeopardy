@@ -8,3 +8,9 @@ public/css/*.css
 Views/Templates/**/*.html
 Modules/*.js
 npm-debug.log
+bin
+obj
+*.user
+.ntvs_analysis.dat
+.pubxml
+.njsproj
