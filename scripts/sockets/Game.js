@@ -70,13 +70,16 @@ export default class Game {
 		});
 	}
 
-	Join ({ name, gameId, gameName, identifier }) {
+	Join ({ name, gameId, identifier }) {
+		/// <summary>
+		/// Call to connect a contestant with an existing game
+		/// </summary>
+
 		this._Init({ name: name });
 		this.socket.emit('Join', {
 			username: name,
-			identifier: identifier,
-			game: gameId,
-			gameName: gameName
+			playerIdentifier: identifier,
+			game: gameId
 		});
 	}
 
@@ -105,11 +108,10 @@ export default class Game {
 		this.socket.close();
 	}
 
-	BuzzIn ({ gameId, player, game }) {
+	BuzzIn ({ gameId, playerId }) {
 		this.socket.emit('BuzzIn', {
 			gameId: gameId,
-			player: player,
-			gameId: game
+			playerId: playerId
 		});
 	}
 }

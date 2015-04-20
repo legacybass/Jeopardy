@@ -1,2 +1,26 @@
 div#Login
-	| Contestant Login Page
+	h2.title.text-center Contestant Login
+	ol.breadcrumb
+		li
+			a(href="#/") Home
+		li.active Contestant Login
+	form.form.form-horizontal(role="form", data-bind="submit: Submit", action="#/Contestant/Play", method="POST")
+		div.form-group(data-bind="css: { 'has-error has-feedback': !GameIdValid() }")
+			label.control-label.col-sm-3(for="gameId") Game Identifier:
+			div.col-sm-9
+				input#gameId.form-control(type="text", name="gameId", required="required", placeholder="1A2B3C4D5E6F7G8H9", data-bind!="value: GameId",
+					pattern="^[a-fA-F0-9]{24}$")
+				span(data-bind!="css: { 'glyphicon glyphicon-remove form-control-feedback': !GameIdValid() }")
+		div.form-group(data-bind!="css: { 'has-error has-feedback': !ContestantNameValid() }")
+			label.control-label.col-sm-3(for="contestantName") Contestant Name:
+			div.col-sm-9
+				input#contestantName.form-control(type="text", name="contestantName", required="required", pattern="^[a-zA-Z]+[\\sa-zA-Z0-9]*$",
+					placeholder="Contestant Name", data-bind!="textInput: ContestantName", autofocus, minlength="3")
+				span(data-bind!="css: { 'glyphicon glyphicon-remove form-control-feedback': !ContestantNameValid() }")
+		div.form-group
+			label.control-label.col-sm-3(for="contestantId") Contestant Identifier:
+			div.col-sm-9
+				input#contestantId.form-control(type="text", name="contestantId", placeholder="0123456789", data-bind!="textInput: ContestantId")
+		div.form-group
+			div.col-sm-offset-3.col-sm-9
+				button.btn.btn-primary.btn-block(type="submit", data-bind!="enable: AllValid") Join Game

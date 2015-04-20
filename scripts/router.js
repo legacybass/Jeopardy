@@ -27,6 +27,7 @@ export function SetupRoutes(main = '#main') {
 		this.get('#/Game/Play', Game.Play);
 		this.get('#/Data/Manage', Data.Manage);
 		this.get('#/Contestant/Login', Contestant.Login);
+		this.get('#/Contestant/Play', Contestant.Play);
 
 
 		// Post calls
@@ -42,6 +43,16 @@ export function SetupRoutes(main = '#main') {
 			context.redirect("#/Game/Play?" + query);
 		});
 		this.post('#/Game/Play', Game.Play);
+		this.post('#/Contestant/Play', context => {
+			var query = "";
+			for(var key in context.params) {
+				if(context.params.hasOwnProperty(key)) {
+					query += key + "=" + context.params[key] + "&";
+				}
+			}
+			context.redirect("#/Contestant/Play?" + query);
+		});
+		this.post('#/Contestant/Play', Contestant.Play);
 
 
 		// Delete calls

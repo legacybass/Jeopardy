@@ -232,19 +232,19 @@ export var Games = (() => {
 				})
 			});
 		},
-		JoinGame: ({ game, name, identifier }) => {
+		JoinGame: ({ game, playerName, playerIdentifier }) => {
 			return new Promise((resolve, reject) => {
 				gameModel.findOne({ _id: game })
 				.exec((err, game) => {
-					if(err)
+					if(err || !game)
 						return reject({ message: 'Could not find game.', exception: err });
 
-					if(game.players.some((player) => player.Name == name || player.Id == identifier ))
+					if(game.Players.some((player) => player.Name == playerName || player.Id == playerIdentifier ))
 						return reject({ message: 'Player already exists.' });
 
 					var player = game.Players.create({
-						Name: player,
-						Id: identifier
+						Name: playerName,
+						Id: playerIdentifier
 					});
 
 					game.Players.push(player);
@@ -276,9 +276,14 @@ export var Games = (() => {
 					if(err)
 						return reject({ message: err.message, exception: err });
 
+					if(!game)
+						return reject({ message: 'Could not find game.' });
+
+					var foundPlayer;
 					var found = game.Players.some((player) => {
 						if(player.Name == name && player.Id == identifier) {
 							player.Score += points;
+							foundPlayer = player;
 							return true;
 						}
 
@@ -290,7 +295,7 @@ export var Games = (() => {
 							if(err)
 								reject({ message: err.message, exception: err });
 							else
-								resolve();
+								resolve({ player: foundPlayer });
 						});
 					}
 					else
@@ -305,8 +310,11 @@ export var Games = (() => {
 					if(err)
 						return reject({ message: err.message, exception: err });
 
+					if(!game)
+						return reject({ message: 'Could not find game.' });
+
 					var found = game.Players.some((player) => {
-						if(player.Name == name, player.Id == identifier) {
+						if(player.Name == name && player.Id == identifier) {
 							player.BuzzCount++;
 							return true;
 						}
@@ -333,6 +341,8 @@ export var Games = (() => {
 				.exec((err, game) => {
 					if(err)
 						return reject({ message: 'Could not find game.', exception: err });
+					if(!game)
+						return reject({ message: 'Could not find game.' });
 
 					resolve(game.Players);
 				});

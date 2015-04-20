@@ -38,6 +38,9 @@ export default class PlayViewModel {
 			onInformation: ({ message }) => {
 				errorHandler.show({ message: message, title: '', level: 'info'})
 			},
+			onGameOver: (stats) => {
+				console.log(stats);
+			},
 			userId: Userid
 		});
 		
@@ -52,7 +55,7 @@ export default class PlayViewModel {
 				
 				data.categories.forEach(n => {
 					if(Array.isArray(n.Questions))
-						n.Questions.forEach(m => { m.isAnswered = ko.observable(false); });
+						n.Questions.forEach(m => { m.isAnswered = ko.observable(!!m.Answered); });
 					this.Categories.push(n);
 				});
 			}

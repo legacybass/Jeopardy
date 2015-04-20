@@ -8,6 +8,8 @@ div#Game
 		li
 			a(href="#/Game/Setup") Setup
 		li.active Play
+	div.gameIdentifier
+		p(data-bind="text: Id")
 	div(data-bind!="if: Categories().length <= 0")
 		h2.text-center No questions are available for this game.
 

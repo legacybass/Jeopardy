@@ -1,4 +1,7 @@
 import { Categories, Users, Questions, Games } from '../Modules/DataInteraction';
+import debugLib from 'debug';
+
+var debug = debugLib('ApiController');
 
 export default function Bootstrap (router) {
 	// Login a user
@@ -244,7 +247,7 @@ export default function Bootstrap (router) {
 
 				[twoHundreds, fourHundreds, sixHundreds, eightHundreds, thousands].forEach((arr, index) => {
 					if(arr.length == 0)
-						arr.push({ Value: ((index + 1) * 200), Question: '', Answer: '' });
+						arr.push({ Value: ((index + 1) * 200), Question: '', Answer: '', Answered: true });
 				});
 
 				category.Questions = [];
@@ -266,8 +269,8 @@ export default function Bootstrap (router) {
 	});
 
 	// Get the stats for a game
-	router.get('/api/Game/:gameid', (req, res, next) => {
-		var gameId = req.body.gameId;
+	router.get('/api/Game/:gameid/Stats', (req, res, next) => {
+		var gameId = req.params.gameid;
 
 		Games.GetStats({ gameId })
 		.then((stats) => {
@@ -277,5 +280,18 @@ export default function Bootstrap (router) {
 			console.log(err);
 			res.json({ message: 'Could not get game stats.', error: true });
 		});
+	});
+
+	router.get('/api/Game/:gameid/Exists', (req, res, next) => {
+		var gameId = req.params.gameid;
+
+		Games.GetStats({ gameId })
+		.then((stats) => {
+			res.json({ exists: !!stats });
+		},
+		(err) => {
+			debug(err);
+			res.json({ exists: false });
+		})
 	});
 }

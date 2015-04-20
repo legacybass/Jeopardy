@@ -28,7 +28,8 @@ var porter = p({
 	game: {
 		new: ['post', '/api/Game/New'],
 		categories: ['get', '/api/Game/Categories'],
-		stats: ['get', '/api/Game/:gameid']
+		stats: ['get', '/api/Game/:gameid/Stats'],
+		exists: ['get', '/api/Game/:gameid/Exists']
 	}
 }).on({
 	'500': (err, response) => {
@@ -179,8 +180,24 @@ export function GetGameCategories({ userid, required }) {
 	});
 }
 
-export function GetGameStats({ game, identifier }) {
+export function GetGameStats({ game }) {
 	return new Promise((resolve, reject) => {
-		reject({ message: 'Not implemented' });
+		porter.game.stats({ gameid: game }, (err, res) => {
+			if(err)
+				reject(err);
+			else
+				resolve(res);
+		});
+	});
+}
+
+export function CheckGameExists({ gameId }) {
+	return new Promise((resolve, reject) => {
+		porter.game.exists({ gameid: gameId }, (err, res) => {
+			if(err)
+				reject(err);
+			else
+				resolve(res);
+		});
 	});
 }

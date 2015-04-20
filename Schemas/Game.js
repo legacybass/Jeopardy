@@ -8,7 +8,8 @@ var GameSchema = new Schema({
 	Host: { type: String },
 	Name: { type: String, required: true },
 	Categories: [CategorySchema],
-	Players: [ PlayerSchema ]
+	Players: [ PlayerSchema ],
+	HasFinished: { type: Boolean }
 });
 
 module.exports = GameSchema;

@@ -15,7 +15,8 @@ import Promise from 'libs/promise';
 
 export default class Jeopardy {
 	constructor ({ name, questionCount: question, contestantCount: contestant, onTimeout = () => { }, onTimerChanged = count => { },
-					onBuzzIn = () => { }, onError = () => { }, onConnectionChange = () => { }, onInformation = () => { }, userId }) {
+					onBuzzIn = () => { }, onError = () => { }, onConnectionChange = () => { }, onInformation = () => { }, userId },
+					onGameOver = () => { }) {
 		var url = Host() || 'http://localhost';
 
 		var gameSocket = io(url + '/Game'),
@@ -58,6 +59,7 @@ export default class Jeopardy {
 		this._errorCallback = onError;
 		this._connectionChangeCallback = onConnectionChange;
 		this._informationCallback = onInformation;
+		this._gameOverCallback = onGameOver;
 
 		this._RemoveQuestion = function (question) {
 			var category = this.__categories.filter(n => n.Questions.indexOf(question) > -1);
@@ -124,7 +126,16 @@ export default class Jeopardy {
 		if(response || timeout) {
 			this._selectedQuestion = undefined;
 			this._RemoveQuestion(this._selectedQuestion);
-			// TODO: Update the _answer window to indicate tha question is over
+			
+			if(this.IsLastQuestion()) {
+				data.GetGameStats({ game: this.__gameId })
+				.then((res) => {
+					this._gameOverCallback(res);
+				},
+				(err) => {
+					this._errorCallback({ message: "Could not retrieve game stats.", error: err });
+				});
+			}
 		}
 		else {
 			this._timer.Start(this._question);

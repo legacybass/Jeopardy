@@ -32,7 +32,7 @@
 
 import socket from 'socket.io';
 import monitor from 'monitor.io';
-import { Game } from '../Modules/DataInteraction';
+import { Games } from '../Modules/DataInteraction';
 
 var games = { };
 
@@ -59,7 +59,9 @@ export default function Bootstrap(server) {
 
 	var chat = io.of('/Chat')
 	.on('connection', socket => {
-
+		socket.on('Join', () => { socket.emit("Error", { message: "Not implemented", status: "Disconnected" })});
+		socket.on('Send', () => { socket.emit("Error", { message: "Not implemented", status: "Disconnected" })});
+		socket.on('disconnect', () => { });
 	});
 }
 
@@ -80,17 +82,16 @@ function Start({ gameId, name }) {
 
 // Username is the player's game name
 // Game is the game id from the database,
-// Room is the game name
 // Identifier is their WNumber or other identifier
-function Join({ username, game, gameName: room, identifier }) {
+function Join({ username, game, playerIdentifier }) {
 	// Join the game room
 	var socket = this;
 
 	if(!games[game])
 		return socket.emit("Error", { message: 'Game does not exist.', status: 'Disconnected' });
 
-	if(room && username && game) {
-		socket.join(room);
+	if(username && game) {
+		socket.join(game);
 
 		socket.gameOptions = {
 			username: username,
@@ -98,13 +99,13 @@ function Join({ username, game, gameName: room, identifier }) {
 			game: game
 		};
 
-		socket.to(room).emit('Information', { message: username + ' has joined the game.' });
+		socket.to(game).emit('Information', { message: username + ' has joined the game.' });
 
-		Game.JoinGame({ game: room, player: username, identifier: identifier, host: host })
+		Games.JoinGame({ game: game, playerName: username, playerIdentifier: playerIdentifier })
 		.then((player) => {
 			socket.gameOptions.player = player;
 			socket.emit('Information', { status: 'Connected' });
-			games[game].players.push({ socket: socket, player: player, identifier: identifier });
+			games[game].players.push({ socket: socket, player: player, playerIdentifier: playerIdentifier });
 		},
 		(err) => {
 			console.log(err);
@@ -116,24 +117,30 @@ function Join({ username, game, gameName: room, identifier }) {
 	}
 }
 
-function BuzzIn({ gameId, name, identifier }) {
+function BuzzIn() {
 	// TODO: Get the player and increment their buzz count,
 	// and lock them out if buzzing in at the wrong time.
+	if(!this.gameOptions || !this.gameOptions.game)
+		return this.emit('Error', { message: 'You are not connected to a game.', status: 'Disconnected' });
+
+	var gameId = this.gameOptions.game,
+		playerName = this.gameOptions.player.Name,
+		identifier = this.gameOptions.player.Id;
+
 	if(games[gameId]) {
-		var game = games[gameId],
-			room = games[gameId].name;
+		var game = games[gameId];
 
 		if(game.ready) {
 			if(this.lockout)
-				return this.emit('Information', { message: 'You are locked out.' });
+				return this.emit('Information', { message: 'You are currently locked out.' });
 
 			if(!game.lastBuzzedIn) {
-				game.lastBuzzedIn = { name: name, identifier: identifier, socket: this };
-				this.to(room).emit('Information', { message: name + ' buzzed in.' });
-				game.host.emit('BuzzIn', { player: name });
+				game.lastBuzzedIn = { name: playerName, socket: this };
+				this.to(game).emit('Information', { message: playerName + ' buzzed in.' });
+				game.host.emit('BuzzIn', { player: playerName });
 			}
 
-			Game.IncrementBuzzIns({ gameId: gameId, name: name, identifier: identifier })
+			Games.IncrementBuzzIns({ gameId: gameId, name: playerName, identifier: identifier })
 			.then(() => {
 
 			},
@@ -153,6 +160,7 @@ function BuzzIn({ gameId, name, identifier }) {
 				}
 				else {
 					delete socket.lockout;
+					clearTimeout(p.socket.lockoutToken);
 					delete socket.lockoutToken;
 				}
 			}
@@ -179,9 +187,8 @@ function SelectQuestion({ gameId }) {
 
 	// Game exists and this is the host
 	if(!!game && this.id === game.host.id) {
-		var room = game.name;
 		game.ready = true;
-		this.to(room).emit('Information', { message: 'Question ready.', status: 'Ready' })
+		this.to(gameId).emit('Information', { message: 'Question ready.', status: 'Ready' })
 	}
 }
 
@@ -190,7 +197,6 @@ function AnswerQuestion({ gameId, response, points, gameOver = false }) {
 
 	// Game exists and this is the host
 	if(game && this.id === game.host.id) {
-		var room = game.name;
 		game.finished = !!gameOver;
 		
 		var player = game.lastBuzzedIn;
@@ -202,20 +208,24 @@ function AnswerQuestion({ gameId, response, points, gameOver = false }) {
 			if(!player)
 				game.host.emit('Error', { message: 'No player was selected for answering this question.' });
 			else {
-				this.to(room).emit('Information', { message: player.name + ' got the question right.', status: 'Connected' });
+				this.to(gameId).emit('Information', { message: player.name + ' got the question right.', status: 'Connected' });
 
 				// Store the player to notify they are next to choose
 				game.lastCorrect = player;
 
 				// clear players so they can all answer again
 				game.players.forEach(p => {
-					if(p.socket.lockout)
-						delete p.socket.lockout;
+					delete p.socket.lockout;
+					if(p.socket.lockoutToken) {
+						clearTimeout(p.socket.lockoutToken);
+						delete p.socket.lockoutToken;
+					}
 				});
 
-				Game.IncrementScore({ gameId: gameId, name: player.name, identifier: player.identifier, points: points })
-				.then(() => {
+				Games.IncrementScore({ gameId: gameId, name: player.name, identifier: player.identifier, points: points })
+				.then((result) => {
 					// TODO: Send update score message?
+					player.socket.emit('Information', { score: result.player.Score, status: 'Update' });
 				},
 				err => {
 					game.host.emit('Information', {
@@ -230,12 +240,12 @@ function AnswerQuestion({ gameId, response, points, gameOver = false }) {
 				// Someone buzzed in, but they got it wrong
 				game.ready = true;
 				this.lockout = 1;
-				this.to(room).emit('Information', { message: 'Question ready.', status: 'Ready' });	
+				this.to(gameId).emit('Information', { message: 'Question ready.', status: 'Ready' });	
 			}
 			else {
 				// No one buzzed in and the response was false, so the question timed out.
 				game.ready = false;
-				this.to(room).emit('Information', { message: 'The question timed out.', status: 'Connected' });
+				this.to(gameId).emit('Information', { message: 'The question timed out.', status: 'Connected' });
 			}
 		}
 
