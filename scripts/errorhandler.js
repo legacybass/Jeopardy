@@ -17,6 +17,8 @@ var defaultToastOptions = {
 	'hideMethod': 'fadeOut'
 };
 
+toastr.options = defaultToastOptions;
+
 export default class MessageHandler {
 	constructor () {
 		this._Message = ko.observable();
@@ -26,8 +28,6 @@ export default class MessageHandler {
 	}
 
 	Show({ message = '', title = '', level = 'error' }) {
-		toastr.options = defaultToastOptions;
-		
 		if(toastr[level])
 			toastr[level](message, title);
 		else
@@ -43,7 +43,7 @@ export default class MessageHandler {
 				jQuery(element).popover('show');
 			}
 			else {
-				toastr.options = {
+				toastr.warning(message, title, {
 					'positionClass': 'toast-top-right',
 					'onclick': () => {
 						isDismissed = true;
@@ -63,9 +63,7 @@ export default class MessageHandler {
 					'showMethod': 'fadeIn',
 					'hideMethod': 'fadeOut',
 					'closeButton': true
-				}
-
-				toastr.warning(message, title);
+				});
 			}
 		});
 	}
