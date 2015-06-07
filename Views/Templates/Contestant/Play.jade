@@ -1,0 +1,8 @@
+div#Play
+	div
+		//- Status
+		div(data-bind!="text: 'Status: ' + Status()")
+		div(data-bind!="text: 'Score: ' + Score()")
+	div
+		//- Controls
+		button.btn.btn-info(type="button", data-bind="click: BuzzIn.bind($data), enable: CanBuzzIn") BuzzIn
