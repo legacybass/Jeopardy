@@ -9,19 +9,12 @@ export function Setup(context) {
 		return;
 	}
 
-	require(['viewmodels/Game/SetupViewModel', 'text!Views/Templates/Game/Setup.html!strip'], function ($__1, $__2) {
-		if(!$__1 || !$__1.__esModule)
-			$__1 = { default: $__1 };
-		if(!$__2 || !$__2.__esModule)
-			$__2 = { default: $__2 };
-		var viewModel = $__1.default;
-		var index = $__2.default;
-
-		var viewmodel = new viewModel({
+	require(['viewmodels/Game/SetupViewModel', 'text!Views/Templates/Game/Setup.html!strip'], function (ViewModel, template) {
+		var viewmodel = new ViewModel({
 			userId: context.session('user', () => '-1')
 		});
 
-		context.app.swap(index);
+		context.app.swap(template);
 
 		ko.applyBindings(viewmodel, context.$element().children('#Setup')[0]);
 	});
@@ -36,15 +29,8 @@ export function Play(context) {
 		return;
 	}
 	
-	require(['viewmodels/Game/PlayViewModel', 'text!Views/Templates/Game/Play.html!strip'], function ($__1, $__2) {
-		if(!$__1 || !$__1.__esModule)
-			$__1 = { default: $__1 };
-		if(!$__2 || !$__2.__esModule)
-			$__2 = { default: $__2 };
-		var viewModel = $__1.default;
-		var game = $__2.default;
-
-		context.app.swap(game);
+	require(['viewmodels/Game/PlayViewModel', 'text!Views/Templates/Game/Play.html!strip'], function (ViewModel, template) {
+		context.app.swap(template);
 
 		var onlineGame = context.params['OnlineGame'] == "on";
 
@@ -54,7 +40,7 @@ export function Play(context) {
 			// Will also need to switch the socket logic so it doesn't break
 		}
 
-		var viewModel = new viewModel({
+		var viewModel = new ViewModel({
 			Name: context.params['GameName'] ? context.params["GameName"].trim() : '',
 			ChosenCategories: context.params['ChosenCategories'],
 			questionCount: context.params['QuestionCounter'],

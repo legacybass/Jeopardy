@@ -48,23 +48,21 @@ function BootApplication(app, next)
 	app.use(express.cookieParser('legacybass'));
 	app.use(express.session());
 
-	app.configure('development', function()
+	if(app.get('env') == 'development')
 	{
 		app.set('db-uri', 'mongodb://localhost/jeopardy-dev');
 		app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-	});
-
-	app.configure('production', function()
+	}
+	else if(app.get('env') == 'production')
 	{
 		app.set('db-uri', 'mongodb://localhost/jeopardy');
-		app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-	});
-
-	app.configure('test', function()
+		app.use(express.errorHandler({ dumpExceptions: false, showStack: false }));
+	}
+	else if(app.get('env') == 'test')
 	{
 		app.set('db-uri', 'mongodb://localhost/jeopardy-test');
 		app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-	});
+	}
 
 	next();
 }
@@ -73,8 +71,8 @@ function BootApplication(app, next)
 function BootControllers(app, next)
 {
 	// routing
-	var homeController = require('./Controllers/HomeController').default;
-	var apiController = require('./Controllers/ApiController').default;
+	var homeController = require('./Controllers/HomeController');
+	var apiController = require('./Controllers/ApiController');
 
 	app.use(app.router);
 
@@ -116,7 +114,7 @@ function BootModels(app, next)
 // Load the socket configurations and handlers
 function BootSockets(server)
 {
-	require('./Controllers/SocketController').default(server);
+	require('./Controllers/SocketController')(server);
 }
 
 var app = exports.boot(function(app) {

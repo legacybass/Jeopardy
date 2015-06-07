@@ -9,7 +9,7 @@ var gulpif = require('gulp-if');
 var jade = require('gulp-jade');
 var rename = require('gulp-rename');
 var concat = require('gulp-concat');
-var traceur = require('gulp-traceur');
+var babel = require('gulp-babel');
 
 var knownOptions = {
 	string: 'env',
@@ -21,8 +21,6 @@ var options = minimist(process.argv.slice(2), knownOptions);
 function HandleError() {
 	console.log(arguments);
 }
-
-console.log(options);
 
 // CSS/Less related tasks
 gulp.task('less', ['clear_css'], function () {
@@ -67,8 +65,8 @@ gulp.task('watch_css', function () {
 gulp.task('client_js', ['clear_js', 'jshint'], function () {
 	var dest = 'public/js';
 
-	var stream = gulp.src(['scripts/**/*.js', '!scripts/routes/**/*.js', '!scripts/bootstrap/**/*.js'])
-		.pipe(traceur({
+	var projectCode = gulp.src(['scripts/**/*.js', '!scripts/routes/**/*.js', '!scripts/bootstrap/**/*.js'])
+		.pipe(babel({
 				modules: 'amd',
 			}))
 		.pipe(gulpif(options.env === 'production',
@@ -110,7 +108,7 @@ gulp.task('client_js', ['clear_js', 'jshint'], function () {
 		.pipe(rename({ extname: '.js' }))
 		.pipe(gulp.dest(dest));
 
-	gulp.src(['scripts/bootstrap/affix.js','scripts/bootstrap/tooltip.js', 'scripts/bootstrap/alert.js', 'scripts/bootstrap/button.js',
+	var bootstrapCode = gulp.src(['scripts/bootstrap/affix.js','scripts/bootstrap/tooltip.js', 'scripts/bootstrap/alert.js', 'scripts/bootstrap/button.js',
 			'scripts/bootstrap/carousel.js', 'scripts/bootstrap/collapse.js', 'scripts/bootstrap/dropdown.js', 'scripts/bootstrap/modal.js',
 			'scripts/bootstrap/popover.js', 'scripts/bootstrap/scrollspy.js', 'scripts/bootstrap/tab.js', 'scripts/bootstrap/transition.js'])
 		.pipe(concat('bootstrap.min.js'))
@@ -151,10 +149,10 @@ gulp.task('client_js', ['clear_js', 'jshint'], function () {
 			})))
 		.pipe(gulp.dest(dest));
 
-	gulp.src('scripts/routes/**/*.js')
-		.pipe(traceur({
+	var routes = gulp.src('scripts/routes/**/*.js')
+		.pipe(babel({
 			modules: 'amd',
-			moduleName: true
+			moduleIds: true
 		}))
 		.pipe(concat('controllers.min.js'))
 		.pipe(gulpif(options.env === 'production',
@@ -194,6 +192,8 @@ gulp.task('client_js', ['clear_js', 'jshint'], function () {
 				}
 			})))
 		.pipe(gulp.dest(dest));
+
+	return [projectCode, bootstrapCode, routes];
 });
 
 gulp.task('jshint', function () {
@@ -232,9 +232,9 @@ gulp.task('server_js', ['clear_server_js'], function() {
 		.pipe(gulp.dest('Controllers'));
 
 	function RouteStream (stream) {
-		return stream.pipe(traceur({
-			moduleName: true,
-			modules: 'commonjs'
+		return stream.pipe(babel({
+			modules: 'common',
+			moduleIds: true
 		}))
 		.pipe(gulpif(options.env === 'production',
 			uglify({

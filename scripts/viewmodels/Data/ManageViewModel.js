@@ -9,9 +9,6 @@ var error = new errorhandler();
 
 export default class ManageViewModel {
 	constructor ({ userid = '0' }) {
-		if(!(this instanceof ManageViewModel))
-			return new ManageViewModel();
-
 		this.__userid = userid;
 		this.__nameRegex = /^[a-zA-Z]( ?.+){2,}$/;
 		this.__textRegex = /^.+$/;
@@ -230,7 +227,19 @@ export default class ManageViewModel {
 		() => { });
 	}
 
-	get Categories() { return this.Categories; }
-	set Categories(value) { this.Categories = value; }
+	get Categories() { return this._Categories; }
+	set Categories(value) { this._Categories = value; }
+
+	get SelectedCategory() { return this._SelectedCategory; }
+	set SelectedCategory(value) { this._SelectedCategory = value; }
+
+	get SelectedQuestion() { return this._SelectedQuestion; }
+	set SelectedQuestion(value) { this._SelectedQuestion = value; }
+
+	get NewCategory() { return this._NewCategory; }
+	set NewCategory(value) { this._NewCategory = value; }
+
+	get NewQuestion() { return this._NewQuestion; }
+	set NewQuestion(value) { this._NewQuestion = value; }
 }
 

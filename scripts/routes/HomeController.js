@@ -5,17 +5,10 @@ import * as dataAccess from 'dataaccess';
 var errorHandler = new ErrorHandler();
 
 export function Page (context, name) {
-	require(['viewmodels/Home/' + name + 'ViewModel', 'text!Views/Templates/Home/' + name + '.html!strip'], ($__1, $__2) => {
-		if(!$__1 || !$__1.__esModule)
-			$__1 = { default: $__1 };
-		if(!$__2 || !$__2.__esModule)
-			$__2 = { default: $__2 };
-		var viewModel = $__1.default;
-		var index = $__2.default;
+	require(['viewmodels/Home/' + name + 'ViewModel', 'text!Views/Templates/Home/' + name + '.html!strip'], (ViewModel, template) => {
+		var viewmodel = new ViewModel({});
 
-		var viewmodel = new viewModel({});
-
-		context.app.swap(index);
+		context.app.swap(template);
 
 		ko.applyBindings(viewmodel, context.$element().children('#' + name)[0]);
 	});

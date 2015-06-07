@@ -1,6 +1,5 @@
 import ko from 'knockout';
-import ErrorHandler from 'errorHandler';
-import { Console } from 'errorhandler';
+import ErrorHandler, { Console } from 'errorHandler';
 
 var errorHandler = new ErrorHandler();
 

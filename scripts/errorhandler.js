@@ -14,7 +14,8 @@ var defaultToastOptions = {
 	'showEasing': 'swing',
 	'hideEasing': 'linear',
 	'showMethod': 'fadeIn',
-	'hideMethod': 'fadeOut'
+	'hideMethod': 'fadeOut',
+	'showProgress': true
 };
 
 export default class MessageHandler {
