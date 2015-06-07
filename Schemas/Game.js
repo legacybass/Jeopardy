@@ -9,7 +9,8 @@ var GameSchema = new Schema({
 	Name: { type: String, required: true },
 	Categories: [CategorySchema],
 	Players: [ PlayerSchema ],
-	HasFinished: { type: Boolean }
+	HasFinished: { type: Boolean },
+	CreatedOn: { type: Date }
 });
 
 module.exports = GameSchema;

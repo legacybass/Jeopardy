@@ -12,14 +12,13 @@
     "express": "^3.2.5",
     "jade": "^1.9.2",
     "mongoose": "^4.0.1",
-    "monitor.io": "0.0.5",
     "socket.io": "^1.3.4",
     "toastr": "^2.0.4"
   },
   "author": "Daniel Beus",
   "devDependencies": {
     "del": "^0.1.3",
-    "gulp": "^3.8.8",
+    "gulp": "^3.9.0",
     "gulp-beautify": "^1.1.0",
     "gulp-concat": "^2.4.1",
     "gulp-if": "1.2.4",

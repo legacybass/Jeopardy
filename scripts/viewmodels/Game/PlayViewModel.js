@@ -23,6 +23,14 @@ export default class PlayViewModel {
 
 		this._contestantCount = contestantCount;
 		this._contestant;
+		this.__answerViewModel = { Information(msg) { this._messages.push(msg); }, Warn(msg) { this._warnings.push(msg); }, _messages: [], _warnings: [] };
+
+		this.__answerWindow = window.open("/Views/Templates/Game/Answer.html", undefined, "height=800, width=800, menubar=no, status=no, titlebar=no, toolbar=no");
+		this.__answerWindow.ParentViewModel = { OnReady: (vm) => {
+			this.__answerViewModel._messages.forEach(vm.Information.bind(vm));
+			this.__answerViewModel._warnings.forEach(vm.Warn.bind(vm));
+			this.__answerViewModel = vm;
+		}};
 
 		this.__game = new jeopardy({
 			name: name,
@@ -35,8 +43,15 @@ export default class PlayViewModel {
 			onConnectionChange: (status) => {
 				this.Status(status);
 			},
-			onInformation: ({ message }) => {
-				errorHandler.show({ message: message, title: '', level: 'info'})
+			onInformation: ({ message, status }) => {
+				switch(status) {
+					case "Connected":
+					case "Ready":
+						this.__answerViewModel.Information(message);
+						break;
+					case "Disconnected":
+						this.__answerViewModel.Warn(message);
+				}
 			},
 			onGameOver: (stats) => {
 				console.log(stats);
@@ -64,14 +79,9 @@ export default class PlayViewModel {
 			}
 		},
 		(err) => {
-			errorHandler.Log({ message: err.message, level: 'warning' });
+			errorHandler.Log({ message: err.message, level: errorHandler.MessageTypes.Error });
 			errorHandler.Show({ message: 'Could not load categories for this game. ' + err.message, title: 'Error Loading Categories'});
 		});
-
-		this.__answerWindow = window.open("/Views/Templates/Game/Answer.html", undefined, "height=800, width=800, menubar=no, status=no, titlebar=no, toolbar=no");
-		this.__answerWindow.ParentViewModel = { OnReady: (vm) => {
-			this.__answerViewModel = vm;
-		}};
 	}
 
 	SelectQuestion (question) {
@@ -84,6 +94,7 @@ export default class PlayViewModel {
 		this.SelectedQuestion(question);
 		question.isAnswered(true);
 
+		// TODO: Make this a knockout custom binding to eliminate having to use jQuery and the DOM directly
 		this.__modal = $('.modal').modal({
 
 		});
@@ -96,9 +107,6 @@ export default class PlayViewModel {
 			// TODO: Hide counter and question
 			this.ClearQuestion();
 		}
-		else {
-			// TODO: Reset question counter
-		}
 	}
 
 	QuestionTimeout () {
@@ -106,15 +114,18 @@ export default class PlayViewModel {
 			// current contestant timed out
 			errorHandler.Show({
 				message: this._contestant + " timed out.",
-				title: "Time Out"
+				title: "Time Out",
+				level: errorHandler.MessageTypes.Info
 			});
+			this._contestant = undefined;
 			// play timeout sound
 		}
 		else {
 			// question timed out
 			errorHandler.Show({
 				message: "No one buzzed in in time.",
-				title: "Time Out"
+				title: "Time Out",
+				level: errorHandler.MessageTypes.Info
 			})
 
 			this.ClearQuestion();
@@ -123,7 +134,7 @@ export default class PlayViewModel {
 	}
 
 	ClearQuestion () {
-			this.__modal.modal('hide');
+			this.__modal && this.__modal.modal('hide');
 			var question = this.SelectedQuestion();
 			this.__answerViewModel.MarkAnswered();
 			//this.SelectedQuestion(undefined);
@@ -135,9 +146,9 @@ export default class PlayViewModel {
 	}
 
 	ContestantBuzzIn ({ player }) {
+		this.__answerViewModel.Log(player + " buzzed in.");
 		errorHandler.Show({ message: player + " buzzed in!", title: 'Contestant Buzzed In' });
-		errorHandler.Confirm({ message: 'Click here to indicate a correct answer. Close the toast or wait until timeout to indicate an incorrect answer.',
-								title: 'Did they answer correctly?', timeout: this._contestantCount })
+		this.__answerViewModel.ConfirmPlayerQuestion({ name: player, timeout: this._contestantCount })
 		.then(() => {
 			this.__game.AnswerQuestion({ response: true });
 		},

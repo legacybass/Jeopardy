@@ -229,4 +229,8 @@ export default class ManageViewModel {
 		},
 		() => { });
 	}
+
+	get Categories() { return this.Categories; }
+	set Categories(value) { this.Categories = value; }
 }
+

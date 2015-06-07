@@ -105,6 +105,7 @@ export default class Game {
 	}
 
 	Close () {
+		this.socket.emit('Close');
 		this.socket.close();
 	}
 

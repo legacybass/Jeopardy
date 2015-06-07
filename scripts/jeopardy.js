@@ -31,7 +31,6 @@ export default class Jeopardy {
 		this.__chat = new Chat({ socket: chatSocket });
 		this._selectedQuestion;
 		this._userId = userId;
-		this._status = 'Disconnected';
 
 		this._timer = new Timer({
 		onFinish: () => {
@@ -39,6 +38,7 @@ export default class Jeopardy {
 				// Contestant timeout
 				this._currentPlayer = undefined;
 				this._timer.Start(this._question);
+				this.AnswerQuestion({ response: false });
 			}
 			else {
 				// Question Timeout - question over
@@ -151,23 +151,15 @@ export default class Jeopardy {
 		this._timer.Start(this._contestant);
 	}
 
-	Information ({ message, status = 'Disconnected'}) {
+	Information ({ message, status }) {
 		// Show the new info in the _answer window
-		console.info("Information update: %s  %s", message, status);
-
-		if(this._status != status) {
-			this._status = status;
-			this._connectionChangeCallback(status);
-		}
+		this._informationCallback({ message: message, status: status });
+		this._connectionChangeCallback({ status: status });
 	}
 
 	Error ({ message, status = 'Disconnected' }) {
 		this._errorCallback({ message: message });
-
-		if(this._status != status) {
-			this._status = status;
-			this._connectionChangeCallback(status);
-		}
+		this._connectionChangeCallback({ status: status });
 	}
 
 	Close () {

@@ -1,5 +1,8 @@
-import ko from 'knockout'
-import { Console } from 'errorhandler'
+import ko from 'knockout';
+import ErrorHandler from 'errorHandler';
+import { Console } from 'errorhandler';
+
+var errorHandler = new ErrorHandler();
 
 export default class AnswerViewModel {
 	constructor () {
@@ -35,5 +38,11 @@ export default class AnswerViewModel {
 			this.Console[level](message);
 		else
 			this.Console.Log(level + ": " + message);
+	}
+
+	ConfirmPlayerQuestion({ name, timeout }) {
+		return errorHandler.Confirm({ message: `Please indicate whether or not ${name} answered correctly.`,
+								title: 'Did they answer correctly?', timeout: timeout,
+								confirmText: 'Yes', cancelText: 'No' })
 	}
 }

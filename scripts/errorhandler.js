@@ -35,7 +35,7 @@ export default class MessageHandler {
 	}
 
 	Confirm({ element, message = "Click here to confirm, or click the 'x' to this close toast and cancel", title = "Confirm Action",
-				timeout = 10000 }) {
+				timeout = 0, confirmText = "Ok", cancelText = "Cancel" }) {
 		return new Promise((resolve, reject) => {
 			var isDismissed = false;
 
@@ -43,17 +43,13 @@ export default class MessageHandler {
 				jQuery(element).popover('show');
 			}
 			else {
-				toastr.options = {
+				var html = `<div>${message}</div>
+						<div class="row">
+							<button type="button" class="btn btn-success btn-block">${confirmText}</button>
+							<button type="button" class="btn btn-warn btn-block">${cancelText}</button>
+						</div>`;
+				var toast = toastr.warning(html, title, {
 					'positionClass': 'toast-top-right',
-					'onclick': () => {
-						isDismissed = true;
-						resolve();
-					},
-					'onHidden': () => {
-						if(!isDismissed) {
-							reject();
-						}
-					},
 					'showDuration': 300,
 					'hideDuration': 1000,
 					'timeOut': timeout,
@@ -62,10 +58,17 @@ export default class MessageHandler {
 					'hideEasing': 'linear',
 					'showMethod': 'fadeIn',
 					'hideMethod': 'fadeOut',
-					'closeButton': true
-				}
+					'closeButton': false
+				});
 
-				toastr.warning(message, title);
+				var btns = toast.find('button');
+				btn.first().on('click', () => {
+					resolve();
+				});
+
+				btn.last().on('click', () => {
+					reject();
+				});
 			}
 		});
 	}
@@ -75,6 +78,15 @@ export default class MessageHandler {
 			console.warn('%s: %s', title, message);
 		else
 			console.info("%s: %s", title, message);
+	}
+
+	get MessageTypes() {
+		return {
+			Error: 'error',
+			Warn: 'warn',
+			Success: 'success',
+			Info: 'info'
+		};
 	}
 }
 

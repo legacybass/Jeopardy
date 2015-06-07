@@ -221,7 +221,8 @@ export var Games = (() => {
 		CreateGame: ({ name }) => {
 			return new Promise((resolve, reject) => {
 				var game = new gameModel({
-					Name: name
+					Name: name,
+					CreateOn: new Date()
 				});
 
 				game.save(err => {

@@ -31,18 +31,17 @@
  */
 
 import socket from 'socket.io';
-import monitor from 'monitor.io';
 import { Games } from '../Modules/DataInteraction';
 
 var games = { };
+var states = {
+	Connected: 'Connected',
+	Disconnected: 'Disconnected',
+	Ready: 'Ready'
+}
 
 export default function Bootstrap(server) {
 	var io = socket(server);
-
-	// io.use(monitor({
-	// 	port: 8000,
-	// 	localOnly: true
-	// }));
 
 	var game = io.of('/Game')
 	.on('connection', socket => {
@@ -54,7 +53,7 @@ export default function Bootstrap(server) {
 		socket.on('Join', Join.bind(socket));
 		socket.on('BuzzIn', BuzzIn.bind(socket));
 
-		socket.on('disconnect', Disconnect.bind(socket));
+		socket.on('Close', Close.bind(socket));
 	});
 
 	var chat = io.of('/Chat')
@@ -74,8 +73,13 @@ function Start({ gameId, name }) {
 	
 	this.gameOptions = {
 		game: games[gameId],
-		gameId: gameId
+		gameId: gameId,
+		host: {
+			isHost: true
+		}
 	};
+
+	this.join(gameId);
 
 	this.emit('Information', { status: 'Connected', message: 'Game created in memory.' });
 }
@@ -132,7 +136,7 @@ function BuzzIn() {
 
 		if(game.ready) {
 			if(this.lockout)
-				return this.emit('Information', { message: 'You are currently locked out.' });
+				return this.emit('Information', { message: 'You are currently locked out.', status: states.Connected });
 
 			if(!game.lastBuzzedIn) {
 				game.lastBuzzedIn = { name: playerName, socket: this };
@@ -162,21 +166,24 @@ function BuzzIn() {
 					delete socket.lockout;
 					clearTimeout(p.socket.lockoutToken);
 					delete socket.lockoutToken;
+					if(game.ready) {
+						socket.emit('Information', { message: 'You are no longer locked out.', status: states.Connected });
+					}
 				}
 			}
 
 			socket.lockoutToken = setTimeout(LockOut, 1000);
-			this.emit('Information', { message: 'You have been locked out for buzzing in at the wrong time.' });
+			this.emit('Information', { message: 'You have been locked out for buzzing in at the wrong time.', status: states.Connected });
 		}
 	}
 	else
 		this.emit('Error', { message: 'This game does not exist.', status: 'Disconnected' });
 }
 
-function Disconnect() {
+function Close() {
 	// clean up on aisle 4
 
-	if(this.gameOptions && this.gameOptions.gameId) {
+	if(this.gameOptions && this.gameOptions.host && this.gameOptions.host.isHost) {
 		// Remove the game from memory, 'cause this is the host
 		delete games[this.gameOptions.gameId];
 	}
@@ -240,6 +247,7 @@ function AnswerQuestion({ gameId, response, points, gameOver = false }) {
 				// Someone buzzed in, but they got it wrong
 				game.ready = true;
 				this.lockout = 1;
+				player.socket.emit('Information', { message: 'You missed the question.', status: 'Connected' });
 				this.to(gameId).emit('Information', { message: 'Question ready.', status: 'Ready' });	
 			}
 			else {
