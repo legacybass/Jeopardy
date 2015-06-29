@@ -22,6 +22,7 @@ export default class PlayViewModel {
 		this.SelectedQuestion = ko.observable();
 
 		this._contestantCount = contestantCount;
+		this._questionCount = questionCount;
 		this._contestant;
 		this.__answerViewModel = { Information(msg) { this._messages.push(msg); }, Warn(msg) { this._warnings.push(msg); }, _messages: [], _warnings: [] };
 
@@ -45,12 +46,14 @@ export default class PlayViewModel {
 			},
 			onInformation: ({ message, status }) => {
 				switch(status) {
-					case "Connected":
-					case "Ready":
-						this.__answerViewModel.Information(message);
-						break;
 					case "Disconnected":
 						this.__answerViewModel.Warn(message);
+						break;
+					case "Connected":
+					case "Ready":
+					default:
+						this.__answerViewModel.Information(message);
+						break;
 				}
 			},
 			onGameOver: (stats) => {
@@ -94,6 +97,8 @@ export default class PlayViewModel {
 		this.SelectedQuestion(question);
 		question.isAnswered(true);
 
+		PlayViewModel.ShowTimer({ timeOut: this._questionCount })
+
 		// TODO: Make this a knockout custom binding to eliminate having to use jQuery and the DOM directly
 		this.__modal = $('.modal').modal({
 
@@ -113,12 +118,15 @@ export default class PlayViewModel {
 		if(this._contestant) {
 			// current contestant timed out
 			errorHandler.Show({
-				message: this._contestant + " timed out.",
+				message: `${this._contestant} timed out.`,
 				title: "Time Out",
 				level: errorHandler.MessageTypes.Info
 			});
 			this._contestant = undefined;
-			// play timeout sound
+
+			PlayViewModel.ShowTimer({ timeOut: this._questionCount });
+
+			// TODO: play timeout sound
 		}
 		else {
 			// question timed out
@@ -137,7 +145,7 @@ export default class PlayViewModel {
 			this.__modal && this.__modal.modal('hide');
 			var question = this.SelectedQuestion();
 			this.__answerViewModel.MarkAnswered();
-			//this.SelectedQuestion(undefined);
+			this.SelectedQuestion(undefined);
 	}
 
 	UpdateTimer (count) {
@@ -147,15 +155,30 @@ export default class PlayViewModel {
 
 	ContestantBuzzIn ({ player }) {
 		this.__answerViewModel.Log(player + " buzzed in.");
-		errorHandler.Show({ message: player + " buzzed in!", title: 'Contestant Buzzed In' });
+		errorHandler.Show({
+			message: `${player} buzzed in!`,
+			title: 'Contestant Buzzed In',
+			timeout: this._contestantCount,
+			level: errorHandler.MessageTypes.Info
+		});
 		this.__answerViewModel.ConfirmPlayerQuestion({ name: player, timeout: this._contestantCount })
 		.then(() => {
-			this.__game.AnswerQuestion({ response: true });
+			if(this.SelectedQuestion() !== undefined)
+				this.__game.AnswerQuestion({ response: true });
 		},
-		() => {
-			this.__game.AnswerQuestion({ response: false });
+		(err) => {
+			if(err)
+				console.error(err);
+			if(this.SelectedQuestion() !== undefined)
+				this.__game.AnswerQuestion({ response: false });
 		});
 		this._contestant = player;
+	}
+
+	static ShowTimer({ message = "Buzz in now", timeOut }) {
+		errorHandler.Show({
+			message, timeOut
+		})
 	}
 
 	NavigateAway () {

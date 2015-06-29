@@ -1,3 +1,5 @@
+/// <reference path="typings/node/node.d.ts"/>
+
 var express = require('express')
 	, http = require('http')
 	, path = require('path')
@@ -29,8 +31,8 @@ exports.boot = function(callback)
 }
 
 // Setup any server configurations
-function BootApplication(app, next)
-{
+function BootApplication(app, next) {
+	
 	// all environments
 	app.set('port', process.env.PORT || 3000);
 	app.use("/public", express.static(path.join(__dirname, 'public')));
@@ -47,20 +49,19 @@ function BootApplication(app, next)
 
 	app.use(express.cookieParser('legacybass'));
 	app.use(express.session());
+	
+	app.set('db-uri', process.env.CONNECTION || 'mongodb://localhost/jeopardy-dev');
 
 	if(app.get('env') == 'development')
 	{
-		app.set('db-uri', 'mongodb://localhost/jeopardy-dev');
 		app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 	}
 	else if(app.get('env') == 'production')
 	{
-		app.set('db-uri', 'mongodb://localhost/jeopardy');
 		app.use(express.errorHandler({ dumpExceptions: false, showStack: false }));
 	}
 	else if(app.get('env') == 'test')
 	{
-		app.set('db-uri', 'mongodb://localhost/jeopardy-test');
 		app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 	}
 

@@ -15,3 +15,5 @@ obj
 *.user
 *.pubxml
 *.orig
+.settings
+typings

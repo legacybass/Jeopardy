@@ -89,7 +89,7 @@ function Start({ gameId, name }) {
 // Identifier is their WNumber or other identifier
 function Join({ username, game, playerIdentifier }) {
 	// Join the game room
-	var socket = this;
+	let socket = this;
 
 	if(!games[game])
 		return socket.emit("Error", { message: 'Game does not exist.', status: 'Disconnected' });
@@ -103,7 +103,8 @@ function Join({ username, game, playerIdentifier }) {
 			game: game
 		};
 
-		socket.to(game).emit('Information', { message: username + ' has joined the game.' });
+		socket.to(game).emit('Information', { message: `${username} has joined the game.` });
+		games[game].host.emit('Information', { message: `${username} has joined the game.` });
 
 		Games.JoinGame({ game: game, playerName: username, playerIdentifier: playerIdentifier })
 		.then((player) => {
@@ -127,12 +128,12 @@ function BuzzIn() {
 	if(!this.gameOptions || !this.gameOptions.game)
 		return this.emit('Error', { message: 'You are not connected to a game.', status: 'Disconnected' });
 
-	var gameId = this.gameOptions.game,
+	let gameId = this.gameOptions.game,
 		playerName = this.gameOptions.player.Name,
 		identifier = this.gameOptions.player.Id;
 
 	if(games[gameId]) {
-		var game = games[gameId];
+		let game = games[gameId];
 
 		if(game.ready) {
 			if(this.lockout)
@@ -154,10 +155,10 @@ function BuzzIn() {
 		}
 		else {
 			// Lock out this player for buzzing in at the wrong time
-			var socket = this;
+			let socket = this;
 			socket.lockout = 2;
 
-			var LockOut = () => {
+			let LockOut = () => {
 				socket.lockout--;
 				if(socket.lockout > 0) {
 					socket.lockoutToken = setTimeout(LockOut, 1000);

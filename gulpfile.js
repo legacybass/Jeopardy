@@ -18,15 +18,11 @@ var knownOptions = {
 
 var options = minimist(process.argv.slice(2), knownOptions);
 
-function HandleError() {
-	console.log(arguments);
-}
-
 // CSS/Less related tasks
 gulp.task('less', ['clear_css'], function () {
 	var dest = 'public/css';
 
-	var stream = gulp.src(['less/site.less', 'less/bootstrap/bootstrap.less'])
+	return gulp.src(['less/site.less', 'less/bootstrap/bootstrap.less'])
 		.pipe(gulpif(options.env === 'production',
 			less({
 				compress: true,

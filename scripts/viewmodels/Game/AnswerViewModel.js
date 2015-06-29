@@ -40,8 +40,7 @@ export default class AnswerViewModel {
 	}
 
 	ConfirmPlayerQuestion({ name, timeout }) {
-		return errorHandler.Confirm({ message: `Please indicate whether or not ${name} answered correctly.`,
-								title: 'Did they answer correctly?', timeout: timeout,
+		return errorHandler.Confirm({ message: "", title: `Did ${name} answer correctly?`, timeout: timeout * 1000,
 								confirmText: 'Yes', cancelText: 'No' })
 	}
 }
