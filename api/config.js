@@ -1,5 +1,5 @@
 module.exports = (() => {
 	return {
-		host: process.env.HOST || 'mongodb://localhost/jeopardy'
+		host: process.env.HOST || 'mongodb://localhost:27017/jeopardy'
 	};
 })();

@@ -9,6 +9,8 @@ const transformCategory = helpers.TransformCategory;
 
 router.options('/', cors());
 
+router.options('/', cors());
+
 // Ensure the user is authenticated
 router.all('/', (req, res, next) => {
 	// since authentication isn't a thing yet, just call next
