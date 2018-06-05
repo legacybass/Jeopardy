@@ -21,3 +21,12 @@ export const AddCategory = ({ name }) => {
 	.then(CheckStatus)
 	.then(response => response.json());
 }
+
+export const RemoveCategory = ({ id }) => {
+	return Promise.resolve()
+	.then(() => fetch(`${config.api}/api/category/${id}`, {
+		method: 'DELETE'
+	}))
+	.then(CheckStatus)
+	.then(response => response.json());
+}

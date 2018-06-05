@@ -33,9 +33,16 @@ export const actionCreators = {
 		type: ADDCATEGORYFAILED,
 		error
 	}),
+	RemovingCategory: () => ({
+		type: REMOVINGCATEGORY
+	}),
 	RemoveCategory: ({ id }) => ({
 		type: REMOVECATEGORY,
 		categoryId: id
+	}),
+	RemoveCategoryFailed: ({ error }) => ({
+		type: REMOVECATEGORYFAILED,
+		error
 	}),
 	EditCategory: ({ id }) => ({
 		type: EDITCATEGORY,
@@ -91,8 +98,13 @@ export const reducer = (state, action = {}) => {
 				isLoading: false,
 				categories: [...state.categories, action.category]
 			};
+		case REMOVECATEGORY:
+			return {
+				...state,
+				isLoading: false,
+				categories: state.categories.filter(cat => cat.id !== action.categoryId)
+			};
 		case ADDEDQUESTION:
-		case REMOVEDCATEGORY:
 		case REMOVEDQUESTION:
 		case EDITEDCATEGORY:
 		case EDITEDQUESTION:
