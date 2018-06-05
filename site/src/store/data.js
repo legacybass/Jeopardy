@@ -1,27 +1,14 @@
-import { ADDCATEGORY, ADDINGCATEGORY, ADDEDCATEGORY, ADDCATEGORYFAILED,
-	REMOVECATEGORY, REMOVINGCATEGORY, REMOVEDCATEGORY, REMOVECATEGORYFAILED,
-	EDITCATEGORY, EDITINGCATEGORY, EDITEDCATEGORY,
-	EDITCATEGORYFAILED,
+import {
+	SELECTCATEGORY,
+	ADDCATEGORY, ADDINGCATEGORY, ADDCATEGORYFAILED,
+	REMOVECATEGORY, REMOVINGCATEGORY, REMOVECATEGORYFAILED,
+	EDITCATEGORY, EDITINGCATEGORY, EDITCATEGORYFAILED,
 	ADDQUESTION, ADDINGQUESTION, ADDEDQUESTION, ADDQUESTIONFAILED,
 	REMOVEQUESTION, REMOVINGQUESTION, REMOVEDQUESTION, REMOVEQUESTIONFAILED,
 	EDITQUESTION, EDITINGQUESTION, EDITEDQUESTION, EDITQUESTIONFAILED,
 	RETRIEVEDATA, RETRIEVINGDATA, RETRIEVEDDATA, RETRIEVEDATAFAILED } from './actions/data';
 
 export const actionCreators = {
-	RetrievingData: () => ({
-		type: RETRIEVINGDATA
-	}),
-	RetrieveData: ({ categories }) => ({
-		type: RETRIEVEDATA,
-		categories
-	}),
-	RetrievedData: () => ({
-		type: RETRIEVEDDATA
-	}),
-	RetrieveDataFailed: ({ error }) => ({
-		type: RETRIEVEDATAFAILED,
-		error
-	}),
 	AddingCategory: () => ({
 		type: ADDINGCATEGORY
 	}),
@@ -38,22 +25,51 @@ export const actionCreators = {
 	}),
 	RemoveCategory: ({ id }) => ({
 		type: REMOVECATEGORY,
-		categoryId: id
+		id
 	}),
 	RemoveCategoryFailed: ({ error }) => ({
 		type: REMOVECATEGORYFAILED,
 		error
 	}),
-	EditCategory: ({ id }) => ({
-		type: EDITCATEGORY,
-		categoryId: id
+	EditingCategory: () => ({
+		type: EDITINGCATEGORY
 	}),
-	AddQuestion: ({ categoryId, question, answer, points }) => ({
+	EditCategory: ({ category }) => ({
+		type: EDITCATEGORY,
+		category
+	}),
+	EditCategoryFailed: ({ error }) => ({
+		type: EDITCATEGORYFAILED,
+		error
+	}),
+	RetrievingData: () => ({
+		type: RETRIEVINGDATA
+	}),
+	RetrieveData: ({ categories }) => ({
+		type: RETRIEVEDATA,
+		categories
+	}),
+	RetrievedData: () => ({
+		type: RETRIEVEDDATA
+	}),
+	RetrieveDataFailed: ({ error }) => ({
+		type: RETRIEVEDATAFAILED,
+		error
+	}),
+	SelectCategory: ({ category }) => ({
+		type: SELECTCATEGORY,
+		category
+	}),
+	AddingQuestion: () => ({
+		type: ADDINGQUESTION
+	}),
+	AddQuestion: ({ category }) => ({
 		type: ADDQUESTION,
-		categoryId,
-		question,
-		answer,
-		points
+		category
+	}),
+	AddQuestionFailed: ({ error }) => ({
+		type: ADDQUESTIONFAILED,
+		error
 	}),
 	RemoveQuestion: ({ categoryId, questionId }) => ({
 		type: REMOVEQUESTION,
@@ -92,6 +108,11 @@ export const reducer = (state, action = {}) => {
 				...state,
 				isLoading: true
 			};
+		case SELECTCATEGORY:
+			return {
+				...state,
+				selectedCategory: action.category
+			};
 		case ADDCATEGORY:
 			return {
 				...state,
@@ -102,16 +123,21 @@ export const reducer = (state, action = {}) => {
 			return {
 				...state,
 				isLoading: false,
-				categories: state.categories.filter(cat => cat.id !== action.categoryId)
+				categories: state.categories.filter(cat => cat.id !== action.id),
+				selectedCategory: state.selectedCategory.id === action.id ? null : state.selectedCategory
 			};
-		case ADDEDQUESTION:
-		case REMOVEDQUESTION:
-		case EDITEDCATEGORY:
-		case EDITEDQUESTION:
+		case ADDQUESTION:
 			return {
 				...state,
-				categories: action.categories,
-				isLoading: false
+				isLoading: false,
+				categories: state.categories.map(category => {
+					if(category.id === action.category.id) {
+						return action.category;
+					}
+
+					return category;
+				}),
+				selectedCategory: state.selectedCategory.id === action.category.id ? action.category : state.selectedCategory
 			};
 		case ADDCATEGORYFAILED:
 		case ADDQUESTIONFAILED:
@@ -134,7 +160,8 @@ export const reducer = (state, action = {}) => {
 		default:
 			return state || {
 				categories: [],
-				isLoading: false
+				isLoading: false,
+				selectedCategory: null
 			}
 	}
 };

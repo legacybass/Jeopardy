@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Route, Redirect, Switch } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.css';
+import 'mdbreact';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'mdbreact/dist/css/mdb.css';
 import NavBar from './components/navbar';
 import logo from './logo.svg';
 import './App.css';

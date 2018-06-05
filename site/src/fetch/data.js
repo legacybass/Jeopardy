@@ -30,3 +30,18 @@ export const RemoveCategory = ({ id }) => {
 	.then(CheckStatus)
 	.then(response => response.json());
 }
+
+export const AddQuestion = ({ categoryId, question, points, answer }) => {
+	const data = new URLSearchParams();
+	data.append('question', question);
+	data.append('value', points);
+	data.append('answer', answer);
+
+	return Promise.resolve()
+	.then(() => fetch(`${config.api}/api/question/${categoryId}`, {
+		method: 'POST',
+		body: data
+	}))
+	.then(CheckStatus)
+	.then(response => response.json());
+}
