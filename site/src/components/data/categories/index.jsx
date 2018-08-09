@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import Categories from './categories';
 import { actionCreators } from '../../../store/data';
-import { AddCategory, RemoveCategory } from '../../../fetch/data';
+import { AddCategory, RemoveCategory, UpdateCategory } from '../../../fetch/data';
 
 const mapStateToProps = ({
 	data: {
@@ -45,7 +45,11 @@ const mapDispatchToProps = (dispatch) => {
 			.catch(err => dispatch(actionCreators.RemoveCategoryFailed({ error: err })));
 		},
 		EditCategory: ({ id, name }) => {
-
+			Promise.resolve()
+			.then(() => dispatch(actionCreators.EditingCategory()))
+			.then(() => UpdateCategory({ id, name }))
+			.then(category => dispatch(actionCreators.EditCategory({ category })))
+			.catch(err => dispatch(actionCreators.EditCategoryFailed({ error: err })));
 		}
 	}
 }

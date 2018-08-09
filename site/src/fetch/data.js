@@ -1,6 +1,7 @@
 import { CheckStatus } from './helpers';
 import config from '../config';
 import { escape } from 'querystring';
+import { promises } from 'fs';
 
 export const LoadCategories = () => {
 	return Promise.resolve()
@@ -26,6 +27,19 @@ export const RemoveCategory = ({ id }) => {
 	return Promise.resolve()
 	.then(() => fetch(`${config.api}/api/category/${id}`, {
 		method: 'DELETE'
+	}))
+	.then(CheckStatus)
+	.then(response => response.json());
+}
+
+export const UpdateCategory = ({ id, name }) => {
+	const data = new URLSearchParams();
+	data.append('name', name);
+
+	return Promise.resolve()
+	.then(() => fetch(`${config.api}/api/category/${id}`, {
+		method: 'PUT',
+		body: data
 	}))
 	.then(CheckStatus)
 	.then(response => response.json());

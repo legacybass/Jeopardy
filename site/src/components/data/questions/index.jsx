@@ -61,6 +61,7 @@ const mapDispatchToProps = (dispatch) => {
 			.then(() => dispatch(actionCreators.RemovingQuestion()))
 			.then(() => RemoveQuestion({ categoryId, questionId }))
 			.then(response => dispatch(actionCreators.RemoveQuestion({ categoryId, questionId })))
+			.catch(err => dispatch(actionCreators.RemoveQuestionFailed({ error: err })));
 		},
 		EditQuestion({ categoryId, questionId, question, answer, points }) {
 

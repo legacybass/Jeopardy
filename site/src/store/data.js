@@ -133,6 +133,17 @@ export const reducer = (state, action = {}) => {
 				categories: state.categories.filter(cat => cat.id !== action.id),
 				selectedCategory: state.selectedCategory.id === action.id ? null : state.selectedCategory
 			};
+		case EDITCATEGORY:
+			return {
+				...state,
+				isLoading: false,
+				categories: state.categories.map(cat => {
+					if(cat.id === action.category.id)
+						return action.category;
+					return cat;
+				}),
+				selectedCategory: state.selectedCategory.id === action.category.id ? action.category : state.selectedCategory
+			};
 		case ADDQUESTION:
 			return {
 				...state,
