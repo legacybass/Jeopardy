@@ -8,8 +8,13 @@ export default class Categories extends React.Component {
 		super(props);
 
 		this.state = {
-			categoryname: null
+			categoryName: ""
 		};
+	}
+
+	CreateCategory() {
+		this.props.AddCategory({ name: this.state.categoryName });
+		this.setState({ categoryName: '' });
 	}
 
 	render() {
@@ -44,9 +49,9 @@ export default class Categories extends React.Component {
 				</div>
 
 				<Col className="my-2 border">
-					<form onSubmit={evt => { evt.preventDefault(); this.props.AddCategory({ name: this.state.categoryname }); }}>
+					<form onSubmit={evt => { evt.preventDefault(); this.CreateCategory(); }}>
 						<Input label="Your New Category Name" value={this.state.categoryName}
-							onChange={evt => this.setState({ categoryname: evt.currentTarget.value })} />
+							onChange={evt => this.setState({ categoryName: evt.currentTarget.value })} />
 						<Button outline color="primary" block type="submit" className="mb-1"
 							disabled={this.props.isLoading} >Add Category</Button>
 					</form>

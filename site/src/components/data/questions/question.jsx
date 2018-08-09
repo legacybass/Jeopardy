@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Input, Col, Button, Card, CardBody, CardText } from 'mdbreact';
+import { Input, Col, Button, Card, CardBody, CardText, CardTitle, CardHeader, CardFooter } from 'mdbreact';
 
 export default class Questions extends React.Component {
 	constructor(props) {
@@ -14,12 +14,19 @@ export default class Questions extends React.Component {
 
 	render() {
 		const questions = this.props.questions.map((q, i) => (
-			<Card key={q.id}>
+			<Card key={q.id} className="text-center mb-2">
+				<CardHeader color="primary-color">
+					<CardTitle className="text-center">{q.question}</CardTitle>
+				</CardHeader>
 				<CardBody cascade>
-					<CardText>{q.question}</CardText>
 					<CardText>{q.answer}</CardText>
 					<CardText>{q.value}</CardText>
 				</CardBody>
+				<CardFooter cascade="true">
+					<Button type="button" color="danger" outline size="sm" onClick={() => this.props.RemoveQuestion({ questionId: q.id, categoryId: this.props.id })}>
+						Delete Question
+					</Button>
+				</CardFooter>
 			</Card>
 		));
 
@@ -55,7 +62,6 @@ export default class Questions extends React.Component {
 							</select>
 							<Input label="Answer" value={this.state.answer} onChange={evt => this.setState({ answer: evt.currentTarget.value })} />
 							<Button outline color="primary" type="submit">Add Question</Button>
-							<Button outline color="danger" type="reset">Reset</Button>
 						</form>
 					</Col>
 				}

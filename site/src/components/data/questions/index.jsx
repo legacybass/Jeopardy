@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import Questions from './question';
 import { actionCreators } from '../../../store/data';
-import { AddQuestion } from '../../../fetch/data';
+import { AddQuestion, RemoveQuestion } from '../../../fetch/data';
 
 const mapStateToProps = ({
 	data: {
@@ -48,7 +48,19 @@ const mapDispatchToProps = (dispatch) => {
 			.catch(err => dispatch(actionCreators.AddQuestionFailed({ error: err })));
 		},
 		RemoveQuestion({ categoryId, questionId }) {
+			const errors = [];
+			if(categoryId === undefined || categoryId === null)
+				errors.push('No category selected. Please select a category.');
+			if(questionId === undefined || questionId === null)
+				errors.push('No question selected. Please select a question to remove.');
 
+			if(errors.length > 0)
+				return dispatch(actionCreators.RemoveQuestionFailed({ error: new Error(errors.join('\n'))}));
+
+			return Promise.resolve()
+			.then(() => dispatch(actionCreators.RemovingQuestion()))
+			.then(() => RemoveQuestion({ categoryId, questionId }))
+			.then(response => dispatch(actionCreators.RemoveQuestion({ categoryId, questionId })))
 		},
 		EditQuestion({ categoryId, questionId, question, answer, points }) {
 

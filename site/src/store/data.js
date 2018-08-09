@@ -3,9 +3,9 @@ import {
 	ADDCATEGORY, ADDINGCATEGORY, ADDCATEGORYFAILED,
 	REMOVECATEGORY, REMOVINGCATEGORY, REMOVECATEGORYFAILED,
 	EDITCATEGORY, EDITINGCATEGORY, EDITCATEGORYFAILED,
-	ADDQUESTION, ADDINGQUESTION, ADDEDQUESTION, ADDQUESTIONFAILED,
-	REMOVEQUESTION, REMOVINGQUESTION, REMOVEDQUESTION, REMOVEQUESTIONFAILED,
-	EDITQUESTION, EDITINGQUESTION, EDITEDQUESTION, EDITQUESTIONFAILED,
+	ADDQUESTION, ADDINGQUESTION, ADDQUESTIONFAILED,
+	REMOVEQUESTION, REMOVINGQUESTION, REMOVEQUESTIONFAILED,
+	EDITQUESTION, EDITINGQUESTION, EDITQUESTIONFAILED,
 	RETRIEVEDATA, RETRIEVINGDATA, RETRIEVEDDATA, RETRIEVEDATAFAILED } from './actions/data';
 
 export const actionCreators = {
@@ -71,10 +71,17 @@ export const actionCreators = {
 		type: ADDQUESTIONFAILED,
 		error
 	}),
+	RemovingQuestion: () => ({
+		type: REMOVINGQUESTION
+	}),
 	RemoveQuestion: ({ categoryId, questionId }) => ({
 		type: REMOVEQUESTION,
 		categoryId,
 		questionId
+	}),
+	RemoveQuestionFailed: ({ error }) => ({
+		type: REMOVEQUESTIONFAILED,
+		error
 	}),
 	EditQuestion: ({ categoryId, questionId, question, answer, points }) => ({
 		type: EDITQUESTION,
@@ -139,6 +146,32 @@ export const reducer = (state, action = {}) => {
 				}),
 				selectedCategory: state.selectedCategory.id === action.category.id ? action.category : state.selectedCategory
 			};
+		case REMOVEQUESTION:
+		{
+			let selectedCategory = state.selectedCategory;
+			const categories = state.categories.map(category => {
+				if(category.id === action.categoryId) {
+					const updatedCategory = {
+						...category,
+						questions: category.questions.filter(q => q.id != action.questionId)
+					};
+
+					if(state.selectedCategory && state.selectedCategory.id === updatedCategory.id)
+						selectedCategory = updatedCategory;
+
+					return updatedCategory;
+				}
+
+				return category;
+			});
+
+			return {
+				...state,
+				isLoading: false,
+				categories,
+				selectedCategory
+			};
+		}
 		case ADDCATEGORYFAILED:
 		case ADDQUESTIONFAILED:
 		case REMOVECATEGORYFAILED:

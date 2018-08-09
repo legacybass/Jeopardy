@@ -39,8 +39,8 @@ export default class Data extends React.Component {
 					<div className="alert alert-danger">{this.props.error}</div>
 				}
 				<div className="row border border-dark">
-					<Categories className="col col-md-5 border-top-0 border-bottom-0 border-left-0 border border-dark" />
-					<Questions className="col" />
+					<Categories className="col-6 col-md-5 border-top-0 border-bottom-0 border-left-0 border border-dark" />
+					<Questions className="col-6 col-md-7" />
 				</div>
 			</main>
 		);

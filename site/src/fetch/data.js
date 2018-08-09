@@ -45,3 +45,12 @@ export const AddQuestion = ({ categoryId, question, points, answer }) => {
 	.then(CheckStatus)
 	.then(response => response.json());
 }
+
+export const RemoveQuestion = ({ categoryId, questionId }) => {
+	return Promise.resolve()
+	.then(() => fetch(`${config.api}/api/question/${categoryId}/${questionId}`, {
+		method: 'DELETE',
+	}))
+	.then(CheckStatus)
+	.then(response => response.json());
+}
