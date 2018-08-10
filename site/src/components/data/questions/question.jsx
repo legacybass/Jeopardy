@@ -8,8 +8,41 @@ export default class Questions extends React.Component {
 		this.state = {
 			question: '',
 			answer: '',
-			points: ''
+			points: '',
+			isEditing: false,
+			currentQuestion: null
 		};
+	}
+
+	EditQuestion({ question }) {
+		this.setState({
+			question: question.question,
+			answer: question.answer,
+			points: question.value,
+			isEditing: true,
+			currentQuestion: question
+		});
+	}
+
+	UpdateQuestion() {
+		this.props.EditQuestion({
+			categoryId: this.props.id,
+			questionId: this.state.currentQuestion.id,
+			question: this.state.question,
+			answer: this.state.answer,
+			points: this.state.points
+		});
+		this.CancelEdit();
+	}
+
+	CancelEdit() {
+		this.setState({
+			question: '',
+			answer: '',
+			poinst: '',
+			isEditing: false,
+			currentQuestion: null
+		})
 	}
 
 	render() {
@@ -25,6 +58,9 @@ export default class Questions extends React.Component {
 				<CardFooter cascade="true">
 					<Button type="button" color="danger" outline size="sm" onClick={() => this.props.RemoveQuestion({ questionId: q.id, categoryId: this.props.id })}>
 						Delete Question
+					</Button>
+					<Button type="button" color="info" outline size="sm" onClick={() => this.EditQuestion({ question: q })} >
+						Edit Question
 					</Button>
 				</CardFooter>
 			</Card>
@@ -50,7 +86,7 @@ export default class Questions extends React.Component {
 
 				{ this.props.id &&
 					<Col className="my-2 border">
-						<form onSubmit={evt => { evt.preventDefault(); this.props.AddQuestion({ categoryId: this.props.id, ...this.state }); }} className="form form-horizontal">
+						<form onSubmit={evt => { evt.preventDefault(); this.state.isEditing ? this.UpdateQuestion() : this.props.AddQuestion({ categoryId: this.props.id, ...this.state }); }} className="form form-horizontal">
 							<Input label="Question" value={this.state.question} onChange={evt => this.setState({ question: evt.currentTarget.value })} />
 							<select className="form-control" value={this.state.points} onChange={evt => this.setState({ points: +evt.currentTarget.value })}>
 								<option>Points</option>
@@ -61,7 +97,17 @@ export default class Questions extends React.Component {
 								<option value="1000">1000</option>
 							</select>
 							<Input label="Answer" value={this.state.answer} onChange={evt => this.setState({ answer: evt.currentTarget.value })} />
-							<Button outline color="primary" type="submit">Add Question</Button>
+							<Button outline color={(this.state.isEditing ? 'success' : 'primary')} type="submit"
+									block className="mb-1">
+								{`${this.state.isEditing ? 'Update' : 'Add'} Question`}
+							</Button>
+							{
+								this.state.isEditing
+								? <Button outline color='warning' type="button" onClick={() => this.CancelEdit()} 			block className="mb-1">
+									Cancel
+								</Button>
+								: null
+							}
 						</form>
 					</Col>
 				}

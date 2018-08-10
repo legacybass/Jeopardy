@@ -83,13 +83,16 @@ export const actionCreators = {
 		type: REMOVEQUESTIONFAILED,
 		error
 	}),
-	EditQuestion: ({ categoryId, questionId, question, answer, points }) => ({
+	EditingQuestion: () => ({
+		type: EDITINGQUESTION
+	}),
+	EditQuestion: ({ category }) => ({
 		type: EDITQUESTION,
-		categoryId,
-		questionId,
-		question,
-		answer,
-		points
+		category
+	}),
+	EditQuestionFailed: ({ error }) => ({
+		type: EDITQUESTIONFAILED,
+		error
 	})
 };
 
@@ -183,6 +186,17 @@ export const reducer = (state, action = {}) => {
 				selectedCategory
 			};
 		}
+		case EDITQUESTION:
+			return {
+				...state,
+				isLoading: false,
+				categories: state.categories.map(category => {
+					if(category.id === action.category.id)
+						return action.category;
+					return category;
+				}),
+				selectedCategory: state.selectedCategory && state.selectedCategory.id === action.category.id ? action.category : state.selectedCategory
+			}
 		case ADDCATEGORYFAILED:
 		case ADDQUESTIONFAILED:
 		case REMOVECATEGORYFAILED:

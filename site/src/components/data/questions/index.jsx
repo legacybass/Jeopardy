@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import Questions from './question';
 import { actionCreators } from '../../../store/data';
-import { AddQuestion, RemoveQuestion } from '../../../fetch/data';
+import { AddQuestion, RemoveQuestion, EditQuestion } from '../../../fetch/data';
 
 const mapStateToProps = ({
 	data: {
@@ -64,7 +64,21 @@ const mapDispatchToProps = (dispatch) => {
 			.catch(err => dispatch(actionCreators.RemoveQuestionFailed({ error: err })));
 		},
 		EditQuestion({ categoryId, questionId, question, answer, points }) {
+			const errors = [];
 
+			if(categoryId === undefined || categoryId === null)
+				errors.push('No category selected. Please select a category.');
+			if(questionId === undefined || questionId === null)
+				errors.push('No question selected. Please select a question to edit.');
+
+			if(errors.length > 0)
+				return dispatch(actionCreators.EditQuestionFailed({ error: new Error(errors.join('\n'))}));
+
+			return Promise.resolve()
+			.then(() => dispatch(actionCreators.EditingQuestion()))
+			.then(() => EditQuestion({ categoryId, questionId, question, answer, points }))
+			.then(categoryResponse => dispatch(actionCreators.EditQuestion({ category: categoryResponse })))
+			.catch(err => dispatch(actionCreators.EditQuestionFailed({ error: err })));
 		}
 	}
 }

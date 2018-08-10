@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ListGroup, ListGroupItem, Badge, Input, Button, Col } from 'mdbreact';
+import { ListGroup, ListGroupItem, Badge, Input, Button, Col, Row } from 'mdbreact';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import faTrashAlt from '@fortawesome/fontawesome-free-solid/faTrashAlt';
 import faEdit from '@fortawesome/fontawesome-free-solid/faEdit';
@@ -38,11 +38,15 @@ export default class Categories extends React.Component {
 			name: this.state.categoryName
 		});
 
+		this.CancelEdit();
+	}
+	
+	CancelEdit() {
 		this.setState({
 			categoryName: '',
 			category: null,
 			isEditing: false
-		})
+		});
 	}
 
 	render() {
@@ -86,13 +90,21 @@ export default class Categories extends React.Component {
 					<form onSubmit={evt => { evt.preventDefault(); this.state.isEditing ? this.UpdateCategory() : this.CreateCategory(); }}>
 						<Input label="Your New Category Name" value={this.state.categoryName}
 							onChange={evt => this.setState({ categoryName: evt.currentTarget.value })} />
-						<Button outline color={this.state.isEditing ? 'success' : 'primary'} block
-								type="submit" className="mb-1"
-								disabled={this.props.isLoading} >
+							<Button outline color={this.state.isEditing ? 'success' : 'primary'} block
+									type="submit" className="mb-1"
+									disabled={this.props.isLoading} >
+								{
+									`${this.state.isEditing ? 'Update' : 'Add'} Category`
+								}
+							</Button>
 							{
-								`${this.state.isEditing ? 'Update' : 'Add'} Category`
+								this.state.isEditing
+								? <Button outline color="warning" type="button" className="mb-1"
+										onClick={() => this.CancelEdit()} block>
+									Cancel
+								</Button>
+								: null
 							}
-						</Button>
 					</form>
 				</Col>
 			</section>

@@ -68,3 +68,18 @@ export const RemoveQuestion = ({ categoryId, questionId }) => {
 	.then(CheckStatus)
 	.then(response => response.json());
 }
+
+export const EditQuestion = ({ categoryId, questionId, question, answer, points }) => {
+	var data = new URLSearchParams();
+	data.append('question', question);
+	data.append('answer', answer);
+	data.append('value', points);
+
+	return Promise.resolve()
+	.then(() => fetch(`${config.api}/api/question/${categoryId}/${questionId}`, {
+		method: 'PUT',
+		body: data
+	}))
+	.then(CheckStatus)
+	.then(response => response.json());
+}
