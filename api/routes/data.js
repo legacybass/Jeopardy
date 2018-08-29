@@ -1,15 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const helpers = require('./helpers');
 const router = express.Router();
 const Category = mongoose.model('category');
 
-const transformCategory = ({ _id, name, questions }) => {
-	return {
-		id: _id,
-		name,
-		questions: questions.map(({ question, answer, value }, i) => ({ id: i, question, answer, value }))
-	};
-}
+const transformCategory = helpers.TransformCategory;
 
 // Ensure the user is authenticated
 router.all('/', (req, res, next) => {

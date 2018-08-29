@@ -12,7 +12,6 @@
     "express": "~4.15.5",
     "mongoose": "^5.0.0-rc1",
     "morgan": "~1.9.0",
-    "node-sass-middleware": "0.9.8",
     "pug": "2.0.0-beta11",
     "serve-favicon": "~2.4.5"
   }
