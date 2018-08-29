@@ -1,11 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const helpers = require('./helpers');
 
 const router = express.Router();
 const Category = mongoose.model('category');
 
 const transformCategory = helpers.TransformCategory;
+
+router.options('/', cors());
 
 router.all('/', (req, res, next) => {
 	// preparing for authentication

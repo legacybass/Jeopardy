@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const config = require('./config');
 const mongoose = require('mongoose');
+const cors = require('cors');
 require('./models/category');
 require('./models/game');
 const dataApi = require('./routes/data');
@@ -19,6 +20,8 @@ db.on('error', console.error.bind(console, 'mongo connection error:'));
 db.once('open', () => console.info('Mongo DB Connected.'));
 
 const app = express();
+
+app.use(cors());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
